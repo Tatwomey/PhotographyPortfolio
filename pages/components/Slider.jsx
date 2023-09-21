@@ -3,9 +3,10 @@ import React, { useState } from "react";
 import { SliderData } from "@/Data/SliderData";
 import { FaArrowCircleLeft, FaArrowCircleRight } from "react-icons/fa";
 
-const Slider = ({ slides }) => {
+const Slider = ({ slides = [] }) => { // set a default value for slides
+  const length = slides.length;
+
   const [current, setCurrent] = useState(0);
-  const length = slides.length
 
   const nextSlide = () => {
     setCurrent(current === length - 1 ? 0 : current + 1);
