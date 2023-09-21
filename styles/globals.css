@@ -20,11 +20,19 @@ html, body {
   min-width: 100vw;  /* Make sure it at least covers the full viewport width */
 }
 
+/* Responsive handling for mobile devices */
+@media (max-width: 640px) {
+  .custom-img {
+    background-position: top; /* Adjust the position to your preference */
+  }
+}
+
 .my-masonry-grid {
   display: flex;
   margin-left: -30px;
   width: auto;
 }
+
 .watermark-overlay {
   display: none;
   position: fixed;
