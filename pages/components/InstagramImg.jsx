@@ -9,7 +9,7 @@ const InstagramImg = ({ socialImg }) => {
         src={socialImg}
         alt='Instagram Image'
         className='w-full h-full'
-        layout='responsive'
+        
       />
       {/* Overlay */}
       <div className='flex justify-center w-full h-full items-center absolute top-0 left-0 right-0 bottom-0 hover:bg-black/50 group'>
