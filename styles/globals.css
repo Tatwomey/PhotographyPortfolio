@@ -23,10 +23,10 @@ html, body {
 /* Responsive handling for mobile devices */
 @media (max-width: 640px) {
   .custom-img {
-    background-size: contain; /* Ensures the whole image is visible within the viewport */
-    background-color: black; /* Assuming you want a black background in case the image doesn't cover the whole viewport. Adjust this color as needed. */
+    background-position: top; /* Adjust the position to your preference */
   }
 }
+
 .my-masonry-grid {
   display: flex;
   margin-left: -30px;
