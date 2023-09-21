@@ -42,8 +42,7 @@ export default function Home() {
 
       <div id="hero-section">
         <Hero id="hero-section"
-          heading="Trevor Twomey Photography"
-          message="I capture live moments and keep them alive."
+          
         />
       </div>
       
