@@ -22,6 +22,7 @@ const Navbar = () => {
     };
 
     window.addEventListener('scroll', changeColor);
+
     return () => {
       window.removeEventListener('scroll', changeColor);
     };
@@ -44,7 +45,14 @@ const Navbar = () => {
             />
           </h1>
         </Link>
-        <ul style={{ color: `${textColor}` }} className='hidden sm:flex'>
+
+        <div className="sm:hidden">
+          <button onClick={handleNav}>
+            {nav ? <AiOutlineClose size={30} /> : <AiOutlineMenu size={30} />}
+          </button>
+        </div>
+
+        <ul style={{ color: `${textColor}` }} className={`sm:flex ${nav ? 'flex' : 'hidden'} flex-col sm:flex-row`}>
           <li className='p-4'>
             <Link href='/'>Home</Link>
           </li>
@@ -58,7 +66,6 @@ const Navbar = () => {
             <Link href='/contact'>Contact</Link>
           </li>
         </ul>
-        {/* ... rest of your code */}
       </div>
     </div>
   );
