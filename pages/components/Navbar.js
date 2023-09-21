@@ -36,12 +36,12 @@ const Navbar = () => {
     <div style={{ backgroundColor: `${color}` }} className='fixed left-0 top-0 w-full z-10 ease-in duration-300'>
       <div className='max-w-[1240px] m-auto flex justify-between items-center p-4'>
         <Link href='/'>
-          <h1 className='font-bold text-4xl'>
+          <h1 className='font-bold text-2xl sm:text-4xl'>  {/* Adjusted font size for mobile */}
             <img
               src={logo}
               alt="Logo"
-              width="250"
-              height="50"
+              width={nav ? 200 : 250}  
+              height={nav ? 40 : 50}
             />
           </h1>
         </Link>
@@ -53,16 +53,17 @@ const Navbar = () => {
         </div>
 
         <ul style={{ color: `${textColor}` }} className={`sm:flex ${nav ? 'flex' : 'hidden'} flex-col sm:flex-row`}>
-          <li className='p-4'>
+          {/* Added more padding for a larger touch area on mobile */}
+          <li className='p-6 sm:p-4'>
             <Link href='/'>Home</Link>
           </li>
-          <li className='p-4'>
+          <li className='p-6 sm:p-4'>
             <Link href='/#gallery'>Gallery</Link>
           </li>
-          <li className='p-4'>
+          <li className='p-6 sm:p-4'>
             <Link href='/music'>Music</Link>
           </li>
-          <li className='p-4'>
+          <li className='p-6 sm:p-4'>
             <Link href='/contact'>Contact</Link>
           </li>
         </ul>
