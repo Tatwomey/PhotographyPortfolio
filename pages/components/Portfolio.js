@@ -10,6 +10,7 @@ import lgThumbnail from "lightgallery/plugins/thumbnail";
 import lgZoom from "lightgallery/plugins/zoom";
 
 const photos = [
+  {src: '/head-hair-korn-camden-NJ-2022-trevortwomey.jpg'},
   { src: '/munky-korn-camden-nj-2022-trevortwomeytest.jpg' },
   { src: '/evanescence-amy-lee-camden-nj-2022-trevortwomey.jpg' },
   { src: '/JD-korn-jones-beach-2022-trevor-twomey-1.jpg' },
@@ -18,6 +19,9 @@ const photos = [
   { src: '/iamx-chris-corner-LPR-2023-trevortwomey-2.jpg'},
   { src: '/head-red-korn-jones-beach-2022-trevor-twomey-1.jpg' },
   { src: '/munky-korn-camden-nj-2022-trevor-twomey-1.jpg' },
+  { src: '/IAMX-BW-LPR-2023-trevor-twomey.jpg'},
+  {src: '/kaged-1 2-Edit copy.png'},
+ 
 ];
 
 const Portfolio = () => {
