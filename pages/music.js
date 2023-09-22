@@ -6,8 +6,7 @@ function music() {
   return (
     <div>
       <Hero
-        heading="Music Photos"
-        message="This is some of my concert photos"
+        
       />{" "}
       <Portfolio />
     </div>

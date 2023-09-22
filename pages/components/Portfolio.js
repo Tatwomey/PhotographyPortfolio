@@ -15,7 +15,9 @@ const photos = [
   { src: '/JD-korn-jones-beach-2022-trevor-twomey-1.jpg' },
   { src: '/q-unique-bowery-ballroom-trevortwomey-1.jpg' },
   { src: '/hash-thievery-corporation-2013-trevor-twomey-1.jpg' },
-  { src: '/head-red-korn-jones-beach-2022-trevor-twomey-1.jpg' }
+  { src: '/iamx-chris-corner-LPR-2023-trevortwomey-2.jpg'},
+  { src: '/head-red-korn-jones-beach-2022-trevor-twomey-1.jpg' },
+  { src: '/munky-korn-camden-nj-2022-trevor-twomey-1.jpg' },
 ];
 
 const Portfolio = () => {
@@ -39,19 +41,20 @@ const Portfolio = () => {
   const breakpointCols = {
     default: 3,
     900: 2,
-    600: 1
+    600: 1,
   };
 
   return (
-    <div className='max-w-[1240px] mx-auto py-16 text-center'>
-      <h1 className='font-bold text-2xl p-4'>Music Photography</h1>
-      <Masonry
-        breakpointCols={breakpointCols}
-        className="flex gap-4"
-        columnClassName=""
-      >
+    <div className="max-w-[1240px] mx-auto py-16 text-center">
+      <h1 className="font-bold text-2xl p-4">Music Photography</h1>
+      {/* Use media queries to change image size on mobile */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 p-4">
         {photos.map((photo, index) => (
-          <div className="relative" key={photo.src} onContextMenu={handleRightClick}>
+          <div
+            className="relative"
+            key={photo.src}
+            onContextMenu={handleRightClick}
+          >
             <Image
               src={photo.src}
               alt="Photo"
@@ -68,7 +71,7 @@ const Portfolio = () => {
             ></div>
           </div>
         ))}
-      </Masonry>
+      </div>
 
       <LightGalleryComponent
         onInit={(ref) => {
@@ -84,7 +87,7 @@ const Portfolio = () => {
         dynamic
         dynamicEl={photos.map((photo) => ({
           src: photo.src,
-          thumb: photo.src
+          thumb: photo.src,
         }))}
       />
     </div>
