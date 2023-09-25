@@ -9,7 +9,7 @@ export default async function handler(req, res) {
       service: 'gmail',
       auth: {
         user: 'info@trevortwomeyphoto.com',
-        pass: 'Manoloi5myfri3nd',
+        pass: 'Manoloi5myfri3nd!!'
       }
     });
 
