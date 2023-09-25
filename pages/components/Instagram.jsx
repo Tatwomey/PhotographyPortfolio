@@ -10,8 +10,9 @@ import InstagramImg from "./InstagramImg";
 const Instagram = () => {
   return (
     <div>
-      <p>Follow me on Instagram</p>
+      
       <a href="https://www.instagram.com/trevortwomey/" target="_blank" rel="noopener noreferrer">
+      <p>Follow me on Instagram</p>
     <p>@trevortwomey</p>
 </a>
 
