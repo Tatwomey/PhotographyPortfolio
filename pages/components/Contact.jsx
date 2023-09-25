@@ -13,14 +13,16 @@ const Contact = () => {
       subject: data.get('subject'),
       message: data.get('message')
     };
+    
+    console.log("Payload:", payload);
 
     try {
       const res = await axios.post('/api/sendEmail', payload);
       console.log('Email sent successfully:', res.data);
     } catch (error) {
-      console.log('Failed to send the email:', error);
+      console.error('Failed to send the email:', error.response ? error.response.data : error.message);
     }
-  };
+};
 
   useEffect(() => {
     if (window.location.hash === '#work-with-me' && workWithMeRef.current) {
