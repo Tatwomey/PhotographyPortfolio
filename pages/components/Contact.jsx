@@ -47,8 +47,7 @@ return (
 
     {isSubmitted ? ( // Conditionally render the message or form based on the submission status
       <div className="text-center text-xl font-bold">
-        Thank you, I'll be in touch.
-      </div>
+      {"Thank you, I'll be in touch."}</div>
     ) : (
       <form className='max-w-[600px] m-auto' onSubmit={handleSubmit}>
         {/* ... rest of your form code ... */}
