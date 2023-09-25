@@ -5,16 +5,17 @@ import Instagram from './components/Instagram';
 import Slider from './components/Slider';
 import { SliderData } from '@/Data/SliderData';
 
-
-
-
 export default function Home() {
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      // Update dark mode based on scroll position
-      const heroHeight = document.getElementById('hero-section').offsetHeight;
+      const heroElement = document.getElementById('hero-section');
+
+      // If the hero element doesn't exist, do nothing
+      if (!heroElement) return;
+
+      const heroHeight = heroElement.offsetHeight;
       const scrollPosition = window.scrollY;
       
       if (scrollPosition > heroHeight) {
@@ -41,9 +42,7 @@ export default function Home() {
       </Head>
 
       <div id="hero-section">
-        <Hero id="hero-section"
-          
-        />
+        <Hero />
       </div>
       
       <Slider slides={SliderData} />

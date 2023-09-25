@@ -27,6 +27,13 @@ const photos = [
 const Portfolio = () => {
   const lightboxRef = useRef(null);
 
+  const breakpointCols = {
+    default: 4,  // default to four images per row
+    1100: 3,    // three images per row for larger screens
+    700: 2,     // two images per row for medium screens
+    500: 1      // one image per row for small screens
+  };
+
   const handleRightClick = (e) => {
     e.preventDefault();
     alert('© Trevor Twomey Photography 2023. All Rights Reserved.');
@@ -42,20 +49,18 @@ const Portfolio = () => {
     });
   }, []);
 
-  const breakpointCols = {
-    default: 3,
-    900: 2,
-    600: 1,
-  };
 
   return (
-    <div className="max-w-[1240px] mx-auto py-16 text-center">
-      <h1 className="font-bold text-2xl p-4">Music Photography</h1>
-      {/* Use media queries to change image size on mobile */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 p-4">
+    <div className="max-w-[1240px] mx-auto py-4 sm:py-16 text-center" id="music-photography">
+      <h1 className="font-bold text-2xl sm:text-3xl p-4">Music Photography</h1>
+      <Masonry
+        breakpointCols={breakpointCols}
+        className="my-masonry-grid"
+        columnClassName="my-masonry-grid_column"
+      >
         {photos.map((photo, index) => (
           <div
-            className="relative"
+            className="relative mb-4"
             key={photo.src}
             onContextMenu={handleRightClick}
           >
@@ -64,8 +69,8 @@ const Portfolio = () => {
               alt="Photo"
               width={500}
               height={750}
-              layout="responsive" // Set layout to responsive
-              className="relative my-4 cursor-pointer"
+              layout="responsive"
+              className="relative cursor-pointer"
             />
             <div
               className="absolute w-full h-full inset-0 bg-transparent hover:bg-stone-900 hover:bg-opacity-10 cursor-pointer"
@@ -75,7 +80,8 @@ const Portfolio = () => {
             ></div>
           </div>
         ))}
-      </div>
+      </Masonry>
+
 
       <LightGalleryComponent
         onInit={(ref) => {
