@@ -11,7 +11,11 @@ const Instagram = () => {
   return (
     <div>
       <p>Follow me on Instagram</p>
-      <p>@trevortwomey</p>
+      <a href="https://www.instagram.com/trevortwomey/" target="_blank" rel="noopener noreferrer">
+    <p>@trevortwomey</p>
+</a>
+
+      
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 p-4">
         <InstagramImg socialImg={igimg1} />
         <InstagramImg socialImg={igimg2} />
