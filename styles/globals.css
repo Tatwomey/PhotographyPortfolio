@@ -11,6 +11,18 @@ html, body {
   color: white;
   scroll-padding-top: 60px;
 }
+
+.navbar-link {
+  color: inherit; /* Ensures the link always takes the parent's color */
+  text-decoration: none; /* Removes underlines */
+  cursor: pointer; /* Ensures the link appears clickable */
+  transition: color 0.3s ease; /* Smooth color transition for hover effect */
+}
+
+.navbar-link:hover {
+  color: #FDB827; /* Some color for hover, adjust as per your design preference */
+}
+
 .navbarScrolled {
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }

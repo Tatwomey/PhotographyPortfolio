@@ -33,10 +33,10 @@ const Navbar = () => {
   };
 
   return (
-    <div style={{ backgroundColor: `${color}` }} className='fixed left-0 top-0 w-full z-10 ease-in duration-300'>
+    <div style={{ backgroundColor: `${color}` }} className='fixed left-0 top-0 w-full z-30 ease-in duration-300'>
         <div className='max-w-[1240px] m-auto flex justify-between items-center p-4'>
             <Link href='/'>
-                <h1 className='font-bold text-4xl'>
+                <h1 className='font-bold text-4xl cursor-pointer'>
                     <img
                         src={logo}
                         alt="Logo"
@@ -52,21 +52,21 @@ const Navbar = () => {
             </div>
             <ul style={{ color: `${textColor}` }} className={`sm:flex ${nav ? 'flex' : 'hidden'} flex-col sm:flex-row`}>
                 <li className='p-4'>
-                    <Link href='/'>Home</Link>
+                    <Link href='/' className="navbar-link cursor-pointer">Home</Link>
                 </li>
                 <li className='p-4'>
-                    <Link href='/#gallery'>Gallery</Link>
+                    <Link href='/#gallery' className="navbar-link cursor-pointer">Gallery</Link>
                 </li>
                 <li className='p-4'>
-                    <Link href='/music#music-photography'>Music</Link>
+                    <Link href='/music#music-photography' className="navbar-link cursor-pointer">Music</Link>
                 </li>
                 <li className='p-4'>
-                    <Link href='/contact#work-with-me'>Contact</Link>
+                    <Link href='/contact#work-with-me' className="navbar-link cursor-pointer">Contact</Link>
                 </li>
             </ul>
         </div>
     </div>
-);
+  );
 };
 
 export default Navbar;
