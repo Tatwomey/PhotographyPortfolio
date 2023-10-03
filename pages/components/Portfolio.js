@@ -10,17 +10,30 @@ import lgThumbnail from "lightgallery/plugins/thumbnail";
 import lgZoom from "lightgallery/plugins/zoom";
 
 const photos = [
-  {src: '/head-hair-korn-camden-NJ-2022-trevortwomey.jpg'},
-  { src: '/munky-korn-camden-nj-2022-trevortwomeytest.jpg' },
-  { src: '/evanescence-amy-lee-camden-nj-2022-trevortwomey.jpg' },
-  { src: '/JD-korn-jones-beach-2022-trevor-twomey-1.jpg' },
+  { src: '/amy-lee-evanescence-jones-beach-2022-trevor-twomey.jpg' },
+  { src: '/munky-korn-camden-nj-2022-trevor-twomey.jpg' },
   { src: '/q-unique-bowery-ballroom-trevortwomey-1.jpg' },
+  { src: '/head-korn-jones-beach-2022-trevor-twomey-2.jpg' },
+  {src: '/iamx-chris-corner-lpr-2023-trevor-twomey-3.jpg'},
+  {src: '/JD-korn-jones-beach-2022-trevor-twomey-3.jpg'},
+  {src: '/stella-nyc-may-2023-trevor-twomey.jpg'},
+  {src: '/clint-lowery-sevendust-nyc-2022-trevor-twomey.jpg'},
+  {src: '/head-korn-homdel-nj-2021-trevor-twomey.jpg'},
+  {src: '/Hash-thievery-corporation-trevor-twomey.jpg'},
+  {src: '/JD-korn-camden-nj-2022-trevor-twomey.jpg'},
+  {src: '/iamx-chris-corner-LPR-2023-trevortwomey-4.jpg'},
+  {src: '/fieldy-korn-allentown-PA-2020-trevor-twomey.jpg'},
+  {src: '/head-korn-jones-beach-2022-trevor-twomey.jpg'},
+  { src: '/JD-korn-jones-beach-2022-trevor-twomey.jpg' },
+  {src: '/sevendust-fans-nyc-2022-trevor-twomey.jpg'},
+  { src: '/JD-korn-jones-beach-2022-trevor-twomey-2.jpg' },
+  { src: '/IAMX-chris-corner-lpr-2023-trevor-twomey-2.jpg' },
   { src: '/hash-thievery-corporation-2013-trevor-twomey-1.jpg' },
-  { src: '/iamx-chris-corner-LPR-2023-trevortwomey-2.jpg'},
-  { src: '/head-red-korn-jones-beach-2022-trevor-twomey-1.jpg' },
+  { src: '/iamx-lpr-2023-trevor-twomey.jpg'},
+  { src: '/ra-diaz-korn-jones-beach-2022-trevortwomey.jpg' },
   { src: '/munky-korn-camden-nj-2022-trevor-twomey-1.jpg' },
-  { src: '/IAMX-BW-LPR-2023-trevor-twomey.jpg'},
-  {src: '/kaged-1 2-Edit copy.png'},
+  { src: '/iamx-chris-corner-lpr-2023-trevor-twomey.jpg'},
+  {src: '/JR-korn-jones-beach-2022-trevortwomey.jpg'},
  
 ];
 
