@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import Masonry from "react-masonry-css";
 import LightGallery from "lightgallery/react";
-import LightGalleryComponent from "lightgallery/react";
 import "lightgallery/css/lightgallery.css";
 import "lightgallery/css/lg-zoom.css";
 import "lightgallery/css/lg-thumbnail.css";
@@ -14,15 +13,14 @@ const photos = [
   {src: '/q-unique-kings-bounty-denial-video-trevor-twomey-1.jpg', type: 'portrait'},
   {src: '/afi-davey-havok-bodies-tour-2022-nyc-trevor-twomey-1.jpg', type: 'portrait'},
   {src: '/roots-thievery-corporation-2016-trevor-twomey-1 2.JPG', type: 'portrait'},
-  { src: '/amy-lee-evanescence-jones-beach-2022-trevor-twomey.jpg' , type: 'portrait'},
-  { src: '/munky-korn-camden-nj-2022-trevor-twomey.jpg', type: 'portrait' },
+  {src: '/amy-lee-evanescence-jones-beach-2022-trevor-twomey.jpg' , type: 'portrait'},
+  {src: '/munky-korn-camden-nj-2022-trevor-twomey.jpg', type: 'portrait' },
   {src: '/mrs-smith-ibanez-nyc-trevor-twomey-2.jpg', type: 'portrait'},
   {src:'/ellias-nonpoint-nyc-2022-trevor-twomey-1.jpg', type: 'portrait'},
-  
   {src:'/head-korn-camden-NJ-2021-trevor-twomey.jpg', type: 'portrait'},
   {src: '/drab-majesty-bodies-tour-2022-nyc-trevor-twomey.jpg', type: 'portrait'},
-  { src: '/head-korn-jones-beach-2022-trevor-twomey-2.jpg', type: 'portrait'},
-  { src: '/q-unique-bowery-ballroom-trevortwomey-1.jpg' , type: 'portrait'},
+  {src: '/head-korn-jones-beach-2022-trevor-twomey-2.jpg', type: 'portrait'},
+  {src: '/q-unique-bowery-ballroom-trevortwomey-1.jpg' , type: 'portrait'},
    {src: '/aaron-lewis-staind-camden-NJ-2021-trevor-twomeytwomey.jpg', type: 'portrait'},
   {src:'/natalia-clavier-thievery-corporation-2016-hot-august-music-festival-trevor-twomey-1.jpg', type: 'portrait'},
   {src: '/iamx-chris-corner-lpr-2023-trevor-twomey-3.jpg', type: 'portrait'},
@@ -109,17 +107,14 @@ const Portfolio = () => {
             <Image
               src={photo.src}
               alt="Photo"
-              width={500}
-              height={photo.type === 'portrait' ? 750 : 375} // Aspect ratio of 2:3 for portrait and 4:3 for landscape
+              width={photo.type === 'portrait' ? 500 : 1000}
+              height={photo.type === 'portrait' ? 750 : 500}
               layout="responsive"
               className="relative cursor-pointer"
-            />
-            <div
-              className="absolute w-full h-full inset-0 bg-transparent hover:bg-stone-900 hover:bg-opacity-10 cursor-pointer"
               onClick={() => {
                 lightboxRef.current?.openGallery(index);
               }}
-            ></div>
+            />
           </div>
         ))}
       </Masonry>
