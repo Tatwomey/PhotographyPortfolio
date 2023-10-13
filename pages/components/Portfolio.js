@@ -10,69 +10,71 @@ import lgThumbnail from "lightgallery/plugins/thumbnail";
 import lgZoom from "lightgallery/plugins/zoom";
 
 const photos = [
-  {src: '/JD-korn-jones-beach-2022-trevor-twomey-5.jpg'},
-  {src: '/q-unique-kings-bounty-denial-video-trevor-twomey-1.jpg'},
   
-  { src: '/amy-lee-evanescence-jones-beach-2022-trevor-twomey.jpg' },
-  { src: '/munky-korn-camden-nj-2022-trevor-twomey.jpg' },
-  {src: '/mrs-smith-ibanez-nyc-trevor-twomey-2.jpg'},
-  {src:'/head-korn-camden-NJ-2021-trevor-twomey.jpg'},
-  {src: '/drab-majesty-bodies-tour-2022-nyc-trevor-twomey.jpg'},
-  { src: '/head-korn-jones-beach-2022-trevor-twomey-2.jpg' },
-  { src: '/q-unique-bowery-ballroom-trevortwomey-1.jpg' },
-   {src: '/aaron-lewis-staind-camden-NJ-2021-trevor-twomeytwomey.jpg'},
-  {src:'/natalia-clavier-thievery-corporation-2016-hot-august-music-festival-trevor-twomey-1.jpg' },
-  {src: '/iamx-chris-corner-lpr-2023-trevor-twomey-3.jpg'},
-  {src: '/JD-korn-jones-beach-2022-trevor-twomey-3.jpg'},
-  {src: '/craig-bonich-brooklyn-bowl-trevor-twomey.JPG'},
-  {src: '/munky-korn-glitch-ftl20-2018-trevor-twomey.jpg'},
-  {src: '/munky-korn-camden-NJ-2021-trevor-twomey.jpg'},
-  {src: '/q-unique-kings-bounty-denial-video-trevor-twomey.jpg'},
-  {src: '/head-korn-jones-beach-ny-2022-trevor-twomey-.jpg'},
-  {src: '/lajon-sevendust-nyc-2022-trevor-twomey.jpg'},
-  {src: '/munky-korn-homdel-nj-2021-trevor-twomey-4.jpg' },
-  {src: '/stella-nyc-may-2023-trevor-twomey.jpg'},
-  {src: '/head-korn-autograph-camden-nj-2022-trevor-twomey.jpg'},
-  {src: '/clint-lowery-sevendust-nyc-2022-trevor-twomey.jpg'},
-  {src: '/JD-korn-jones-beach-2022-trevor-twomey-jpg.jpg'},
-  {src: '/q-unique-bowery-ballroom-nyc-trevor-twomey.jpg'},
-  {src: '/head-korn-homdel-nj-2021-trevor-twomey.jpg'},
-  {src: '/Hash-thievery-corporation-trevor-twomey.jpg'},
-  {src: '/JD-korn-camden-nj-2022-trevor-twomey.jpg'},
-  {src: '/iamx-chris-corner-LPR-2023-trevortwomey-4.jpg'},
-  {src: '/mike-dijan-kings-bounty-band-trevor-twomey.JPG'},
-  {src: '/fieldy-head-korn-buckcherry-2013-trevor-twomey.jpg' },
-  {src: '/mike-dijan-kings-bounty-rehersal-trevor-twomey.jpg' },
-  {src: '/fieldy-korn-allentown-PA-2020-trevor-twomey.jpg'},
-  {src: '/tim-mccord-evanescence-jones-beach-2022-trevor-twomey.jpg'},
-  {src: '/head-korn-jones-beach-2022-trevor-twomey.jpg'},
-  {src: '/amy-lee-evanescence-jones-beach-2022-trevor-twomey-2.jpg'},
-  { src: '/JD-korn-jones-beach-2022-trevor-twomey.jpg' },
-  {src: '/mrs-smith-ibanez-nyc-trevor-twomey.jpg' },
+  {src: '/q-unique-kings-bounty-denial-video-trevor-twomey-1.jpg', type: 'portrait'},
+  {src: '/afi-davey-havok-bodies-tour-2022-nyc-trevor-twomey-1.jpg', type: 'portrait'},
+  {src: '/roots-thievery-corporation-2016-trevor-twomey-1 2.JPG', type: 'portrait'},
+  { src: '/amy-lee-evanescence-jones-beach-2022-trevor-twomey.jpg' , type: 'portrait'},
+  { src: '/munky-korn-camden-nj-2022-trevor-twomey.jpg', type: 'portrait' },
+  {src: '/mrs-smith-ibanez-nyc-trevor-twomey-2.jpg', type: 'portrait'},
+  {src:'/ellias-nonpoint-nyc-2022-trevor-twomey-1.jpg', type: 'portrait'},
   
-  {src: '/sevendust-fans-nyc-2022-trevor-twomey.jpg'},
-  { src: '/JD-korn-jones-beach-2022-trevor-twomey-2.jpg' },
-  { src: '/IAMX-chris-corner-lpr-2023-trevor-twomey-2.jpg' },
-  { src: '/hash-thievery-corporation-2013-trevor-twomey-1.jpg' },
-  { src: '/iamx-lpr-2023-trevor-twomey.jpg'},
-  { src: '/ra-diaz-korn-jones-beach-2022-trevortwomey.jpg' },
-  {src: '/ray-luzier-korn-jones-beach-2022-trevor-twomey.jpg' },
-  {src: '/lou-lou-thievery-corporation-capitol-theatre-trevor-twomey-1.jpg'},
-  { src: '/munky-korn-camden-nj-2022-trevor-twomey-1.jpg' },
-  { src: '/iamx-chris-corner-lpr-2023-trevor-twomey.jpg'},
-  {src: '/JR-korn-jones-beach-2022-trevortwomey.jpg'},
-  {src: '/head-korn-los-angeles-2015-trevor-twomey-1.JPG'},
+  {src:'/head-korn-camden-NJ-2021-trevor-twomey.jpg', type: 'portrait'},
+  {src: '/drab-majesty-bodies-tour-2022-nyc-trevor-twomey.jpg', type: 'portrait'},
+  { src: '/head-korn-jones-beach-2022-trevor-twomey-2.jpg', type: 'portrait'},
+  { src: '/q-unique-bowery-ballroom-trevortwomey-1.jpg' , type: 'portrait'},
+   {src: '/aaron-lewis-staind-camden-NJ-2021-trevor-twomeytwomey.jpg', type: 'portrait'},
+  {src:'/natalia-clavier-thievery-corporation-2016-hot-august-music-festival-trevor-twomey-1.jpg', type: 'portrait'},
+  {src: '/iamx-chris-corner-lpr-2023-trevor-twomey-3.jpg', type: 'portrait'},
+  {src: '/JD-korn-jones-beach-2022-trevor-twomey-3.jpg', type: 'portrait'},
+  {src: '/craig-bonich-brooklyn-bowl-trevor-twomey.JPG', type: 'portrait'},
+  {src: '/munky-korn-glitch-ftl20-2018-trevor-twomey.jpg', type: 'portrait'},
+  {src: '/munky-korn-camden-NJ-2021-trevor-twomey.jpg', type: 'portrait'},
+  {src: '/q-unique-kings-bounty-denial-video-trevor-twomey.jpg', type: 'portrait'},
+  {src: '/head-korn-jones-beach-ny-2022-trevor-twomey-.jpg', type: 'portrait'},
+  {src: '/lajon-sevendust-nyc-2022-trevor-twomey.jpg', type: 'portrait'},
+  {src: '/munky-korn-homdel-nj-2021-trevor-twomey-4.jpg', type: 'portrait' },
+  {src: '/stella-nyc-may-2023-trevor-twomey.jpg', type: 'portrait'},
+  {src: '/head-korn-autograph-camden-nj-2022-trevor-twomey.jpg', type: 'portrait'},
+  {src: '/clint-lowery-sevendust-nyc-2022-trevor-twomey.jpg', type: 'portrait'},
+  {src: '/JD-korn-jones-beach-2022-trevor-twomey-jpg.jpg', type: 'portrait'},
+  {src: '/q-unique-bowery-ballroom-nyc-trevor-twomey.jpg', type: 'portrait'},
+  {src: '/head-korn-homdel-nj-2021-trevor-twomey.jpg', type: 'portrait'},
+  {src: '/Hash-thievery-corporation-trevor-twomey.jpg', type: 'portrait'},
+  {src: '/JD-korn-camden-nj-2022-trevor-twomey.jpg', type: 'portrait'},
+  {src: '/iamx-chris-corner-LPR-2023-trevortwomey-4.jpg', type: 'portrait'},
+  {src: '/mike-dijan-kings-bounty-band-trevor-twomey.JPG', type: 'portrait'},
+  {src: '/fieldy-head-korn-buckcherry-2013-trevor-twomey.jpg', type: 'portrait' },
+  {src: '/mike-dijan-kings-bounty-rehersal-trevor-twomey.jpg', type: 'portrait' },
+  {src: '/fieldy-korn-allentown-PA-2020-trevor-twomey.jpg', type: 'portrait'},
+  {src: '/tim-mccord-evanescence-jones-beach-2022-trevor-twomey.jpg', type: 'portrait'},
+  {src: '/head-korn-jones-beach-2022-trevor-twomey.jpg', type: 'portrait'},
+  {src: '/amy-lee-evanescence-jones-beach-2022-trevor-twomey-2.jpg', type: 'portrait'},
+  { src: '/JD-korn-jones-beach-2022-trevor-twomey.jpg', type: 'portrait' },
+  {src: '/mrs-smith-ibanez-nyc-trevor-twomey.jpg' , type: 'portrait'},
+  {src: '/sevendust-fans-nyc-2022-trevor-twomey.jpg', type: 'portrait'},
+  { src: '/JD-korn-jones-beach-2022-trevor-twomey-2.jpg' , type: 'portrait'},
+  { src: '/IAMX-chris-corner-lpr-2023-trevor-twomey-2.jpg' , type: 'portrait'},
+  { src: '/hash-thievery-corporation-2013-trevor-twomey-1.jpg' , type: 'portrait'},
+  { src: '/iamx-lpr-2023-trevor-twomey.jpg', type: 'portrait'},
+  { src: '/ra-diaz-korn-jones-beach-2022-trevortwomey.jpg' , type: 'portrait'},
+  {src: '/ray-luzier-korn-jones-beach-2022-trevor-twomey.jpg' , type: 'portrait'},
+  {src: '/lou-lou-thievery-corporation-capitol-theatre-trevor-twomey-1.jpg', type: 'portrait'},
+  { src: '/munky-korn-camden-nj-2022-trevor-twomey-1.jpg' , type: 'portrait'},
+  { src: '/iamx-chris-corner-lpr-2023-trevor-twomey.jpg', type: 'portrait'},
+  {src: '/JR-korn-jones-beach-2022-trevortwomey.jpg', type: 'portrait'},
+  {src: '/head-korn-los-angeles-2015-trevor-twomey-1.JPG', type: 'portrait'},
+  {src:'/ray-luzier-korn-2020-trevor-twomey.jpg', type: 'landscape' },
  
 ];
-
 const Portfolio = () => {
   const lightboxRef = useRef(null);
 
   const breakpointCols = {
-    default: 4,  // default to four images per row
-    1100: 3,    // three images per row for larger screens
-    700: 2,     // two images per row for medium screens
-    500: 1      // one image per row for small screens
+    default: 4,
+    1100: 3,
+    700: 2,
+    500: 1
   };
 
   const handleRightClick = (e) => {
@@ -90,7 +92,6 @@ const Portfolio = () => {
     });
   }, []);
 
-
   return (
     <div className="max-w-[1240px] mx-auto py-4 sm:py-16 text-center" id="music-photography">
       <h1 className="font-bold text-2xl sm:text-3xl p-4">Music Photography</h1>
@@ -101,7 +102,7 @@ const Portfolio = () => {
       >
         {photos.map((photo, index) => (
           <div
-            className="relative mb-4"
+            className={`relative mb-4 ${photo.type === 'landscape' ? 'my-masonry-grid_column-span-2' : ''}`}
             key={photo.src}
             onContextMenu={handleRightClick}
           >
@@ -109,7 +110,7 @@ const Portfolio = () => {
               src={photo.src}
               alt="Photo"
               width={500}
-              height={750}
+              height={photo.type === 'portrait' ? 750 : 375} // Aspect ratio of 2:3 for portrait and 4:3 for landscape
               layout="responsive"
               className="relative cursor-pointer"
             />
@@ -123,8 +124,7 @@ const Portfolio = () => {
         ))}
       </Masonry>
 
-
-      <LightGalleryComponent
+      <LightGallery
         onInit={(ref) => {
           if (ref) {
             lightboxRef.current = ref.instance;

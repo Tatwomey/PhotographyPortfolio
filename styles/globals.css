@@ -51,6 +51,10 @@ html, body {
   margin-left: -30px;
   width: auto;
 }
+.my-masonry-grid_column {
+  padding-bottom: 30px; /* This ensures each item has a gap at the bottom */
+}
+
 
 .watermark-overlay {
   position: absolute;
