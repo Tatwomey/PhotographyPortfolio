@@ -66,7 +66,7 @@ const Navbar = () => {
                     <Link href='/contact#work-with-me' className="navbar-link cursor-pointer">Contact</Link>
                 </li>
             </ul>
-            <div className="space-x-4 sm:space-x-6">
+            <div className="flex space-x-4 ml-4">
     <a href="https://www.instagram.com/trevortwomey/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
         <FaInstagram size={24} style={{ color: `${textColor}` }}/>
     </a>
@@ -74,6 +74,7 @@ const Navbar = () => {
         <FaLinkedin size={24} style={{ color: `${textColor}` }}/>
     </a>
 </div>
+
 
         </div>
     </div>
