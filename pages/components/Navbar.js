@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import { FaInstagram, FaLinkedin } from 'react-icons/fa';
 
-const Navbar = () => {
+const Navbar = ({ showAbout, setShowAbout }) => {
   const [nav, setNav] = useState(false);
   const [color, setColor] = useState('transparent');
   const [textColor, setTextColor] = useState('white');
@@ -12,18 +12,16 @@ const Navbar = () => {
   useEffect(() => {
     const changeColor = () => {
       if (window.scrollY >= 90) {
-          setColor('black'); 
-          setTextColor('white');
-          setLogo("/Watermarklogo.png");
+        setColor('black'); 
+        setTextColor('white');
+        setLogo("/Watermarklogo.png");
       } else {
-          setColor('transparent');
-          setTextColor('white');
-          setLogo("/waterlogo.PNG");
+        setColor('transparent');
+        setTextColor('white');
+        setLogo("/waterlogo.PNG");
       }
     };
-
     window.addEventListener('scroll', changeColor);
-
     return () => {
       window.removeEventListener('scroll', changeColor);
     };
@@ -38,11 +36,7 @@ const Navbar = () => {
         <div className='max-w-[1240px] m-auto flex justify-between items-center p-4'>
             <Link href='/'>
                 <h1 className='font-bold text-4xl cursor-pointer'>
-                    <img
-                        src={logo}
-                        alt="Logo"
-                        className="navbar-logo"
-                    />
+                    <img src={logo} alt="Logo" className="navbar-logo" />
                 </h1>
             </Link>
             <div className="lg:hidden">
@@ -56,8 +50,9 @@ const Navbar = () => {
                         <Link href='/'>Home</Link>
                     </li>
                     <li className='p-4'>
-                        <Link href='/#gallery'>Gallery</Link>
-                    </li>
+    <Link href='/#about-trevor-twomey'> About</Link>
+</li>
+
                     <li className='p-4'>
                         <Link href='/music#music-photography'>Music</Link>
                     </li>
