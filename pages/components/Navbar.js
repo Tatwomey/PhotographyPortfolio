@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
+import { FaInstagram, FaLinkedin } from 'react-icons/fa';
+
 
 const Navbar = () => {
   const [nav, setNav] = useState(false);
@@ -64,6 +66,15 @@ const Navbar = () => {
                     <Link href='/contact#work-with-me' className="navbar-link cursor-pointer">Contact</Link>
                 </li>
             </ul>
+            <div className="space-x-4 sm:space-x-6">
+    <a href="https://www.instagram.com/trevortwomey/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+        <FaInstagram size={24} style={{ color: `${textColor}` }}/>
+    </a>
+    <a href="https://www.linkedin.com/in/trevor-twomey/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <FaLinkedin size={24} style={{ color: `${textColor}` }}/>
+    </a>
+</div>
+
         </div>
     </div>
   );

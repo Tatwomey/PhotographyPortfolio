@@ -45,7 +45,7 @@ const photos = [
   {src: '/head-korn-jones-beach-ny-2022-trevor-twomey-.jpg', type: 'portrait'},
   {src: '/lajon-sevendust-nyc-2022-trevor-twomey.jpg', type: 'portrait'},
   {src: '/munky-korn-homdel-nj-2021-trevor-twomey-4.jpg', type: 'portrait' },
-  {src: '/stella-nyc-may-2023-trevor-twomey.jpg', type: 'portrait'},
+  {src: '/sabina-sciubba-brazilian-girls-trevor-twomey.jpg', type: 'portrait'},
   {src: '/head-korn-autograph-camden-nj-2022-trevor-twomey.jpg', type: 'portrait'},
   {src: '/clint-lowery-sevendust-nyc-2022-trevor-twomey.jpg', type: 'portrait'},
   {src: '/JD-korn-jones-beach-2022-trevor-twomey-jpg.jpg', type: 'portrait'},
