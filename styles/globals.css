@@ -37,11 +37,29 @@ html, body {
   min-width: 100vw;
 }
 
+.navbar-logo {
+  width: 187.17px;      
+  height: 187.17px;     
+  max-width: 100%;     /* Ensures the logo doesn't overflow its container */
+}
+
 @media (max-width: 640px) {
   .custom-img {
     background-image: url('/head-korn-ftl20-San-Francisco-2018-trevor-twomey-1 ios.jpg');
     background-size: contain;
     background-position: top;
+    
+  }
+
+  /* For mobile devices */
+  .navbar-logo {
+    width: 62.39px;
+    height: 62.39px;
+  }
+
+  .watermark-overlay {
+    width: 75%;
+    height: 75%;
   }
 }
 
@@ -66,19 +84,4 @@ html, body {
   padding: 0 15px 30px 15px; /* Added padding-left/right to create gaps between columns */
 }
 
-/* Watermark Styles */
-.watermark-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: auto;
-  height: auto;
-  pointer-events: none;
-}
 
-@media (max-width: 640px) {
-  .watermark-overlay {
-    width: 75%;
-    height: 75%;
-  }
-}
