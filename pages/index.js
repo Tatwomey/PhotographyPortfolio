@@ -3,9 +3,7 @@ import Head from 'next/head';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './About';
-import Instagram from './components/Instagram';
-import Slider from './components/Slider';
-import { SliderData } from '@/Data/SliderData';
+
 
 export default function Home() {
 
@@ -50,7 +48,7 @@ export default function Home() {
 
       )
 
-      <Instagram />
+    
     </div>
   );
 }
