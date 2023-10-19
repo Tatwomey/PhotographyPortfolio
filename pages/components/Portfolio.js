@@ -15,7 +15,7 @@ const photos = [
   {src: '/roots-thievery-corporation-2016-trevor-twomey-1 2.JPG', type: 'portrait'},
   {src: '/thievery-corporation-capitol-theatre-trevor-twomey.jpg', type: 'landscape'},
   {src: '/korn-eagles-ballroom-2017-trevor-twomey-1jpg.jpg', type: 'landscape'},
-  {src: '/ray-luzier-korn-ftl20-2018-trevor-twomey.jpg', type: 'landscape'},
+  {src: '/ray-luzier-korn-2020-trevor-twomey.jpg', type: 'landscape'},
   {src: '/Natalia-clavier-nublu-trevor-twomey.jpg', type: 'landscape'},
   {src:'/head-korn-2015-la-forum-trevor-twomey-1.jpg', type: 'landscape'},
   {src:'/raquel-jones-thievery-corporation-pier-17-trevor-twomey-1.jpg', type: 'landscape'},
