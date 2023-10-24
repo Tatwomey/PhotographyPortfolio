@@ -19,7 +19,7 @@ const About = () => {
                 
                 <div className="md:w-1/2 md:pl-8">
                     <p className="text-lg leading-relaxed mb-4">
-                        Trevor Twomey is a seasoned music and street photographer rooted in Brooklyn, NY. With a particular talent for discerning the nuanced details and fleeting moments, he masterfully showcases both the rawness and the allure of urban life and vibrant music scenes. His dedication is evident in the way he pushes his gear, whether vintage or contemporary, to its full potential, ensuring each shot is a work of art.
+                        Trevor Twomey is an accomplished music and street photographer rooted in Brooklyn, NY. With a particular talent for discerning the nuanced details and fleeting moments, he masterfully showcases both the rawness and the allure of urban life and vibrant music scenes. His dedication is evident in the way he pushes his gear, whether vintage or contemporary, to its full potential, ensuring each shot is a work of art.
                     </p>
                     <p className="mb-4 text-lg leading-relaxed">
                         While he remains deeply entrenched in music photography, capturing the essence of live performances for artists and aficionados alike, Trevor&apos;s gift extends to the streets, seizing spontaneous instances that many might overlook. His works not only reverberate with the pulsating energy of the music community but also encapsulate the very soul of bustling streets, and have been featured across an array of platforms and publications.
