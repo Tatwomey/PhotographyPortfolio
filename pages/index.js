@@ -6,7 +6,7 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace('/music/#music-photography');
+    router.replace('/music#music-photography');
   }, [router]);
 
   return (
@@ -15,7 +15,6 @@ export default function Home() {
         <title>Trevor Twomey Photography</title>
         <meta name="Trevor Twomey Photography" content="Trevor Twomey Photography" />
       </Head>
-      {/* This is just a placeholder; it will not be shown because of the redirect */}
       <div>Redirecting...</div>
     </div>
   );

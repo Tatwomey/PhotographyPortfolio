@@ -3,12 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import { FaInstagram, FaLinkedin } from 'react-icons/fa';
 
-const Navbar = ({ showAbout, setShowAbout }) => {
+const Navbar = () => {
   const [nav, setNav] = useState(false);
   const [color, setColor] = useState('transparent');
   const [textColor, setTextColor] = useState('white');
 
-  // Use a single logo
   const logo = "/waterlogo.PNG";
 
   useEffect(() => {
@@ -34,7 +33,7 @@ const Navbar = ({ showAbout, setShowAbout }) => {
   return (
     <div style={{ backgroundColor: `${color}` }} className='fixed left-0 top-0 w-full z-30 ease-in duration-300'>
       <div className='max-w-[1240px] m-auto flex justify-between items-center p-4'>
-        <Link href='/'>
+        <Link href='/#home'>
           <h1 className='font-bold text-4xl cursor-pointer'>
             <img src={logo} alt="Logo" className="navbar-logo" />
           </h1>
@@ -45,20 +44,20 @@ const Navbar = ({ showAbout, setShowAbout }) => {
           </button>
         </div>
         <div className="flex items-center">
-          <ul style={{ color: `${textColor}` }} className={`${nav ? '' : 'hidden'} lg:flex flex-col lg:flex-row`}>
-            <li className='p-4'>
-              <Link href='/'>Home</Link>
-            </li>
-            <li className='p-4'>
-              <Link href='/#about-trevor-twomey'>About</Link>
-            </li>
-            <li className='p-4'>
-              <Link href='/music#music-photography'>Music</Link>
-            </li>
-            <li className='p-4'>
-              <Link href='/contact#work-with-me'>Contact</Link>
-            </li>
-          </ul>
+        <ul style={{ color: `${textColor}` }} className={`${nav ? '' : 'hidden'} lg:flex flex-col lg:flex-row`}>
+  <li className='p-4'>
+    <Link href='/music#music-photography'>Home</Link>  {/* Navigates directly to the music photography section */}
+  </li>
+  <li className='p-4'>
+    <Link href='/about#about-trevor-twomey'>About</Link>    {/* Replace 'some-section' with the actual ID of the section you want */}
+  </li>
+  <li className='p-4'>
+    <Link href='/music#music-photography'>Music</Link> {/* Replace 'another-section' with the actual ID of the section you want */}
+  </li>
+  <li className='p-4'>
+    <Link href='/contact#work-with-me'>Contact</Link> {/* Replace 'contact-section' with the actual ID of the section you want */}
+  </li>
+</ul>
           <div className="flex space-x-4 ml-4">
             <a href="https://www.instagram.com/trevortwomey/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
               <FaInstagram size={24} style={{ color: `${textColor}` }}/>

@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Navbar from "./components/Navbar";
 import Head from "next/head";
 import Footer from './components/Footer';
 import "@/styles/globals.css";
+import { NavigationProvider } from '../contexts/NavigationContext';
+
+
 
 export default function App({ Component, pageProps }) {
-  const [showAbout, setShowAbout] = useState(false); // Define state here
 
   return (
     <>
@@ -13,12 +15,13 @@ export default function App({ Component, pageProps }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      {/* Pass down the props to Navbar */}
-      <Navbar showAbout={showAbout} setShowAbout={setShowAbout} />
-
-      {/* Pass down the showAbout state to the pages */}
-      <Component {...pageProps} showAbout={showAbout} setShowAbout={setShowAbout} />
-      <Footer />
+      <NavigationProvider>
+        {/* The Navbar can access the context values directly without props */}
+        <Navbar />
+      
+        <Component {...pageProps} />
+        <Footer />
+      </NavigationProvider>
     </>
   );
 }
