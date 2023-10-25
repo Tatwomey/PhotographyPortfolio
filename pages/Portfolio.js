@@ -139,7 +139,7 @@ const Portfolio = () => {
           }
         }}
         id="lightGallery"
-        download={true}
+        download={false}
         zoom={false}
         speed={500}
         plugins={[lgThumbnail, lgZoom]}
