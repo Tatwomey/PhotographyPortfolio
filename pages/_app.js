@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Navbar from "./components/Navbar";
 import Head from "next/head";
+import Footer from './components/Footer';
 import "@/styles/globals.css";
 
 export default function App({ Component, pageProps }) {
@@ -17,6 +18,7 @@ export default function App({ Component, pageProps }) {
 
       {/* Pass down the showAbout state to the pages */}
       <Component {...pageProps} showAbout={showAbout} setShowAbout={setShowAbout} />
+      <Footer />
     </>
   );
 }
