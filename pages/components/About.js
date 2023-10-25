@@ -25,7 +25,7 @@ const About = () => {
                         His childhood experiences, marked by his identity as the son of dead heads and his adventures following bands from one venue to another, have deeply influenced his approach to photography. &quot;My passion for music and its entire world ignited at a young age, greatly influenced by my father who always had music playing and frequently attended concerts. Some of my fondest memories involve listening to songs with my dad or strumming my guitar. I&apos;m captivated by everything that unfolds on stage, behind the scenes, and amongst the crowd.&quot;
                     </p>
                     <p className="text-lg leading-relaxed">
-                        Over the years, he&apos;s honed his skills, and since 2013, had the incredible opportunity to capture extraordinary live shows and everyday life worldwide. If you&apos;d like more information about my work, or discuss potential commissioned projects, tours, or events, feel free to reach out to me at xxxxxxxxxx. I look forward to connecting with you.
+                        Over the years, he&apos;s honed his skills, and since 2013, had the incredible opportunity to capture extraordinary live shows and everyday life worldwide. If you&apos;d like more information about my work, or discuss potential commissioned projects, tours, or events, feel free to reach out to me. I look forward to connecting with you.
                     </p>
                 </div>
             </div>
