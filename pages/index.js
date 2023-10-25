@@ -1,54 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 import Head from 'next/head';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import About from './components/About';
-
 
 export default function Home() {
-
-
-
-  const [darkMode, setDarkMode] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    const handleScroll = () => {
-      const heroElement = document.getElementById('hero-section');
-      if (!heroElement) return;
-      const heroHeight = heroElement.offsetHeight;
-      const scrollPosition = window.scrollY;
-      if (scrollPosition > heroHeight) {
-        setDarkMode(true);
-      } else {
-        setDarkMode(false);
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-  
+    router.replace('/music/#music-photography');
+  }, [router]);
+
   return (
-    <div style={{ backgroundColor: darkMode ? 'black' : 'initial' }}>
+    <div>
       <Head>
         <title>Trevor Twomey Photography</title>
         <meta name="Trevor Twomey Photography" content="Trevor Twomey Photography" />
       </Head>
-
-      
-
-      <div id="hero-section">
-    <Hero />
-</div>
-  
-<div id="about-trevor-twomey" className="pt-20">
-    <About />
-</div>
-
-      
-
-    
+      {/* This is just a placeholder; it will not be shown because of the redirect */}
+      <div>Redirecting...</div>
     </div>
   );
 }
