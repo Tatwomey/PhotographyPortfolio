@@ -19,13 +19,13 @@ const About = () => {
                 
                 <div className="md:w-1/2 md:pl-8">
                     <p className="text-lg leading-relaxed mb-4">
-                        Trevor Twomey is an accomplished music and street photographer based in Brooklyn, NY. With a particular talent for discerning the nuanced details and fleeting moments, he masterfully showcases both the rawness and the allure of urban life and vibrant music scenes. His dedication is evident in the way he pushes his gear, whether vintage or contemporary, to its full potential, ensuring each shot is a work of art.
+                        Trevor Twomey is a professional music and street style photographer based in Brooklyn, New York. Though Trevor specializes in music photography, his skills extend beyond live performances. He has a talent for capturing spontaneous moments on the streets that many others might overlook. His works not only reflect the energy of the music community but also the soul of the streets.
                     </p>
                     <p className="mb-4 text-lg leading-relaxed">
-                        While he remains deeply entrenched in music photography, capturing the essence of live performances for artists and aficionados alike, Trevor&apos;s gift extends to the streets, seizing spontaneous instances that many might overlook. His works not only reverberate with the pulsating energy of the music community but also encapsulate the very soul of bustling streets, and have been featured across an array of platforms and publications.
+                        His childhood experiences, marked by his identity as the son of dead heads and his adventures following bands from one venue to another, have deeply influenced his approach to photography. "My passion for music and its entire world ignited at a young age, greatly influenced by my father who always had music playing and frequently attended concerts. Some of my fondest memories involve listening to songs with my dad or strumming my guitar. I'm captivated by everything that unfolds on stage, behind the scenes, and amongst the crowd."
                     </p>
                     <p className="text-lg leading-relaxed">
-                        Beyond freelancing, Trevor actively seeks collaboration with bands, offering his skills for tours and events, always with the intent to immortalize those distinctive moments that shape music gatherings. For collaborations or to witness the world through Trevor&apos;s lens, be it in the U.S. or globally, he is just a call away. For a closer look at his adventures and projects, dive into his blog and <a href="https://www.instagram.com/trevortwomey/" target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">Instagram</a>.
+                        Over the years, he's honed his skills, and since 2013, had the incredible opportunity to capture extraordinary live shows and everyday life worldwide. If you'd like more information about my work, or discuss potential commissioned projects, tours, or events, feel free to reach out to me at xxxxxxxxxx. I look forward to connecting with you.
                     </p>
                 </div>
             </div>
