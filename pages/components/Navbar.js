@@ -32,41 +32,41 @@ const Navbar = () => {
 
   return (
     <div style={{ backgroundColor: `${color}` }} className='fixed left-0 top-0 w-full z-30 ease-in duration-300'>
-      <div className='max-w-[1240px] m-auto flex justify-between items-center p-4'>
+      <div className='max-w-[1240px] m-auto flex justify-between items-center p-4 relative'>
         <Link href='/#home'>
-          <h1 className='font-bold text-4xl cursor-pointer'>
+          <h1 className='font-bold text-4xl cursor-pointer absolute left-4 top-4 lg:static'>
             <img src={logo} alt="Logo" className="navbar-logo" />
           </h1>
         </Link>
         <div className="lg:hidden">
-          <button onClick={handleNav}>
+          <button onClick={handleNav} className="absolute top-4 right-4">
             {nav ? <AiOutlineClose size={30} /> : <AiOutlineMenu size={30} />}
           </button>
         </div>
-        <div className="flex items-center">
-        <ul style={{ color: `${textColor}` }} className={`${nav ? '' : 'hidden'} lg:flex flex-col lg:flex-row`}>
-  <li className='p-4'>
-    <Link href='/music#music-photography'>Home</Link>  {/* Navigates directly to the music photography section */}
-  </li>
-  <li className='p-4'>
-    <Link href='/about#about-trevor-twomey'>About</Link>    {/* Replace 'some-section' with the actual ID of the section you want */}
-  </li>
-  <li className='p-4'>
-    <Link href='/music#music-photography'>Music</Link> {/* Replace 'another-section' with the actual ID of the section you want */}
-  </li>
-  <li className='p-4'>
-    <Link href='/contact#work-with-me'>Contact</Link> {/* Replace 'contact-section' with the actual ID of the section you want */}
-  </li>
-</ul>
-          <div className="flex space-x-4 ml-4">
+        <ul style={{ color: `${textColor}` }} className={`${nav ? 'flex flex-col h-screen justify-center space-y-4 w-full items-center lg:items-start' : 'hidden'} lg:flex flex-col lg:flex-row`}>
+          <li className='p-4'>
+            <Link href='/music#music-photography'>Home</Link>
+          </li>
+          <li className='p-4'>
+            <Link href='/about#about-trevor-twomey'>About</Link>
+          </li>
+          <li className='p-4'>
+            <Link href='/music#music-photography'>Music</Link>
+          </li>
+          <li className='p-4'>
+            <Link href='/contact#work-with-me'>Contact</Link>
+          </li>
+          <li className='p-4'>
             <a href="https://www.instagram.com/trevortwomey/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-              <FaInstagram size={24} style={{ color: `${textColor}` }}/>
+              <FaInstagram size={24} />
             </a>
+          </li>
+          <li className='p-4'>
             <a href="https://www.linkedin.com/in/trevor-twomey/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-              <FaLinkedin size={24} style={{ color: `${textColor}` }}/>
+              <FaLinkedin size={24} />
             </a>
-          </div>
-        </div>
+          </li>
+        </ul>
       </div>
     </div>
   );
