@@ -31,19 +31,17 @@ const Navbar = () => {
   };
 
   return (
-    <div style={{ backgroundColor: `${color}` }} className='fixed left-0 top-0 w-full z-30 ease-in duration-300'>
+    <div style={{ backgroundColor: color }} className='fixed left-0 top-0 w-full z-30 ease-in duration-300'>
       <div className='max-w-[1240px] m-auto flex justify-between items-center p-4 relative'>
-        <Link href='/#home'>
-          <h1 className='font-bold text-4xl cursor-pointer absolute left-4 top-4 lg:static'>
-            <img src={logo} alt="Logo" className="navbar-logo" />
-          </h1>
+        <Link href='/#home' className='font-bold text-4xl cursor-pointer absolute left-4 top-4 lg:static'>
+          <img src={logo} alt="Logo" className="navbar-logo" />
         </Link>
         <div className="lg:hidden">
           <button onClick={handleNav} className="absolute top-4 right-4">
             {nav ? <AiOutlineClose size={30} /> : <AiOutlineMenu size={30} />}
           </button>
         </div>
-        <ul style={{ color: `${textColor}` }} className={`${nav ? 'flex flex-col h-screen justify-center space-y-4 w-full items-center lg:items-start' : 'hidden'} lg:flex flex-col lg:flex-row`}>
+        <ul style={{ color: textColor }} className={`${nav ? 'flex flex-col h-screen justify-center space-y-4 w-full items-center lg:items-start' : 'hidden'} lg:flex flex-col lg:flex-row`}>
           <li className='p-4'>
             <Link href='/music#music-photography'>Home</Link>
           </li>
@@ -73,3 +71,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

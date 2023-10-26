@@ -85,7 +85,7 @@ const Portfolio = () => {
     default: 4,
     1100: 3,
     700: 2,
-    500: 1
+    500: 2
   };
 
   const handleRightClick = (e) => {
@@ -117,7 +117,7 @@ const Portfolio = () => {
             key={photo.src}
             onContextMenu={handleRightClick}
           >
-           <Image
+            <Image
               src={photo.src}
               alt="Photo"
               width={photo.type === 'portrait' ? 500 : 1000}

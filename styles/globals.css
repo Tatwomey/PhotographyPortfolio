@@ -76,10 +76,21 @@ html, body {
 
 .my-masonry-grid {
   display: flex;
-  margin-left: -30px;  /* If you have a reason for this negative margin, keep it. Otherwise, consider removing it. */
+  margin-left: -30px; /* Adjust according to your spacing */
   width: auto;
 }
 
 .my-masonry-grid_column {
-  padding: 0 15px 30px 15px; /* Added padding-left/right to create gaps between columns */
+  padding-left: 30px; /* Adjust according to your spacing */
+  background-clip: padding-box;
+}
+
+/* Responsive Layout */
+@media (max-width: 500px) {
+  .my-masonry-grid {
+      margin-left: -15px;
+  }
+  .my-masonry-grid_column {
+      padding-left: 15px;
+  }
 }
