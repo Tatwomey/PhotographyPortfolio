@@ -14,8 +14,7 @@ const Contact = () => {
       lastName: data.get('lastName'),
       email: data.get('email'),
       subject: data.get('subject'),
-      message: data.get('message'),
-      phoneNumber: data.get('phoneNumber')
+      message: data.get('message')
     };
 
     try {
@@ -68,10 +67,6 @@ const Contact = () => {
           <div>
             <input style={{ color: 'black' }} name="email" className='border shadow-lg p-3 w-full my-2' type="email" placeholder='Email' required />
             <div className="text-sm text-gray-500">Required</div>
-          </div>
-          <div>
-            <input style={{ color: 'black' }} name="phoneNumber" className='border shadow-lg p-3 w-full my-2' type="tel" placeholder='Phone Number (Optional)' />
-            <div className="text-sm text-gray-500">(Optional)</div>
           </div>
           <input style={{ color: 'black' }} name="subject" className='border shadow-lg p-3 w-full my-2' type="text" placeholder='Subject' />
           <textarea style={{ color: 'black' }} name="message" className='border shadow-lg p-3 w-full' cols="30" rows="10" placeholder='Message' required></textarea>
