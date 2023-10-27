@@ -40,11 +40,17 @@ const Contact = () => {
     <div className='max-w-[1240px] m-auto p-4 h-screen'>
       <h1 id="work-with-me" ref={workWithMeRef} className='text-2xl font-bold text-center p-4'>Work with me</h1>
       
-      <div className="mb-4">
-        <label className="text-xl">Purpose of email (required)</label>
-        <div>
-          <input type="checkbox" name="purpose" value="Business Inquiries" /> Business Inquiries
-          <input type="checkbox" name="purpose" value="Print Inquiries" className="ml-4" /> Print Inquiries
+      <div className="flex flex-col items-center mb-4">
+        <label className="text-lg mb-2">Purpose of email (required)</label>
+        <div className="flex space-x-4">
+          <div>
+            <input type="checkbox" name="purpose" value="Business Inquiries" />
+            <span className="text-gray-500">Business Inquiries</span>
+          </div>
+          <div>
+            <input type="checkbox" name="purpose" value="Print Inquiries" />
+            <span className="text-gray-500">Print Inquiries</span>
+          </div>
         </div>
       </div>
 

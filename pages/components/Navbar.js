@@ -35,8 +35,7 @@ const Navbar = () => {
     };
 
     return (
-      <div style={{ backgroundColor: nav ? 'black' : backgroundColor }} className='fixed left-0 top-0 w-full z-30 ease-in duration-300'>
-
+        <div style={{ backgroundColor: nav ? 'black' : backgroundColor }} className='fixed left-0 top-0 w-full z-30 ease-in duration-300'>
             <div className='max-w-[1240px] m-auto flex justify-between items-center p-4 relative'>
                 <Link href='/#home'>
                     <img src={logo} alt="Logo" className="navbar-logo cursor-pointer absolute left-4 top-4 lg:static" />
@@ -74,6 +73,6 @@ const Navbar = () => {
             </div>
         </div>
     );
-};
+}
 
 export default Navbar;
