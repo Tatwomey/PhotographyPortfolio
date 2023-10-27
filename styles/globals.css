@@ -44,6 +44,7 @@ html, body {
   max-width: 100%;     /* Ensures the logo doesn't overflow its container */
 }
 
+/* Responsive adjustments */
 @media (max-width: 640px) {
   .custom-img {
     background-image: url('/head-korn-ftl20-San-Francisco-2018-trevor-twomey-1 ios.jpg');
@@ -51,7 +52,6 @@ html, body {
     background-position: top;
   }
 
-  /* For mobile devices */
   .navbar-logo {
     width: 62.39px;
     height: 62.39px;
