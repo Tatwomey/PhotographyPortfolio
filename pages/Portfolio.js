@@ -9,7 +9,7 @@ import lgThumbnail from "lightgallery/plugins/thumbnail";
 import lgZoom from "lightgallery/plugins/zoom";
 
 const photos = [
-  { src: '/munky-korn-camden-nj-2022-trevor-twomey-1.jpg' , type: 'portrait'},
+ {src: '/JD-korn-jones-beach-2022-trevor-twomey-5-2.jpg', type: 'portrait' },
   {src: '/q-unique-kings-bounty-denial-video-trevor-twomey-1.jpg', type: 'portrait'},
   {src: '/afi-davey-havok-bodies-tour-2022-nyc-trevor-twomey-1.jpg', type: 'portrait'},
   {src: '/roots-thievery-corporation-2016-trevor-twomey-1 2.JPG', type: 'portrait'},
@@ -44,7 +44,7 @@ const photos = [
   {src: '/q-unique-kings-bounty-denial-video-trevor-twomey.jpg', type: 'portrait'},
   {src: '/head-korn-jones-beach-ny-2022-trevor-twomey-.jpg', type: 'portrait'},
   {src: '/lajon-sevendust-nyc-2022-trevor-twomey.jpg', type: 'portrait'},
-  {src: '/munky-korn-eagles-ballroom-2017-trevor-twomey.jpg', type: 'portrait' },
+  { src: '/munky-korn-camden-nj-2022-trevor-twomey-1.jpg' , type: 'portrait'},
   {src: '/sabina-sciubba-brazilian-girls-trevor-twomey.jpg', type: 'portrait'},
   {src: '/head-korn-autograph-camden-nj-2022-trevor-twomey.jpg', type: 'portrait'},
   {src: '/clint-lowery-sevendust-nyc-2022-trevor-twomey.jpg', type: 'portrait'},
