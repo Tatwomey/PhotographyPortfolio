@@ -9,7 +9,7 @@ import lgThumbnail from "lightgallery/plugins/thumbnail";
 import lgZoom from "lightgallery/plugins/zoom";
 
 const photos = [
-  {src: '/JD-korn-jones-beach-2022-trevor-twomey-8.jpg', type: 'portrait'},
+  { src: '/munky-korn-camden-nj-2022-trevor-twomey-1.jpg' , type: 'portrait'},
   {src: '/q-unique-kings-bounty-denial-video-trevor-twomey-1.jpg', type: 'portrait'},
   {src: '/afi-davey-havok-bodies-tour-2022-nyc-trevor-twomey-1.jpg', type: 'portrait'},
   {src: '/roots-thievery-corporation-2016-trevor-twomey-1 2.JPG', type: 'portrait'},
@@ -28,6 +28,8 @@ const photos = [
   {src:'/head-korn-camden-NJ-2021-trevor-twomey.jpg', type: 'portrait'},
   {src: '/drab-majesty-bodies-tour-2022-nyc-trevor-twomey.jpg', type: 'portrait'},
   {src: '/ray-luzier-korn-2021-glitch-trevor-twomey.jpg', type: 'portrait'},
+  {src: '/craig-bonich-brooklyn-bowl-trevor-twomey.JPG', type: 'portrait'},
+  {src: '/munky-korn-glitch-ftl20-2018-trevor-twomey.jpg', type: 'portrait'},
   {src: '/q-unique-bowery-ballroom-trevortwomey-1.jpg' , type: 'portrait'},
    {src: '/aaron-lewis-staind-camden-NJ-2021-trevor-twomeytwomey.jpg', type: 'portrait'},
   {src:'/voxmana-nublu-natalia-clavier-trevor-twomey-1.JPG', type: 'portrait'},
@@ -37,8 +39,6 @@ const photos = [
   {src:'/q-unique-mic-kings-bounty-band-trevor-twomey-1.JPG', type: 'landscape'},
   {src:'/brazilian-girls-farfield-ct-trevor-twomey-1.jpg', type: 'landscape'},
   {src:'/korn-fieldy-allentown-pa-2020-trevor-twomey-1.jpg', type: 'landscape' },
-  {src: '/craig-bonich-brooklyn-bowl-trevor-twomey.JPG', type: 'portrait'},
-  {src: '/munky-korn-glitch-ftl20-2018-trevor-twomey.jpg', type: 'portrait'},
   {src: '/raquel-jones-capitol-theatre-2018-trevor-twomey.jpg', type: 'portrait'},
   {src: '/munky-korn-camden-NJ-2021-trevor-twomey.jpg', type: 'portrait'},
   {src: '/q-unique-kings-bounty-denial-video-trevor-twomey.jpg', type: 'portrait'},
@@ -73,8 +73,7 @@ const photos = [
   { src: '/ra-diaz-korn-jones-beach-2022-trevortwomey.jpg' , type: 'portrait'},
   {src: '/ray-luzier-korn-jones-beach-2022-trevor-twomey.jpg' , type: 'portrait'},
   {src: '/lou-lou-thievery-corporation-capitol-theatre-trevor-twomey-1.jpg', type: 'portrait'},
-  { src: '/munky-korn-camden-nj-2022-trevor-twomey-1.jpg' , type: 'portrait'},
-  
+  {src: '/JD-korn-jones-beach-2022-trevor-twomey-8.jpg', type: 'portrait'},
   
  
 ];
