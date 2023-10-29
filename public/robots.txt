@@ -1,4 +1,9 @@
+# *
 User-agent: *
-Disallow:
+Allow: /
 
+# Host
+Host: https://trevortwomeyphoto.com
+
+# Sitemaps
 Sitemap: https://trevortwomeyphoto.com/sitemap.xml
