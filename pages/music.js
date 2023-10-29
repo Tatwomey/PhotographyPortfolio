@@ -1,5 +1,5 @@
 import React from "react";
-import Meta from "../path/to/Meta"; // Adjust the path according to where your Meta component is located
+import Meta from "./components/Meta";
 import Hero from "./components/Hero";
 import Portfolio from "./Portfolio";
 
