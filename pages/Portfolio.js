@@ -74,7 +74,7 @@ const photos = [
   { src: '/ra-diaz-korn-jones-beach-2022-trevortwomey.jpg' , type: 'portrait'},
   {src: '/ray-luzier-korn-jones-beach-2022-trevor-twomey.jpg' , type: 'portrait'},
   {src: '/lou-lou-thievery-corporation-capitol-theatre-trevor-twomey-1.jpg', type: 'portrait'},
-  {src: '/JD-korn-jones-beach-2022-trevor-twomey-8.jpg', type: 'portrait'},
+ 
   
  
 ];
