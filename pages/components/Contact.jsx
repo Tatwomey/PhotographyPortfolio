@@ -37,7 +37,7 @@ const Contact = () => {
   }, []);
 
   return (
-    <div className='max-w-[1240px] m-auto p-4 h-screen'>
+    <div className='max-w-[1240px] m-auto p-4 h-screen pb-20'> 
       <h1 id="work-with-me" ref={workWithMeRef} className='text-2xl font-bold text-center p-4'>Work with me</h1>
       
       <div className="flex flex-col items-center mb-4">

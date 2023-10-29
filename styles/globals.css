@@ -94,3 +94,8 @@ html, body {
       padding-left: 15px;
   }
 }
+footer {
+  position: sticky; /* This will make the footer stick at the bottom */
+  bottom: 0;
+  width: 100%;
+}
