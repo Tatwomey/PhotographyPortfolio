@@ -53,6 +53,7 @@ const photos = [
   {src: '/head-korn-homdel-nj-2021-trevor-twomey.jpg', type: 'portrait'},
   {src: '/Hash-thievery-corporation-trevor-twomey.jpg', type: 'portrait'},
   {src: '/Korn-JD-Jones-Beach-2022-trevor-twomey.jpg', type: 'portrait'},
+  {src: '/evanescence-troy-mclawhorn--trevor-twomey-2022.jpg', type: 'portrait'},
   {src: '/iamx-chris-corner-LPR-2023-trevortwomey-4.jpg', type: 'portrait'},
   {src: '/mike-dijan-kings-bounty-band-trevor-twomey.JPG', type: 'portrait'},
   {src: '/fieldy-head-korn-buckcherry-2013-trevor-twomey.jpg', type: 'portrait' },

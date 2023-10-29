@@ -1,5 +1,5 @@
 module.exports = {
-    siteUrl: 'photography-portfolio-exycbvrl0-trevoratwomey-gmailcom.vercel.app',
+    siteUrl: 'https://trevortwomeyphoto.com',
     generateRobotsTxt: true, // (optional)
     // ...other options
 }
