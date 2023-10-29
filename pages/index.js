@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import Head from 'next/head';
+import Meta from './components/Meta';
 
 export default function Home() {
   const router = useRouter();
@@ -11,10 +11,7 @@ export default function Home() {
 
   return (
     <div>
-      <Head>
-        <title>Trevor Twomey Photography</title>
-        <meta name="Trevor Twomey Photography" content="Trevor Twomey Photography" />
-      </Head>
+      <Meta title="Trevor Twomey Photography" description="Trevor Twomey's portfolio of music and concert photography capturing the energy and passion of live performances." />
       <div>Redirecting...</div>
     </div>
   );
