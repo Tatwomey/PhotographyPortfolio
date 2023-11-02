@@ -1,4 +1,4 @@
-const { EmailTemplate } = require('../components/email-template');
+const { EmailTemplate } = require('/components/email-template');
 const { Resend } = require('resend');
 
 

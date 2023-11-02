@@ -1,6 +1,6 @@
 import React from "react";
-import Meta from "./components/Meta";
-import Hero from "./components/Hero";
+import Meta from "@/components/Meta";
+import Hero from "@/components/Hero";
 import Portfolio from "./Portfolio";
 
 function Music() {

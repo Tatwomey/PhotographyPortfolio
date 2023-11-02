@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { useNavigation } from '../contexts/NavigationContext'; // update the path based on your folder structure
-import Contact from './components/Contact';
-import Hero from './components/Hero';
+import Contact from '@/components/Contact';
+import Hero from '@/components/Hero';
 
 const ContactPage = () => {
   const contactRef = useRef(null);

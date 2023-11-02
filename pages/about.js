@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
-import About from './components/About';
+import About from '@/components/About';
 import { useSmoothScroll } from '@/hooks/useSmoothScroll';
-import Hero from './components/Hero';
+import Hero from '@/components/Hero';
 import { useNavigation } from '../contexts/NavigationContext'; // Update this path if necessary
 
 export default function AboutPage() {
