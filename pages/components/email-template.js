@@ -1,4 +1,4 @@
-import React from 'react';
+const React = require("react");
 
 const EmailTemplate = ({ firstName }) => (
   <div>
@@ -6,4 +6,6 @@ const EmailTemplate = ({ firstName }) => (
   </div>
 );
 
-export default EmailTemplate;
+module.exports = {
+  EmailTemplate
+};

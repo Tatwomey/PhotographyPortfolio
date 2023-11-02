@@ -24,7 +24,7 @@ const Contact = () => {
     } catch (error) {
       console.error('Failed to send the email:', error.response ? error.response.data : error.message);
     }
-  };
+  };    
 
   useEffect(() => {
     if (window.location.hash === '#work-with-me' && workWithMeRef.current) {
