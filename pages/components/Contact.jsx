@@ -18,7 +18,7 @@ const Contact = () => {
     };
 
     try {
-      const res = await axios.post('/api/sendEmail', payload);
+      const res = await axios.post('/api/send', payload);
       console.log('Email sent successfully:', res.data);
       setIsSubmitted(true);
     } catch (error) {
