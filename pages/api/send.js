@@ -1,7 +1,6 @@
 const { EmailTemplate } = require('/components/email-template');
 const { Resend } = require('resend');
 
-
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req, res) {
@@ -19,6 +18,7 @@ export default async function handler(req, res) {
   try {
     const data = await resend.emails.send({
       from: 'Acme <onboarding@resend.dev>',
+      replyTo: `${firstName} ${lastName} <${email}>`,
       to: ['info@trevortwomeyphoto.com'],
       subject: subject || 'Hello world',
       react: EmailTemplate({ firstName, lastName, email, message }),
