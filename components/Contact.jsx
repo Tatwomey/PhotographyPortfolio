@@ -17,13 +17,11 @@ const Contact = () => {
             message: data.get('message')
         };
 
-        // Manual checks for required fields
         if (!payload.firstName || !payload.lastName || !payload.email || !payload.message) {
             alert("Please fill in all required fields.");
             return;
         }
 
-        // Email validation using regex
         const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
         if (!emailRegex.test(payload.email)) {
             alert("Please enter a valid email address.");
@@ -55,7 +53,7 @@ const Contact = () => {
     }, []);
 
     return (
-        <div className='max-w-[1240px] m-auto p-4 h-screen pb-20'>
+        <div className='max-w-[1240px] m-auto p-4 min-h-screen pb-20'>
             <h1 id="work-with-me" ref={workWithMeRef} className='text-2xl font-bold text-center p-4'>Work with me</h1>
             <div className="flex flex-col items-center mb-4">
                 <label className="text-lg mb-2">Purpose of email (required)</label>
