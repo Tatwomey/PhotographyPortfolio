@@ -16,7 +16,7 @@ const Meta = ({ title, keywords, description }) => {
 
 Meta.defaultProps = {
   title: 'Trevor Twomey Photography',
-  keywords: 'music photography, concert photography, band photos, live music',
+  keywords: 'music photography, band photography, rock photography, music journalist, rock photographer, concert photography, band photos, live music photographer, nyc photographer, New York City Photographer, concert photographer, band photographer, gig photographer, music photographer',
   description: 'Trevor Twomey\'s portfolio of music and concert photography capturing the energy and passion of live performances.'
 };
 
