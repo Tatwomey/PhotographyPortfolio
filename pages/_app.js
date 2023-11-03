@@ -12,29 +12,32 @@ export default function App({ Component, pageProps }) {
     <>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        
-        <Script
-          strategy="afterInteractive"
-        >
-          {`
-            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','GTM-M3ZGLXGX');
-          `}
-        </Script>
       </Head>
 
-      {/* This is the noscript tag for GTM, but Next.js doesn't handle noscript tags in the JSX */}
-      {/* You might need another way to handle this, or just skip this part if you're okay with not supporting users with JavaScript disabled */}
+      {/* Google Tag Manager scripts */}
+      <Script id="gtm-script" strategy="afterInteractive">
+        {`
+          (function(w,d,s,l,i){
+            w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
+            var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
+            j.async=true; j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+            f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer','GTM-M3ZGLXGX');
+        `}
+      </Script>
 
       <NavigationProvider>
+        {/* The Navbar can access the context values directly without props */}
         <Navbar />
         <GoogleAnalytics/>
         <Component {...pageProps} />
         <Footer />
       </NavigationProvider>
+
+      {/* Google Tag Manager noscript */}
+      <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M3ZGLXGX" height="0" width="0" style={{display: 'none', visibility: 'hidden'}}></iframe>
+      </noscript>
     </>
   );
 }
