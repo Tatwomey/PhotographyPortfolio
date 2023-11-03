@@ -4,12 +4,9 @@ import Head from "next/head";
 import Footer from '@/components/Footer';
 import "@/styles/globals.css";
 import { NavigationProvider } from '../contexts/NavigationContext';
-import Script from 'next/script';
-
-
+import GoogleAnalytics from '@/components/GoogleAnalytics';
 
 export default function App({ Component, pageProps }) {
-
   return (
     <>
       <Head>
@@ -19,19 +16,7 @@ export default function App({ Component, pageProps }) {
       <NavigationProvider>
         {/* The Navbar can access the context values directly without props */}
         <Navbar />
-      <Script strategy="afterinteractive" 
-      src="https://www.googletagmanager.com/gtag/js?id=G-H3MT6ZKKN4"/>
-
-      <Script id="google-analytics" strategy="afterInteractive">
-
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-        
-          gtag('config', 'G-H3MT6ZKKN4');
-          `}
-      </Script>
+        <GoogleAnalytics/>
         <Component {...pageProps} />
         <Footer />
       </NavigationProvider>
