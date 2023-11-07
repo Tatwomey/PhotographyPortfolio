@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import { Resend } from 'resend'; // Adjust if 'Resend' is not the correct import
-import EmailTemplate from '@/components/email-template';
+import EmailTemplate from '@/components/EmailTemplate';
 import dotenv from 'dotenv';
 
 dotenv.config();
