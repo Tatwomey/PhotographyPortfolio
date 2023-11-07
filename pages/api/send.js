@@ -1,39 +1,60 @@
-import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
-import { EmailTemplate } from '@/components/email-template'; // Ensure this path is correct
+import { Resend } from 'resend'; // Adjust if 'Resend' is not the correct import
+import EmailTemplate from '@/components/EmailTemplate';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Create a transporter object using the default SMTP transport
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER, // Your Gmail address from the .env file
-    pass: process.env.EMAIL_PASSWORD, // Your Gmail password from the .env file
-  },
-});
+// Initialize your Resend client with the API key
+const resendClient = new Resend(process.env.RESEND_API_KEY);
 
-// send function to be used in your route handling to send an email
-export const send = async (data) => {
-  const { email, name, message, phone, subject } = data;
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', 'POST');
+    res.status(405).end('Method Not Allowed');
+    return;
+  }
 
-  // Assuming EmailTemplate is a function that returns an HTML string for the email body
-  const emailBody = EmailTemplate({ name, email, phone, message });
+  const { firstName, email, subject, message } = req.body;
 
-  const mailOptions = {
-    from: 'info@trevortwomeyphoto.com', // The email address you want to send from
-    to: email, // Recipient's email address
-    subject: subject, // Subject line from the form
-    text: `Message from: ${name}\nEmail: ${email}\nPhone: ${phone}\nMessage: ${message}`, // plain text body
-    html: emailBody, // HTML body content from EmailTemplate
-  };
+  // Set up your SMTP server credentials for nodemailer
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
 
-  try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Message sent: %s', info.messageId);
-    return { success: true, messageId: info.messageId };
-  } catch (error) {
-    console.error('Error sending email:', error);
-    return { success: false, error: error };
-  }
-};
+  const mailOptions = {
+    from: 'Your Name <youremail@example.com>',
+    to: email,
+    subject: subject,
+    text: `Name: ${firstName}\nEmail: ${email}\nMessage: ${message}`,
+  };
+
+  try {
+    // First, send the email from the user to your address
+    await transporter.sendMail(mailOptions);
+
+    // Then, send a confirmation/thank-you email to the user using the Resend service
+    const response = await resendClient.emails.send({
+      from: "Trevor <info@trevortwomeyphoto.com>",
+      to: [email], // Send confirmation to the user's email
+      subject: "Thanks for reaching out!",
+      react: EmailTemplate({ firstName: firstName }),
+    });
+
+    // Handle response from Resend service
+    if (response.status === 'success') {
+      res.status(200).json({ success: true, message: 'Both emails sent successfully!' });
+    } else {
+      // If Resend service fails, log it, but don't necessarily fail the whole request
+      console.error('Resend service did not return success:', response);
+      res.status(200).json({ success: true, message: 'Email to Trevor sent, but confirmation email had issues.' });
+    }
+  } catch (error) {
+    console.error('Error in sending emails:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+}
