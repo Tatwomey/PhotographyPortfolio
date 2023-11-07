@@ -71,7 +71,7 @@ const Contact = () => {
     return isSubmitted ? (
         <div className='max-w-[1240px] m-auto p-4 min-h-screen flex justify-center items-center'>
             <h1 className='text-2xl font-bold text-white'>
-                Thank you, I'll be in touch soon.
+                Thank you, I&apos;ll be in touch soon.
             </h1>
         </div>
     ) : (
