@@ -39,7 +39,7 @@ export default async function handler(req, res) {
 
     // Then, send a confirmation/thank-you email to the user using the Resend service
     const response = await resendClient.emails.send({
-      from: "Trevor <info@trevortwomeyphoto.com>",
+      from: "Trevor Twomey Photo <info@trevortwomeyphoto.com>",
       to: [email], // Send confirmation to the user's email
       subject: "Thank you for reaching out!",
       react: EmailTemplate({ firstName: firstName }),
