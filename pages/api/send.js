@@ -41,7 +41,7 @@ export default async function handler(req, res) {
     const response = await resendClient.emails.send({
       from: "Trevor <info@trevortwomeyphoto.com>",
       to: [email], // Send confirmation to the user's email
-      subject: "Thanks for reaching out,({ firstName: firstName })!",
+      subject: "Thank you for reaching out!",
       react: EmailTemplate({ firstName: firstName }),
     });
 
