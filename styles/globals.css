@@ -5,8 +5,8 @@
 /* General Styles */
 html, body {
   scroll-behavior: smooth;
-  font-family: 'Montserrat', sans-serif; /* Change 'Raleway' to 'Montserrat' */
-  font-size: 18px; /* Set default font size to 18px */
+  font-family: 'Montserrat', sans-serif;
+  font-size: 18px;
   margin: 0;
   background-color: black;
   color: white;
@@ -39,9 +39,9 @@ html, body {
 }
 
 .navbar-logo {
-  width: 187.17px;      
-  height: 187.17px;     
-  max-width: 100%;     /* Ensures the logo doesn't overflow its container */
+  width: 187.17px;
+  height: 187.17px;
+  max-width: 100%;
 }
 
 /* Responsive adjustments */
@@ -76,12 +76,12 @@ html, body {
 
 .my-masonry-grid {
   display: flex;
-  margin-left: -30px; /* Adjust according to your spacing */
+  margin-left: -30px;
   width: auto;
 }
 
 .my-masonry-grid_column {
-  padding-left: 30px; /* Adjust according to your spacing */
+  padding-left: 30px;
   background-clip: padding-box;
 }
 
@@ -94,8 +94,26 @@ html, body {
       padding-left: 15px;
   }
 }
+
+/* Footer Styles */
 footer {
-  position: sticky; /* This will make the footer stick at the bottom */
+  position: sticky;
   bottom: 0;
   width: 100%;
+}
+
+/* Cart Icon Badge Styles */
+.cart-icon-badge {
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

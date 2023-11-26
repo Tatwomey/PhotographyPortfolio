@@ -4,12 +4,13 @@ import Head from "next/head";
 import Footer from '@/components/Footer';
 import "@/styles/globals.css";
 import { NavigationProvider } from '../contexts/NavigationContext';
+import { CartProvider } from '@/contexts/CartContext';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import Script from 'next/script';
 
 export default function App({ Component, pageProps }) {
   return (
-    <>
+    <CartProvider> {/* Wrap the application with CartProvider */}
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
@@ -38,6 +39,6 @@ export default function App({ Component, pageProps }) {
       <noscript>
         <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M3ZGLXGX" height="0" width="0" style={{display: 'none', visibility: 'hidden'}}></iframe>
       </noscript>
-    </>
+    </CartProvider> 
   );
 }
