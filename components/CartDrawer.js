@@ -1,36 +1,31 @@
 import React, { useContext, useEffect, useState } from 'react';
-import axios from 'axios';
 import { CartContext } from '@/contexts/CartContext';
 import CartItem from './CartItem';
+import { loadCart } from '@/utils/load-cart'; // Ensure this path is correct
 
 const CartDrawer = () => {
-    const { cartItems, removeItemFromCart, cartId } = useContext(CartContext); // Include cartId here
+    const { removeItemFromCart, cartId } = useContext(CartContext);
     const [loadedCartItems, setLoadedCartItems] = useState([]);
 
     useEffect(() => {
-        const fetchCartItemDetails = async () => {
-            if (!cartId) {
-                console.error('No cart ID available');
-                return;
-            }
-
-            const response = await axios.post('/api/shopify-get-cart', { cartId });
-            if (response.data && response.data.cart) {
-                setLoadedCartItems(response.data.cart.lines.edges.map(line => ({
-                    id: line.node.id,
-                    name: line.node.merchandise.product.title,
-                    price: line.node.merchandise.price.amount,
-                    image: line.node.merchandise.product.images.edges[0].node.src,
-                    quantity: line.node.quantity,
-                })));
+        const fetchCartDetails = async () => {
+            if (cartId) {
+                const cartData = await loadCart(cartId);
+                if (cartData && cartData.lines) {
+                    setLoadedCartItems(cartData.lines.edges.map(edge => ({
+                        id: edge.node.id,
+                        name: edge.node.merchandise.product.title,
+                        price: edge.node.merchandise.price.amount,
+                        image: edge.node.merchandise.product.images.edges[0].node.src,
+                        quantity: edge.node.quantity,
+                    })));
+                }
             }
         };
 
-        if (cartItems.length > 0 && cartId) {
-            fetchCartItemDetails();
-        }
-    }, [cartItems, cartId]); // cartId is now included in the dependency array
-    
+        fetchCartDetails();
+    }, [cartId]);
+
     return (
         <div className="cart-drawer">
             {loadedCartItems.length > 0 ? (

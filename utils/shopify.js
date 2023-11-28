@@ -1,39 +1,24 @@
-import { default as fetch } from 'node-fetch';
+// shopify.js
+export const postToShopify = async ({ query, variables }) => {
+    const endpoint = `https://${process.env.SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
+    const headers = {
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN,
+        // Ensure you have the correct token and headers set up
+    };
 
-export const postToShopify = async ({ query, variables = {} }) => {
     try {
-        console.log('API Endpoint:', process.env.SHOPIFY_API_ENDPOINT);
-        console.log('Access Token:', process.env.SHOPIFY_STOREFONT_API_TOKEN);
-
-        const response = await fetch(process.env.SHOPIFY_API_ENDPOINT, {
+        const response = await fetch(endpoint, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Shopify-Storefront-Access-Token': process.env.SHOPIFY_STOREFONT_API_TOKEN,
-            },
+            headers: headers,
             body: JSON.stringify({ query, variables }),
         });
-
-        if (response.status === 404) {
-            throw new Error('Resource not found');
-        }
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        const result = await response.json();
-
-        if (result.errors) {
-            console.error('Shopify API errors:', result.errors);
-            throw new Error('Error returned from Shopify API');
-        }
-
-        if (!result || !result.data) {
-            throw new Error('No results found from Shopify API');
-        }
-
-        return result.data;
+        return await response.json();
     } catch (error) {
         console.error('Error in postToShopify:', error);
         throw error;

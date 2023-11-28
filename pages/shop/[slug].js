@@ -8,7 +8,7 @@ import { CartContext } from '@/contexts/CartContext';
 
 export async function getStaticPaths() {
     const endpoint = `https://${process.env.SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
-    const token = process.env.SHOPIFY_STOREFRONT_API_TOKEN;
+    const token = process.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
     const graphqlQuery = {
         query: `
@@ -29,7 +29,7 @@ export async function getStaticPaths() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Shopify-Storefront-Access-Token': token,
+                'X-Shopify-Storefront-Access-Token': process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN,
             },
             body: JSON.stringify(graphqlQuery),
         });
@@ -52,7 +52,7 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
     const endpoint = `https://${process.env.SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
-    const token = process.env.SHOPIFY_STOREFRONT_API_TOKEN;
+    const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
     const graphqlQuery = {
         query: `
@@ -86,7 +86,7 @@ export async function getStaticProps({ params }) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Shopify-Storefront-Access-Token': token,
+                'X-Shopify-Storefront-Access-Token': process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN,
             },
             body: JSON.stringify(graphqlQuery),
         });
@@ -120,18 +120,23 @@ const ProductPage = ({ product }) => {
     const handleAddToCart = async () => {
         setAddingToCart(true);
         try {
-            await addItemToCart({
-                id: product.id,
-                title: product.title,
-                price: product.priceRange.minVariantPrice.amount,
-                quantity: 1,
-            });
+            if (cartId) {
+                await addItemToCart({
+                    cartId: cartId,
+                    itemId: product.id,
+                    quantity: 1,
+                });
+            } else {
+                const newCart = await createCartItem({ itemId: product.id, quantity: 1 });
+                setCartId(newCart.id);
+                localStorage.setItem('trevortwomeyphoto:Shopify:cart', JSON.stringify({ cartId: newCart.id }));
+            }
         } catch (error) {
             console.error('Error adding to cart:', error);
-            // Handle error, e.g., show error message
         }
         setAddingToCart(false);
     };
+    
 
     const handleProceedToCheckout = () => {
         router.push('/checkout');

@@ -4,10 +4,12 @@ import Head from "next/head";
 import Hero from "@/components/Hero";
 import Product from "@/components/Product";
 import { CartContext } from '@/contexts/CartContext';
+import { createCartItem } from "@/utils/createCartItem";
+import { addItemToCart as addToCart } from "@/utils/addItemToCart"; // Import the addItemToCart utility
 
 export default function Shop({ products }) {
     const productListRef = useRef(null);
-    const { cartId, setCartId, addItemToCart } = useContext(CartContext); // Include cartId and setCartId
+    const { cartId, setCartId } = useContext(CartContext);
 
     useEffect(() => {
         if (productListRef.current) {
@@ -20,23 +22,18 @@ export default function Shop({ products }) {
 
     const handleAddToCart = async (product) => {
         try {
-            if (cartId) {
-                // Add item to existing cart
-                addItemToCart({
-                    cartId: cartId,
-                    itemId: product.id,
-                    quantity: 1,
-                });
-            } else {
-                // Create a new cart and add the item
+            if (!cartId) {
+                // Create a new cart if no cart ID is present
                 const newCart = await createCartItem({ itemId: product.id, quantity: 1 });
                 setCartId(newCart.id);
-                localStorage.setItem('cartId', newCart.id);
+                localStorage.setItem('trevortwomeyphoto:Shopify:cart', JSON.stringify({ cartId: newCart.id }));
+            } else {
+                // Add item to the existing cart
+                await addToCart({ cartId, itemId: product.id, quantity: 1 });
             }
             alert('Added to cart!');
         } catch (error) {
             console.error('Error in handleAddToCart:', error);
-            // Handle the error, e.g., display an error message to the user
         }
     };
 
@@ -63,7 +60,7 @@ export default function Shop({ products }) {
 
 export async function getStaticProps() {
     const endpoint = `https://${process.env.SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
-    const token = process.env.SHOPIFY_STOREFRONT_API_TOKEN;
+    const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
     if (!endpoint || !token) {
         console.error('Shopify endpoint or token is undefined.');

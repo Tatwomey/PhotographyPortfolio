@@ -8,6 +8,7 @@ export const addItemToCart = async ({ cartId, itemId, quantity }) => {
                     cartLinesAdd(cartId: $cartId, lines: $lines) {
                         cart {
                             id
+                            // Include additional fields if necessary
                         }
                     }
                 }
@@ -23,8 +24,9 @@ export const addItemToCart = async ({ cartId, itemId, quantity }) => {
             },
         });
 
-        return shopifyResponse;
+        return shopifyResponse.cartLinesAdd.cart; // Ensure this aligns with your application's state structure
     } catch (error) {
-        console.log(error);
+        console.error('Error in addItemToCart:', error);
+        throw error;
     }
 };
