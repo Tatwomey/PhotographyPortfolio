@@ -1,14 +1,14 @@
-// pages/shop/[slug].js
 import React, { useEffect, useState, useContext } from 'react';
 import Head from 'next/head';
 import Hero from '@/components/Hero';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { CartContext } from '@/contexts/CartContext';
+import { createCartItem } from "@/utils/createCartItem";
 
 export async function getStaticPaths() {
-    const endpoint = `https://${process.env.SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
-    const token = process.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
+    const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
+    const token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
     const graphqlQuery = {
         query: `
@@ -29,7 +29,7 @@ export async function getStaticPaths() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Shopify-Storefront-Access-Token': process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN,
+                'X-Shopify-Storefront-Access-Token':token,
             },
             body: JSON.stringify(graphqlQuery),
         });
@@ -51,8 +51,8 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-    const endpoint = `https://${process.env.SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
-    const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
+    const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
+    const token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
     const graphqlQuery = {
         query: `
@@ -86,7 +86,7 @@ export async function getStaticProps({ params }) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Shopify-Storefront-Access-Token': process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN,
+                'X-Shopify-Storefront-Access-Token': token,
             },
             body: JSON.stringify(graphqlQuery),
         });
@@ -110,7 +110,7 @@ export async function getStaticProps({ params }) {
 
 const ProductPage = ({ product }) => {
     const router = useRouter();
-    const { addItemToCart } = useContext(CartContext);
+    const { cartId, setCartId, addItemToCart } = useContext(CartContext);
     const [addingToCart, setAddingToCart] = useState(false);
 
     useEffect(() => {
@@ -120,23 +120,22 @@ const ProductPage = ({ product }) => {
     const handleAddToCart = async () => {
         setAddingToCart(true);
         try {
-            if (cartId) {
-                await addItemToCart({
-                    cartId: cartId,
-                    itemId: product.id,
-                    quantity: 1,
-                });
-            } else {
+            if (!cartId) {
                 const newCart = await createCartItem({ itemId: product.id, quantity: 1 });
                 setCartId(newCart.id);
                 localStorage.setItem('trevortwomeyphoto:Shopify:cart', JSON.stringify({ cartId: newCart.id }));
+            } else {
+                await addItemToCart({
+                    cartId,
+                    itemId: product.id,
+                    quantity: 1,
+                });
             }
         } catch (error) {
             console.error('Error adding to cart:', error);
         }
         setAddingToCart(false);
     };
-    
 
     const handleProceedToCheckout = () => {
         router.push('/checkout');
@@ -154,7 +153,6 @@ const ProductPage = ({ product }) => {
             </Head>
             <Hero />
             <div className="container mx-auto p-4 flex flex-col md:flex-row">
-                {/* Product image and details */}
                 <div className="md:w-1/2">
                     <Image
                         src={product.images.edges[0]?.node.src || '/fallback-image.jpg'}

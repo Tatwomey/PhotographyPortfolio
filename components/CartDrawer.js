@@ -15,7 +15,7 @@ const CartDrawer = () => {
                     setLoadedCartItems(cartData.lines.edges.map(edge => ({
                         id: edge.node.id,
                         name: edge.node.merchandise.product.title,
-                        price: edge.node.merchandise.price.amount,
+                        price: edge.node.price.amount,
                         image: edge.node.merchandise.product.images.edges[0].node.src,
                         quantity: edge.node.quantity,
                     })));

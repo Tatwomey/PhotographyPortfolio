@@ -59,8 +59,8 @@ export default function Shop({ products }) {
 }
 
 export async function getStaticProps() {
-    const endpoint = `https://${process.env.SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
-    const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
+    const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
+    const token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
     if (!endpoint || !token) {
         console.error('Shopify endpoint or token is undefined.');
