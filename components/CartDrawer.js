@@ -1,32 +1,24 @@
 import React from 'react';
-import { useShopContext } from '../contexts/shopContext';
-import CartItem from './CartItem'; // You should import the CartItem component if it's not already imported
+import { useShopContext } from '@/contexts/shopContext';
 
 const CartDrawer = () => {
-  const { cart, removeFromCart } = useShopContext();
+  const { cart } = useShopContext();
+
+  // Ensure cart is always an array, default to an empty array if undefined
+  const safeCart = cart || [];
 
   return (
     <div className="cart-drawer">
-      {cart && cart.lines && cart.lines.edges && cart.lines.edges.length > 0 ? (
-        cart.lines.edges.map((item) => (
-          <CartItem
-            key={item.node.id}
-            item={{
-              id: item.node.id,
-              name: item.node.merchandise.product.title,
-              price: item.node.merchandise.price,
-              image: item.node.merchandise.product.images.edges[0]?.node.url,
-              quantity: item.node.quantity,
-            }}
-            onRemove={() => removeFromCart(item.node.id)}
-          />
-        ))
-      ) : (
-        <p>Your cart is empty.</p>
-      )}
+      {safeCart.length === 0 && <p>Your cart is empty.</p>}
+      {safeCart.map(item => (
+        <div key={item.id} className="cart-item">
+          <p>Product ID: {item.id}</p>
+          <p>Quantity: {item.quantity}</p>
+          {/* Add more product details as needed */}
+        </div>
+      ))}
     </div>
   );
 };
 
 export default CartDrawer;
-

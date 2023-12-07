@@ -1,66 +1,25 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 const ShopContext = createContext();
 
-export function useShopContext() {
-  return useContext(ShopContext);
-}
+export const useShopContext = () => useContext(ShopContext);
 
-export function ShopProvider({ children }) {
-  const [cart, setCart] = useState([]);
-  const [cartOpen, setCartOpen] = useState(false); // Add cartOpen state
+export const ShopProvider = ({ children }) => {
+    const [globalCart, setGlobalCart] = useState({});
 
-  // Load cart data from localStorage on component mount (client-side).
-  useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
-    }
-  }, []);
+    const addToCart = async (product) => {
+        // Replace this with your actual logic to add a product to the cart
+        const updatedCart = { ...globalCart };
+        updatedCart.items = [...(updatedCart.items || []), product];
+        setGlobalCart(updatedCart);
+        return updatedCart;
+    };
 
-  // Save cart data to localStorage whenever it changes.
-  useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
-  }, [cart]);
-
-  const addToCart = (item) => {
-    setCart([...cart, item]);
-  };
-
-  const removeFromCart = (itemId) => {
-    const updatedCart = cart.filter((item) => item.id !== itemId);
-    setCart(updatedCart);
-  };
-
-  const clearCart = () => {
-    setCart([]);
-  };
-
-  const getTotalItems = () => {
-    return cart.reduce((total, item) => total + item.quantity, 0);
-  };
-
-  const getTotalPrice = () => {
-    return cart.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
+    return (
+        <ShopContext.Provider value={{ globalCart, setGlobalCart, addToCart }}>
+            {children}
+        </ShopContext.Provider>
     );
-  };
+};
 
-  return (
-    <ShopContext.Provider
-      value={{
-        cart,
-        addToCart,
-        removeFromCart,
-        clearCart,
-        getTotalItems,
-        getTotalPrice,
-        cartOpen, // Include cartOpen in the context
-        setCartOpen, // Include setCartOpen in the context
-      }}
-    >
-      {children}
-    </ShopContext.Provider>
-  );
-}
+export default ShopContext;

@@ -1,4 +1,3 @@
-// components/Product.js
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -11,7 +10,7 @@ const Product = ({ product, onAddToCart }) => {
 
     const handleAddToCartClick = () => {
         if (onAddToCart) {
-            onAddToCart(product.id);
+            onAddToCart({ id: product.id, quantity: 1 });
         }
     };
 
@@ -20,11 +19,11 @@ const Product = ({ product, onAddToCart }) => {
             <Link href={`/shop/${product.handle || 'default-slug'}`}>
                 <div className="cursor-pointer">
                     <Image
-                        src={product.imageSrc || '/fallback-image.jpg'} // Fallback image path
+                        src={product.imageSrc || '/fallback-image.jpg'}
                         alt={product.imageAlt || 'Product Image'}
-                        width={400} // Optional if using CSS to control image size
-                        height={400} // Optional if using CSS to control image size
-                        unoptimized // Optional, only if you want to opt-out of Next.js optimization
+                        width={400}
+                        height={400}
+                        unoptimized
                     />
                 </div>
             </Link>

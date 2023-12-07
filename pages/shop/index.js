@@ -2,11 +2,11 @@ import React, { useRef, useEffect } from "react";
 import Head from "next/head";
 import Hero from "@/components/Hero";
 import Product from "@/components/Product";
-import { useShopContext } from '@/contexts/shopContext'; // Update the import to use shopContext
+import { useShopContext } from '@/contexts/shopContext';
 
 export default function Shop({ products }) {
     const productListRef = useRef(null);
-    const { addToCart } = useShopContext(); // Use useShopContext instead of useCartContext
+    const { addToCart } = useShopContext();
 
     useEffect(() => {
         if (productListRef.current) {
@@ -19,13 +19,15 @@ export default function Shop({ products }) {
 
     const handleAddToCart = async (product) => {
         try {
-            await addToCart({ id: product.id, variantQuantity: 1 }); // Update to match your addToCart function
+            await addToCart({ id: product.id, variantQuantity: 1 });
             alert('Added to cart!');
         } catch (error) {
             console.error('Error in handleAddToCart:', error);
-            console.log('GraphQL Response:', error.response); // Log the response for debugging
         }
     };
+
+    // Ensure products is always an array before using map
+    const safeProducts = products || [];
 
     return (
         <>
@@ -37,7 +39,7 @@ export default function Shop({ products }) {
             <div ref={productListRef} className="container mx-auto p-4">
                 <h1 className="text-2xl font-bold mb-4">Shop</h1>
                 <div className="flex flex-wrap -mx-2">
-                    {products.map((product) => (
+                    {safeProducts.map((product) => (
                         <div key={product.id} className="w-full sm:w-1/2 md:w-1/3 px-2 mb-4">
                             <Product product={product} onAddToCart={() => handleAddToCart(product)} />
                         </div>
@@ -47,8 +49,6 @@ export default function Shop({ products }) {
         </>
     );
 }
-
-
 
 export async function getStaticProps() {
     const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
@@ -119,7 +119,7 @@ export async function getStaticProps() {
             imageAlt: edge.node.images.edges[0]?.node.altText || 'Product Image',
             price: edge.node.priceRange.minVariantPrice.amount,
         }));
-
+n
         return { props: { products } };
     } catch (error) {
         console.error('Error fetching products:', error);
