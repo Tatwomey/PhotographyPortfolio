@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Hero from '@/components/Hero';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { CartContext } from '@/contexts/CartContext';
-import { createCartItem } from "@/utils/createCartItem";
+import { useShopContext } from '@/contexts/shopContext';
+
 
 export async function getStaticPaths() {
     const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
@@ -29,7 +29,7 @@ export async function getStaticPaths() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Shopify-Storefront-Access-Token':token,
+                'X-Shopify-Storefront-Access-Token': token,
             },
             body: JSON.stringify(graphqlQuery),
         });
@@ -110,7 +110,7 @@ export async function getStaticProps({ params }) {
 
 const ProductPage = ({ product }) => {
     const router = useRouter();
-    const { cartId, setCartId, addItemToCart } = useContext(CartContext);
+    const { addToCart } = useShopContext();
     const [addingToCart, setAddingToCart] = useState(false);
 
     useEffect(() => {
@@ -120,17 +120,7 @@ const ProductPage = ({ product }) => {
     const handleAddToCart = async () => {
         setAddingToCart(true);
         try {
-            if (!cartId) {
-                const newCart = await createCartItem({ itemId: product.id, quantity: 1 });
-                setCartId(newCart.id);
-                localStorage.setItem('trevortwomeyphoto:Shopify:cart', JSON.stringify({ cartId: newCart.id }));
-            } else {
-                await addItemToCart({
-                    cartId,
-                    itemId: product.id,
-                    quantity: 1,
-                });
-            }
+            await addToCart({ id: product.id, quantity: 1 });
         } catch (error) {
             console.error('Error adding to cart:', error);
         }

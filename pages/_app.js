@@ -1,21 +1,25 @@
-import React from 'react';
+// pages/_app.js
+
+import React, { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
-import Head from "next/head";
+import Head from 'next/head';
 import Footer from '@/components/Footer';
 import "@/styles/globals.css";
-import { NavigationProvider } from '../contexts/NavigationContext';
-import { CartProvider } from '@/contexts/CartContext';
+import { NavigationProvider } from '@/contexts/NavigationContext';
+import { ShopProvider } from '@/contexts/shopContext';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import Script from 'next/script';
 
-export default function App({ Component, pageProps }) {
+// Placeholder initial cart data (adjust this based on your needs)
+const initialCartData = [];
+
+function MyApp({ Component, pageProps }) {
   return (
-    <CartProvider> {/* Wrap the application with CartProvider */}
+    <ShopProvider initialCart={initialCartData}>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      {/* Google Tag Manager scripts */}
       <Script id="gtm-script" strategy="afterInteractive">
         {`
           (function(w,d,s,l,i){
@@ -28,17 +32,17 @@ export default function App({ Component, pageProps }) {
       </Script>
 
       <NavigationProvider>
-        {/* The Navbar can access the context values directly without props */}
         <Navbar />
-        <GoogleAnalytics/>
+        <GoogleAnalytics />
         <Component {...pageProps} />
         <Footer />
       </NavigationProvider>
 
-      {/* Google Tag Manager noscript */}
       <noscript>
-        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M3ZGLXGX" height="0" width="0" style={{display: 'none', visibility: 'hidden'}}></iframe>
+        {/* ... GTM noscript content ... */}
       </noscript>
-    </CartProvider> 
+    </ShopProvider>
   );
 }
+
+export default MyApp;

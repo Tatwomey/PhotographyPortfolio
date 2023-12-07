@@ -1,22 +1,10 @@
-import { postToShopify } from "./shopify";
+import { removeItemFromCart as removeFromCartShopify } from "../lib/shopify";
 
 export const removeItemFromCart = async ({ cartId, lineId }) => {
     try {
-        const shopifyResponse = await postToShopify({
-            query: `
-                mutation removeItemFromCart($cartId: ID!, $lineIds: [ID!]!) {
-                    cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
-                        cart {
-                            id
-                            // Include additional fields if necessary
-                        }
-                    }
-                }
-            `,
-            variables: {
-                cartId,
-                lineIds: [lineId],
-            },
+        const shopifyResponse = await removeFromCartShopify({
+            cartId,
+            lineId,
         });
 
         return shopifyResponse.cartLinesRemove.cart; // Adjust based on your application's requirements

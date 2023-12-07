@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
-    "eject": "react-scripts eject"
-  },
+    "start": "next start",
+    "build": "next build",
+    "eject": "next eject" },
+
+  
   "dependencies": {
     "@headlessui/react": "^1.7.17",
     "@shopify/shopify-api": "^8.0.2",

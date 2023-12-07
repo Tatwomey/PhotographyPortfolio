@@ -117,3 +117,22 @@ footer {
   align-items: center;
   justify-content: center;
 }
+.cart-icon-link {
+  position: relative;
+  cursor: pointer;
+}
+
+.cart-drawer {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease-in-out;
+}
+
+.cart-icon-link:hover .cart-drawer {
+  display: block;
+  transform: translateY(10px);
+}

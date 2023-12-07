@@ -1,25 +1,60 @@
 import React, { useEffect, useState } from 'react';
-import { loadCart } from '../utils/load-cart';
 
 export default function Cart() {
-    const [cart, setCart] = useState({ id: null, lines: [], checkoutUrl: '', estimatedCost: null });
+    const [cart, setCart] = useState({ id: null, lines: [] });
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
         async function getCart() {
-            const localCartData = JSON.parse(window.localStorage.getItem('trevortwomeyphoto:Shopify:cart'));
+            let localCartData = JSON.parse(
+                window.localStorage.getItem('trevortwomeyphoto:shopify:cart')
+            );
 
-            if (localCartData && localCartData.cartId) {
-                const cartData = await loadCart(localCartData.cartId);
-                setCart(cartData);
-            } else {
-                const newCartData = await fetch('/api/create-cart').then(res => res.json());
-                window.localStorage.setItem('trevortwomeyphoto:Shopify:cart', JSON.stringify(newCartData));
-                setCart(newCartData);
+            if (localCartData) {
+                const existingCart = await fetch(
+                    `/api/load-cart?cartId=${localCartData.cartId}`
+                ).then((res) => res.json());
+
+                setCart({
+                    id: localCartData.cartId,
+                    checkoutUrl: localCartData.checkoutUrl,
+                    estimatedCost: existingCart.cart.estimatedCost,
+                    lines: existingCart.cart.lines.edges,
+                });
+
+                return;
             }
+
+            localCartData = await fetch('/api/create-cart').then((res) => res.json());
+
+            setCart({
+                id: localCartData.cartId,
+                checkoutUrl: localCartData.checkoutUrl,
+                estimatedCost: null,
+                lines: [],
+            });
+
+            window.localStorage.setItem(
+                'trevortwomeyphoto:shopify:cart',
+                JSON.stringify(localCartData)
+            );
         }
 
         getCart();
+
+        const interval = setInterval(() => {
+            const state = window.localStorage.getItem('trevortwomeyphoto:shopify:status');
+
+            if (state && state === 'dirty') {
+                getCart();
+                setOpen(true);
+                window.localStorage.setItem('trevortwomeyphoto:shopify:status', 'clean');
+            }
+        }, 500);
+
+        return () => {
+            clearInterval(interval);
+        };
     }, []);
 
     function toggleCart() {
@@ -27,9 +62,14 @@ export default function Cart() {
     }
 
     function emptyCart() {
-        window.localStorage.removeItem('trevortwomeyphoto:Shopify:cart');
-        setCart({ id: null, lines: [], checkoutUrl: '', estimatedCost: null });
+        window.localStorage.removeItem('trevortwomeyphoto:shopify:cart');
+        // Setting the status to 'dirty' indicates that the cart has been modified.
+        // When 'dirty', it will trigger a refresh of the cart data.
+        window.localStorage.setItem('trevortwomeyphoto:shopify:status', 'dirty');
     }
+
+    // Adjusted cost calculation, removing the free item logic
+    let cost = Number(cart?.estimatedCost?.totalAmount?.amount || 0);
 
     return (
         <div className="cart">
@@ -39,29 +79,34 @@ export default function Cart() {
             </button>
             <div className={`drawer ${open ? 'open' : ''}`}>
                 <button className="close" onClick={toggleCart}>
-                    &times; Close
+                    &times; close
                 </button>
+
                 <h3>Your Cart</h3>
                 {cart.lines.length > 0 ? (
                     <>
                         <ul>
-                            {cart.lines.map(({ node: item }, index) => (
-                                <li key={index}>
+                            {cart.lines.map(({ node: item }) => (
+                                <li key={item.id}>
                                     <p>
-                                        {item.quantity} &times; {item.merchandise?.product?.title}
+                                        {item.quantity} &times;{' '}
+                                        {item.merchandise?.product?.title}
                                     </p>
                                 </li>
                             ))}
+                            <li className="total">
+                                <p>Total: {cost === 0 ? 'FREE' : `$${cost}`}</p>
+                            </li>
                         </ul>
                         <a className="button" href={`${cart.checkoutUrl}?discount=CYBERMON`}>
                             Check Out
                         </a>
                         <button className="empty-cart" onClick={emptyCart}>
-                            Empty Cart
+                            empty cart
                         </button>
                     </>
                 ) : (
-                    <p className="no-items">Your cart is empty.</p>
+                    <p className="no-items">your cart is empty</p>
                 )}
             </div>
         </div>

@@ -1,15 +1,12 @@
-// pages/shop/index.js
-import React, { useRef, useEffect, useContext } from "react";
+import React, { useRef, useEffect } from "react";
 import Head from "next/head";
 import Hero from "@/components/Hero";
 import Product from "@/components/Product";
-import { CartContext } from '@/contexts/CartContext';
-import { createCartItem } from "@/utils/createCartItem";
-import { addItemToCart as addToCart } from "@/utils/addItemToCart"; // Import the addItemToCart utility
+import { useShopContext } from '@/contexts/shopContext'; // Update the import to use shopContext
 
 export default function Shop({ products }) {
     const productListRef = useRef(null);
-    const { cartId, setCartId } = useContext(CartContext);
+    const { addToCart } = useShopContext(); // Use useShopContext instead of useCartContext
 
     useEffect(() => {
         if (productListRef.current) {
@@ -22,18 +19,11 @@ export default function Shop({ products }) {
 
     const handleAddToCart = async (product) => {
         try {
-            if (!cartId) {
-                // Create a new cart if no cart ID is present
-                const newCart = await createCartItem({ itemId: product.id, quantity: 1 });
-                setCartId(newCart.id);
-                localStorage.setItem('trevortwomeyphoto:Shopify:cart', JSON.stringify({ cartId: newCart.id }));
-            } else {
-                // Add item to the existing cart
-                await addToCart({ cartId, itemId: product.id, quantity: 1 });
-            }
+            await addToCart({ id: product.id, variantQuantity: 1 }); // Update to match your addToCart function
             alert('Added to cart!');
         } catch (error) {
             console.error('Error in handleAddToCart:', error);
+            console.log('GraphQL Response:', error.response); // Log the response for debugging
         }
     };
 
@@ -57,6 +47,8 @@ export default function Shop({ products }) {
         </>
     );
 }
+
+
 
 export async function getStaticProps() {
     const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;

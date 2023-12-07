@@ -1,18 +1,21 @@
 // components/CartItem.js
 import React from 'react';
+import { useShopContext } from '../contexts/shopContext';
 
-const CartItem = ({ item, onRemove }) => {
-    return (
-        <div className="cart-item">
-            <div className="item-details">
-                <span className="item-name">{item.name}</span> {/* Replace with your item property */}
-                <span className="item-price">${item.price}</span> {/* Replace with your item property */}
-            </div>
-            <div className="item-actions">
-                <button onClick={() => onRemove(item.id)}>Remove</button>
-            </div>
-        </div>
-    );
+const CartItem = ({ item }) => {
+  const { removeFromCart } = useShopContext();
+
+  return (
+    <div className="cart-item">
+      <div className="item-details">
+        <span className="item-name">{item.name}</span>
+        <span className="item-price">${item.price}</span>
+      </div>
+      <div className="item-actions">
+        <button onClick={() => removeFromCart(item.id)}>Remove</button>
+      </div>
+    </div>
+  );
 };
 
 export default CartItem;
