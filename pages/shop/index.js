@@ -26,7 +26,6 @@ export default function Shop({ products }) {
         }
     };
 
-    // Ensure products is always an array before using map
     const safeProducts = products || [];
 
     return (

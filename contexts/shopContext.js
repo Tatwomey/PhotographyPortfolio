@@ -1,4 +1,6 @@
+// shopContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { addItemToCart } from '../utils/addItemToCart'; // Import your utility function for adding items to cart
 
 const ShopContext = createContext();
 
@@ -10,46 +12,31 @@ export const ShopProvider = ({ children }) => {
 
     // Load cart from localStorage when component mounts (client-side)
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const savedCart = localStorage.getItem('trevortwomeyphoto:Shopify:cart');
-            if (savedCart) {
-                setGlobalCart(JSON.parse(savedCart));
-            }
+        const storedCart = localStorage.getItem('cart');
+        if (storedCart) {
+            setGlobalCart(JSON.parse(storedCart));
         }
     }, []);
 
-    // Update localStorage when globalCart changes
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('trevortwomeyphoto:Shopify:cart', JSON.stringify(globalCart));
-        }
-    }, [globalCart]);
-
+    // Define addToCart function here
     const addToCart = async (product) => {
-        const updatedCart = { ...globalCart };
-        const existingItemIndex = updatedCart.items.findIndex(item => item.id === product.id);
-
-        if (existingItemIndex > -1) {
-            updatedCart.items[existingItemIndex].quantity += 1;
-        } else {
-            updatedCart.items.push({ ...product, quantity: 1 });
+        try {
+            // Assuming product contains the necessary ID and quantity
+            const updatedCart = await addItemToCart({ 
+                cartId: globalCart.cartId, 
+                itemId: product.id, 
+                quantity: product.variantQuantity 
+            });
+            setGlobalCart(updatedCart); // Update the global cart state
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            // Handle error appropriately
         }
-
-        setGlobalCart(updatedCart);
-    };
-
-    const removeFromCart = (productId) => {
-        const updatedCart = { ...globalCart };
-        updatedCart.items = updatedCart.items.filter(item => item.id !== productId);
-
-        setGlobalCart(updatedCart);
     };
 
     return (
-        <ShopContext.Provider value={{ globalCart, addToCart, removeFromCart, cartOpen, setCartOpen }}>
+        <ShopContext.Provider value={{ globalCart, setGlobalCart, cartOpen, setCartOpen, addToCart }}>
             {children}
         </ShopContext.Provider>
     );
 };
-
-export default ShopContext;

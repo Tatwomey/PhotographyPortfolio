@@ -10,7 +10,7 @@ const Product = ({ product, onAddToCart }) => {
 
     const handleAddToCartClick = () => {
         if (onAddToCart) {
-            onAddToCart({ id: product.id, quantity: 1 });
+            onAddToCart(product);
         }
     };
 
