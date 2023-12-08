@@ -6,10 +6,10 @@ import CartDrawer from './CartDrawer';
 
 const CartIcon = () => {
   const router = useRouter();
-  const { cart, cartOpen, setCartOpen } = useShopContext();
+  const { globalCart, cartOpen, setCartOpen } = useShopContext();
 
-  // Ensure cart is always an array, default to an empty array if undefined
-  const itemCount = (cart || []).reduce((total, item) => total + item.quantity, 0);
+  // Calculate total item count
+  const itemCount = globalCart.items.reduce((total, item) => total + item.quantity, 0);
 
   const handleCartIconClick = () => {
     router.push('/shop/CartPage');
