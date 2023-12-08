@@ -1,55 +1,3 @@
-import React, { useRef, useEffect } from "react";
-import Head from "next/head";
-import Hero from "@/components/Hero";
-import Product from "@/components/Product";
-import { useShopContext } from '@/contexts/shopContext';
-
-export default function Shop({ products }) {
-    const productListRef = useRef(null);
-    const { addToCart } = useShopContext();
-
-    useEffect(() => {
-        if (productListRef.current) {
-            window.scroll({
-                top: productListRef.current.getBoundingClientRect().top + window.scrollY,
-                behavior: 'smooth',
-            });
-        }
-    }, []);
-
-    const handleAddToCart = async (product) => {
-        try {
-            await addToCart({ id: product.id, variantQuantity: 1 });
-            alert('Added to cart!');
-        } catch (error) {
-            console.error('Error in handleAddToCart:', error);
-        }
-    };
-
-    // Ensure products is always an array before using map
-    const safeProducts = products || [];
-
-    return (
-        <>
-            <Head>
-                <title>Shop Page</title>
-                <meta name="description" content="Shop for our products" />
-            </Head>
-            <Hero />
-            <div ref={productListRef} className="container mx-auto p-4">
-                <h1 className="text-2xl font-bold mb-4">Shop</h1>
-                <div className="flex flex-wrap -mx-2">
-                    {safeProducts.map((product) => (
-                        <div key={product.id} className="w-full sm:w-1/2 md:w-1/3 px-2 mb-4">
-                            <Product product={product} onAddToCart={() => handleAddToCart(product)} />
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </>
-    );
-}
-
 export async function getStaticProps() {
     const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
     const token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN;
@@ -91,7 +39,7 @@ export async function getStaticProps() {
     };
 
     try {
-        const res = await fetch(endpoint, {
+        const response = await fetch(endpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -100,11 +48,11 @@ export async function getStaticProps() {
             body: JSON.stringify(graphqlQuery),
         });
 
-        if (!res.ok) {
-            throw new Error(`HTTP error! Status: ${res.status}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        const responseJson = await res.json();
+        const responseJson = await response.json();
 
         if (!responseJson || !responseJson.data || !responseJson.data.products || !responseJson.data.products.edges) {
             throw new Error('Products data is not available in the response');
@@ -119,7 +67,7 @@ export async function getStaticProps() {
             imageAlt: edge.node.images.edges[0]?.node.altText || 'Product Image',
             price: edge.node.priceRange.minVariantPrice.amount,
         }));
-n
+
         return { props: { products } };
     } catch (error) {
         console.error('Error fetching products:', error);
