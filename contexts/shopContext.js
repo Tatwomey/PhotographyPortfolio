@@ -5,7 +5,7 @@ const ShopContext = createContext();
 export const useShopContext = () => useContext(ShopContext);
 
 export const ShopProvider = ({ children }) => {
-    const [globalCart, setGlobalCart] = useState({ items: [] });
+    const [globalCart, setGlobalCart] = useState({ items: [], cartId: null, checkoutUrl: null });
     const [cartOpen, setCartOpen] = useState(false); // State for cart visibility
 
     // Load cart from localStorage when component mounts (client-side)
