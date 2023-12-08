@@ -2,7 +2,7 @@
 
 export const addItemToCart = async ({ cartId, itemId, quantity }) => {
     try {
-      const response = await fetch(`/api/add-to-cart?cartId=${cartId}&itemId=${itemId}&quantity=${quantity}`, {
+      const response = await fetch(`/api/shopify-add-to-cart?cartId=${cartId}&itemId=${itemId}&quantity=${quantity}`, {
         method: 'POST',
       });
   
