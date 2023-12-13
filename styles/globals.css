@@ -102,36 +102,63 @@ footer {
   width: 100%;
 }
 
+/* Cart Icon Wrapper Styles */
+.cart-icon-link {
+  position: relative; /* Added for badge positioning */
+  display: inline-block; /* Added for proper alignment */
+}
+
 /* Cart Icon Badge Styles */
 .cart-icon-badge {
-  background-color: red;
-  color: white;
-  border-radius: 50%;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
   position: absolute;
   top: 0;
   right: 0;
-  transform: translate(50%, -50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.cart-icon-link {
-  position: relative;
-  cursor: pointer;
+  background-color: red;
+  color: white;
+  font-size: 0.8em;
+  border-radius: 50%;
+  padding: 2px 5px;
+  transform: translate(50%, -50%); /* Adjusted for precise positioning */
+  z-index: 10; /* Added to ensure badge is above the icon */
 }
 
+/* Cart Drawer Styles */
 .cart-drawer {
   display: none;
   position: absolute;
   top: 100%;
   right: 0;
-  background-color: white;
+  background-color: black; /* Updated to black */
+  color: white; /* Text color updated to white */
+  width: 300px; /* Width adjusted */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease-in-out;
+  padding: 10px; /* Padding added for better spacing */
+  z-index: 100; /* Z-index added to ensure drawer is above other content */
 }
 
+.cart-drawer.open {
+  display: block;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.cart-item img {
+  width: 50px; /* Image/icon size adjusted */
+  height: 50px; /* Image/icon size adjusted */
+  margin-right: 10px; /* Space between image and text */
+}
+
+.cart-item p {
+  margin: 0; /* Default margin removed */
+  color: white; /* Text color */
+}
+
+/* Hover effect to show Cart Drawer */
 .cart-icon-link:hover .cart-drawer {
   display: block;
   transform: translateY(10px);

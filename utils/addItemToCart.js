@@ -7,7 +7,7 @@ export const addItemToCart = async ({ cartId, variantId, quantity }) => {
           headers: {
               'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ cartId, itemId: variantId, quantity }),
+          body: JSON.stringify({ cartId, variantId, quantity }),
       });
 
       if (!response.ok) {

@@ -1,6 +1,7 @@
+// CartIcon.js
 import React from 'react';
-import { useRouter } from 'next/router';
 import { FaShoppingCart } from 'react-icons/fa';
+import { useRouter } from 'next/router';
 import { useShopContext } from '@/contexts/shopContext';
 import CartDrawer from './CartDrawer';
 
@@ -8,13 +9,10 @@ const CartIcon = () => {
     const router = useRouter();
     const { globalCart, cartOpen, setCartOpen } = useShopContext();
 
-    // Ensure globalCart.items is an array before using reduce
-    const itemCount = Array.isArray(globalCart.items) ? globalCart.items.reduce((total, item) => total + item.quantity, 0) : 0;
+    // Calculate the total number of items in the cart
+    const itemCount = globalCart.items.reduce((total, item) => total + item.quantity, 0);
 
-    const handleCartIconClick = () => {
-        router.push('/shop/CartPage');
-    };
-
+    // Toggle CartDrawer on hover
     const handleHover = () => {
         setCartOpen(true);
     };
@@ -23,9 +21,14 @@ const CartIcon = () => {
         setCartOpen(false);
     };
 
+    // Navigate to CartPage on click
+    const handleClick = () => {
+        router.push('/shop/CartPage');
+    };
+
     return (
-        <div className="cart-icon-link" onMouseEnter={handleHover} onMouseLeave={handleHoverLeave}>
-            <FaShoppingCart onClick={handleCartIconClick} />
+        <div className="cart-icon-link" onMouseEnter={handleHover} onMouseLeave={handleHoverLeave} onClick={handleClick}>
+            <FaShoppingCart />
             {itemCount > 0 && <span className="cart-icon-badge">{itemCount}</span>}
             {cartOpen && <CartDrawer />}
         </div>
