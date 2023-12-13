@@ -1,165 +1,157 @@
+/* Tailwind CSS Base */
 @tailwind base;
 @tailwind components;
-@tailwind utilities;
-
-/* General Styles */
-html, body {
+@tailwind utilities; /* General Styles */
+html,
+body {
   scroll-behavior: smooth;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 18px;
   margin: 0;
   background-color: black;
   color: white;
   scroll-padding-top: 60px;
 }
-
 .navbar-link {
   color: inherit;
   text-decoration: none;
   cursor: pointer;
   transition: color 0.3s ease;
 }
-
 .navbar-link:hover {
-  color: #FDB827;
+  color: #fdb827;
 }
-
 .navbarScrolled {
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
-
-/* Custom Image Styles */
 .custom-img {
-  background-image: url('/head-korn-ftl20-San-Francisco-2018-trevor-twomey-1 3.jpg');
+  background-image: url("/head-korn-ftl20-San-Francisco-2018-trevor-twomey-1 3.jpg");
   background-size: cover;
   background-position: top;
   background-repeat: no-repeat;
   min-height: 100vh;
   min-width: 100vw;
 }
-
 .navbar-logo {
   width: 187.17px;
   height: 187.17px;
   max-width: 100%;
 }
-
-/* Responsive adjustments */
 @media (max-width: 640px) {
   .custom-img {
-    background-image: url('/head-korn-ftl20-San-Francisco-2018-trevor-twomey-1 ios.jpg');
+    background-image: url("/head-korn-ftl20-San-Francisco-2018-trevor-twomey-1 ios.jpg");
     background-size: contain;
     background-position: top;
   }
-
   .navbar-logo {
     width: 62.39px;
     height: 62.39px;
   }
-
   .watermark-overlay {
     width: 75%;
     height: 75%;
   }
 }
-
-/* Masonry Grid Styles */
 .masonry-grid {
   display: grid;
   grid-gap: 16px;
   grid-template-columns: repeat(2, 1fr);
 }
-
-.masonry-grid .landscape, .masonry-grid .my-masonry-grid_column-span-2 {
+.masonry-grid .landscape,
+.masonry-grid .my-masonry-grid_column-span-2 {
   grid-column-end: span 2;
 }
-
 .my-masonry-grid {
   display: flex;
   margin-left: -30px;
   width: auto;
 }
-
 .my-masonry-grid_column {
   padding-left: 30px;
   background-clip: padding-box;
 }
-
-/* Responsive Layout */
 @media (max-width: 500px) {
   .my-masonry-grid {
-      margin-left: -15px;
+    margin-left: -15px;
   }
   .my-masonry-grid_column {
-      padding-left: 15px;
+    padding-left: 15px;
   }
 }
-
-/* Footer Styles */
 footer {
   position: sticky;
   bottom: 0;
   width: 100%;
 }
-
-/* Cart Icon Wrapper Styles */
 .cart-icon-link {
-  position: relative; /* Added for badge positioning */
-  display: inline-block; /* Added for proper alignment */
+  position: relative;
+  display: inline-block;
 }
-
-/* Cart Icon Badge Styles */
 .cart-icon-badge {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: -10px;
+  right: -10px;
   background-color: red;
   color: white;
   font-size: 0.8em;
   border-radius: 50%;
   padding: 2px 5px;
-  transform: translate(50%, -50%); /* Adjusted for precise positioning */
-  z-index: 10; /* Added to ensure badge is above the icon */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  min-height: 20px;
+  font-weight: bold;
 }
-
-/* Cart Drawer Styles */
 .cart-drawer {
   display: none;
   position: absolute;
   top: 100%;
   right: 0;
-  background-color: black; /* Updated to black */
-  color: white; /* Text color updated to white */
-  width: 300px; /* Width adjusted */
+  background-color: black;
+  color: white;
+  width: 350px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease-in-out;
-  padding: 10px; /* Padding added for better spacing */
-  z-index: 100; /* Z-index added to ensure drawer is above other content */
+  padding: 20px;
+  z-index: 100;
 }
-
+.cart-drawer .cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+.cart-drawer .cart-item img {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+}
+.cart-drawer .cart-item p {
+  margin: 0;
+  color: white;
+  flex: 1;
+}
 .cart-drawer.open {
   display: block;
 }
-
 .cart-item {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
 }
-
 .cart-item img {
-  width: 50px; /* Image/icon size adjusted */
-  height: 50px; /* Image/icon size adjusted */
-  margin-right: 10px; /* Space between image and text */
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
 }
-
 .cart-item p {
-  margin: 0; /* Default margin removed */
-  color: white; /* Text color */
+  margin: 0;
+  color: white;
 }
-
-/* Hover effect to show Cart Drawer */
 .cart-icon-link:hover .cart-drawer {
   display: block;
-  transform: translateY(10px);
+  transform: translateY(0);
 }
