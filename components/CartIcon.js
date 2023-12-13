@@ -5,31 +5,31 @@ import { useShopContext } from '@/contexts/shopContext';
 import CartDrawer from './CartDrawer';
 
 const CartIcon = () => {
-  const router = useRouter();
-  const { globalCart, cartOpen, setCartOpen } = useShopContext();
+    const router = useRouter();
+    const { globalCart, cartOpen, setCartOpen } = useShopContext();
 
-  // Calculate total item count
-  const itemCount = globalCart.items.reduce((total, item) => total + item.quantity, 0);
+    // Ensure globalCart.items is an array before using reduce
+    const itemCount = Array.isArray(globalCart.items) ? globalCart.items.reduce((total, item) => total + item.quantity, 0) : 0;
 
-  const handleCartIconClick = () => {
-    router.push('/shop/CartPage');
-  };
+    const handleCartIconClick = () => {
+        router.push('/shop/CartPage');
+    };
 
-  const handleHover = () => {
-    setCartOpen(true);
-  };
+    const handleHover = () => {
+        setCartOpen(true);
+    };
 
-  const handleHoverLeave = () => {
-    setCartOpen(false);
-  };
+    const handleHoverLeave = () => {
+        setCartOpen(false);
+    };
 
-  return (
-    <div className="cart-icon-link" onMouseEnter={handleHover} onMouseLeave={handleHoverLeave}>
-      <FaShoppingCart onClick={handleCartIconClick} />
-      {itemCount > 0 && <span className="cart-icon-badge">{itemCount}</span>}
-      {cartOpen && <CartDrawer />}
-    </div>
-  );
+    return (
+        <div className="cart-icon-link" onMouseEnter={handleHover} onMouseLeave={handleHoverLeave}>
+            <FaShoppingCart onClick={handleCartIconClick} />
+            {itemCount > 0 && <span className="cart-icon-badge">{itemCount}</span>}
+            {cartOpen && <CartDrawer />}
+        </div>
+    );
 };
 
 export default CartIcon;

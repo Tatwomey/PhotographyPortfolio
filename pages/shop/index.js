@@ -19,13 +19,32 @@ export default function Shop({ products }) {
 
     const handleAddToCart = async (product) => {
         try {
-            await addToCart({ id: product.id, variantQuantity: 1 });
+            // Check if the variant ID is available
+            if (!product.variantId) {
+                console.error('Variant ID is missing for the product');
+                return; // Exit the function if no variant ID
+            }
+    
+            console.log('Variant ID:', product.variantId);
+    
+            const title = product.title;
+            const price = product.price || '0';
+            const image = product.imageSrc;
+    
+            await addToCart({
+                variantId: product.variantId,
+                quantity: 1,
+                title,
+                price,
+                image
+            });
             alert('Added to cart!');
         } catch (error) {
             console.error('Error in handleAddToCart:', error);
         }
     };
-
+    
+    
     const safeProducts = products || [];
 
     return (
@@ -57,38 +76,42 @@ export async function getStaticProps() {
         console.error('Shopify endpoint or token is undefined.');
         return { props: { products: [] } };
     }
-
     const graphqlQuery = {
         query: `
-            query getProductList {
-                products(sortKey: PRICE, first: 10, reverse: true) {
+          query getProductList {
+            products(sortKey: PRICE, first: 10, reverse: true) {
+              edges {
+                node {
+                  id
+                  title
+                  handle
+                  description
+                  images(first: 1) {
                     edges {
-                        node {
-                            id
-                            title
-                            handle
-                            description
-                            images(first: 1) {
-                                edges {
-                                    node {
-                                        src
-                                        altText
-                                    }
-                                }
-                            }
-                            priceRange {
-                                minVariantPrice {
-                                    amount
-                                    currencyCode
-                                }
-                            }
-                        }
+                      node {
+                        src
+                        altText
+                      }
                     }
+                  }
+                  variants(first: 1) {
+                    edges {
+                      node {
+                        id
+                        priceV2 {
+                          amount
+                          currencyCode
+                        }
+                      }
+                    }
+                  }
                 }
+              }
             }
+          }
         `,
-    };
-
+      };
+      
     try {
         const res = await fetch(endpoint, {
             method: 'POST',
@@ -109,19 +132,26 @@ export async function getStaticProps() {
             throw new Error('Products data is not available in the response');
         }
 
-        const products = responseJson.data.products.edges.map(edge => ({
-            id: edge.node.id,
-            title: edge.node.title,
-            handle: edge.node.handle,
-            description: edge.node.description,
-            imageSrc: edge.node.images.edges[0]?.node.src || '/fallback-image.jpg',
-            imageAlt: edge.node.images.edges[0]?.node.altText || 'Product Image',
-            price: edge.node.priceRange.minVariantPrice.amount,
-        }));
+        const products = responseJson.data.products.edges.map(edge => {
+            const variant = edge.node.variants.edges[0]?.node;
+            return {
+                id: edge.node.id,
+                title: edge.node.title,
+                handle: edge.node.handle,
+                description: edge.node.description,
+                imageSrc: edge.node.images.edges[0]?.node.src || '/fallback-image.jpg',
+                imageAlt: edge.node.images.edges[0]?.node.altText || 'Product Image',
+                price: variant?.priceV2.amount || '0',
+                variantId: variant?.id || null
+            };
+        });
+        
+        console.log("Products with Variant ID:", products);
 
-        return { props: { products } };
+        return { props: { products }};
     } catch (error) {
-        console.error('Error fetching products:', error);
-        return { props: { products: [] } };
+        return { props: { products:
+            [] } };
     }
 }
+    

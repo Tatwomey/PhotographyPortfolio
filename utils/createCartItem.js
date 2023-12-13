@@ -1,8 +1,8 @@
 // utils/createCartItem.js
 
-export const createCartItem = async ({ itemId, quantity }) => {
+export const createCartItem = async ({ variantId, quantity }) => {
     try {
-      const response = await fetch(`/api/create-cart-item?itemId=${itemId}&quantity=${quantity}`, {
+      const response = await fetch(`/api/create-cart-item?variantId=${variantId}&quantity=${quantity}`, {
         method: 'POST',
       });
   

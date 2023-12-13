@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useShopContext } from '@/contexts/shopContext';
 
-
 export async function getStaticPaths() {
     const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
     const token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN;
@@ -72,8 +71,19 @@ export async function getStaticProps({ params }) {
                     }
                     priceRange {
                         minVariantPrice {
-                            amount
-                            currencyCode
+                          amount
+                          currencyCode
+                        }
+                    }
+                    variants(first: 1) {
+                        edges {
+                            node {
+                                id
+                                priceV2 {
+                                    amount
+                                    currencyCode
+                                }
+                            }
                         }
                     }
                 }
@@ -120,12 +130,31 @@ const ProductPage = ({ product }) => {
     const handleAddToCart = async () => {
         setAddingToCart(true);
         try {
-            await addToCart({ id: product.id, quantity: 1 });
+            if (product.variants && product.variants.edges && product.variants.edges.length > 0) {
+                const variantId = product.variants.edges[0].node.id;
+                const title = product.title;
+                const price = product.variants.edges[0]?.node.priceV2.amount || '0';
+                const image = product.images.edges.length > 0 
+                             ? product.images.edges[0].node.src 
+                             : '/fallback-image.jpg'; // Fallback image
+        
+                await addToCart({
+                    variantId,
+                    quantity: 1,
+                    title,
+                    price,
+                    image
+                });
+            } else {
+                console.error('Variant data is missing');
+            }
         } catch (error) {
             console.error('Error adding to cart:', error);
         }
         setAddingToCart(false);
     };
+    
+    
 
     const handleProceedToCheckout = () => {
         router.push('/checkout');
@@ -153,9 +182,10 @@ const ProductPage = ({ product }) => {
                     />
                 </div>
                 <div className="md:w-1/2 flex flex-col justify-center items-start p-4">
-                    <h1 className="text-2xl font-bold">{product.title}</h1>
+                    <h1 className="text-2xl font-bold
+">{product.title}</h1>
                     <p>{product.description}</p>
-                    <p className="font-bold">Price: {product.priceRange.minVariantPrice.amount} {product.priceRange.minVariantPrice.currencyCode}</p>
+                    <p className="font-bold">Price: {product.priceRange?.minVariantPrice?.amount} {product.priceRange?.minVariantPrice?.currencyCode}</p>
                     <button 
                         onClick={handleAddToCart} 
                         disabled={addingToCart}

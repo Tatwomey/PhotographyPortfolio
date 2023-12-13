@@ -12,7 +12,7 @@ const CartItem = ({ item }) => {
         <span className="item-price">${item.price}</span>
       </div>
       <div className="item-actions">
-        <button onClick={() => removeFromCart(item.id)}>Remove</button>
+        <button onClick={() => removeFromCart(item.variantId)}>Remove</button>
       </div>
     </div>
   );

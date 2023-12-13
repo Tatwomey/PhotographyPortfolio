@@ -3,10 +3,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 const Product = ({ product, onAddToCart }) => {
-    const formattedPrice = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-    }).format(product.price);
+    // Check if the price is available and is a number
+    const price = product.price;
+
+
+    const formattedPrice = price 
+        ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(price)
+        : 'Price Not Available'; 
 
     const handleAddToCartClick = () => {
         if (onAddToCart) {

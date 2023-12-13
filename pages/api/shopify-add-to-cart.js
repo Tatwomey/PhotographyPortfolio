@@ -5,16 +5,21 @@ export default async function handler(req, res) {
         return res.status(405).json({ message: 'Method not allowed' });
     }
 
-    const { cartId, itemId, quantity } = req.body;
+    const { cartId, variantId, quantity } = req.body;
+ // Validate variantId
+ if (!variantId) {
+    console.error("Variant ID is undefined");
+    return res.status(400).json({ message: 'Variant ID is undefined' });
+}
 
     try {
         let cart;
 
         if (cartId) {
-            const lineItems = [{ id: itemId, variantQuantity: quantity }];
+            const lineItems = [{ id: variantId, variantQuantity: quantity }];
             cart = await updateCheckout(cartId, lineItems);
         } else {
-            cart = await createCheckout(itemId, quantity);
+            cart = await createCheckout(variantId, quantity);
         }
 
         res.status(200).json(cart);

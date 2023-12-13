@@ -18,17 +18,17 @@ const CheckoutPage = () => {
     }, []);
 
     const handleCheckout = async (customerInfo) => {
-        // You can use customerInfo here if needed
-        if (!globalCart || !globalCart.items) {
-            console.error('Cart is null or undefined.');
-            return; // Add error handling or redirect to the cart page.
+        // Ensure globalCart.items is not null or empty
+        if (!globalCart || !globalCart.items || globalCart.items.length === 0) {
+            console.error('Cart is empty or not defined.');
+            return; // Implement proper error handling or redirection
         }
 
+        // Format lineItems with complete variantId
         const lineItems = globalCart.items.map(item => ({
-            variantId: btoa(`gid://shopify/ProductVariant/${item.id}`),
+            variantId: item.variantId, // Use complete variantId directly from the item
             quantity: item.quantity,
         }));
-
         try {
             const response = await axios.post('/api/shopify-create-checkout', { lineItems });
             window.location.href = response.data.webUrl;
