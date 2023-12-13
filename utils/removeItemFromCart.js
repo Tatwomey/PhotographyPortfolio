@@ -1,8 +1,8 @@
-import { removeItemFromCart as removeFromCartShopify } from "../lib/shopify";
+import { removeItemFromCart } from "../lib/shopify";
 
 export const removeItemFromCart = async ({ cartId, lineId }) => {
     try {
-        const shopifyResponse = await removeFromCartShopify({
+        const shopifyResponse = await removeFromCart({
             cartId,
             lineId,
         });

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { addItemToCart, removeItemFromCart as removeFromCartShopify } from '../utils/addItemToCart';
+import { addItemToCart, removeItemFromCart, createCheckout } from '../lib/shopify';
 
 const ShopContext = createContext();
 
@@ -28,53 +28,97 @@ export const ShopProvider = ({ children }) => {
                 return;
             }
 
-            const updatedCartItems = [...globalCart.items, {
-                variantId: product.variantId,
-                quantity: product.quantity,
-                title: product.title,
-                price: product.price,
-                image: product.image,
-            }];
+            setGlobalCart((prevGlobalCart) => {
+                const updatedCartItems = [
+                    ...prevGlobalCart.items,
+                    {
+                        variantId: product.variantId,
+                        quantity: product.quantity,
+                        title: product.title,
+                        price: product.price,
+                        image: product.image,
+                    },
+                ];
 
-            const updatedCartData = await addItemToCart({ 
-                cartId: globalCart.cartId, 
-                variantId: product.variantId, 
-                quantity: product.quantity 
+                return {
+                    ...prevGlobalCart,
+                    items: updatedCartItems,
+                };
             });
 
-            const updatedCartState = { ...globalCart, items: updatedCartItems, ...updatedCartData };
-            setGlobalCart(updatedCartState);
+            const updatedCartData = await addItemToCart({
+                cartId: globalCart.cartId,
+                variantId: product.variantId,
+                quantity: product.quantity,
+            });
 
-            // Update localStorage after state change
-            updateLocalStorage(updatedCartState);
+            setGlobalCart((prevGlobalCart) => ({
+                ...prevGlobalCart,
+                ...updatedCartData,
+            }));
 
+            updateLocalStorage((prevGlobalCart) => ({
+                ...prevGlobalCart,
+                items: [
+                    ...prevGlobalCart.items,
+                    {
+                        variantId: product.variantId,
+                        quantity: product.quantity,
+                        title: product.title,
+                        price: product.price,
+                        image: product.image,
+                    },
+                ],
+            }));
         } catch (error) {
             console.error('Error adding to cart:', error);
         }
     };
 
-    const removeFromCart = async (itemId) => {
+    const removeFromCart = async (variantId) => {
         try {
-            const updatedItems = globalCart.items.filter(item => item.variantId !== itemId);
+            const updatedItems = globalCart.items.filter((item) => item.variantId !== variantId);
+            await removeItemFromCart(globalCart.cartId, variantId);
 
-            // Perform API call if necessary
-            if (globalCart.cartId) {
-                await removeFromCartShopify({ cartId: globalCart.cartId, lineId: itemId });
-            }
+            setGlobalCart((prevGlobalCart) => ({
+                ...prevGlobalCart,
+                items: updatedItems,
+            }));
 
-            const updatedCartState = { ...globalCart, items: updatedItems };
-            setGlobalCart(updatedCartState);
-
-            // Update localStorage after state change
-            updateLocalStorage(updatedCartState);
-
+            updateLocalStorage((prevGlobalCart) => ({
+                ...prevGlobalCart,
+                items: updatedItems,
+            }));
         } catch (error) {
             console.error('Error removing from cart:', error);
         }
     };
 
+    const checkout = async () => {
+        try {
+            if (!globalCart.items.length) {
+                console.error('Cart is empty');
+                return;
+            }
+            const checkoutSession = await createCheckout(globalCart.items);
+            window.location.href = checkoutSession.checkoutUrl;
+        } catch (error) {
+            console.error('Error during checkout:', error);
+        }
+    };
+
     return (
-        <ShopContext.Provider value={{ globalCart, setGlobalCart, cartOpen, setCartOpen, addToCart, removeFromCart }}>
+        <ShopContext.Provider
+            value={{
+                globalCart,
+                setGlobalCart,
+                cartOpen,
+                setCartOpen,
+                addToCart,
+                removeFromCart,
+                checkout,
+            }}
+        >
             {children}
         </ShopContext.Provider>
     );

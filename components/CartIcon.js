@@ -10,24 +10,20 @@ const CartIcon = () => {
     const { globalCart, cartOpen, setCartOpen } = useShopContext();
 
     // Calculate the total number of items in the cart
-    const itemCount = globalCart.items.reduce((total, item) => total + item.quantity, 0);
+    const itemCount = globalCart.items ? globalCart.items.reduce((total, item) => total + item.quantity, 0) : 0;
 
     // Toggle CartDrawer on hover
     const handleHover = () => {
-        setCartOpen(true);
-    };
-
-    const handleHoverLeave = () => {
-        setCartOpen(false);
+        setCartOpen(!cartOpen);
     };
 
     // Navigate to CartPage on click
     const handleClick = () => {
-        router.push('/shop/CartPage');
+        router.push('/CartPage');
     };
 
     return (
-        <div className="cart-icon-link" onMouseEnter={handleHover} onMouseLeave={handleHoverLeave} onClick={handleClick}>
+        <div className="cart-icon-link" onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={handleClick}>
             <FaShoppingCart />
             {itemCount > 0 && <span className="cart-icon-badge">{itemCount}</span>}
             {cartOpen && <CartDrawer />}

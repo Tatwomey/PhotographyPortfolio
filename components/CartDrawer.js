@@ -9,10 +9,11 @@ const CartDrawer = () => {
   return (
     <div className={`cart-drawer ${globalCart.cartOpen ? 'open' : ''}`}>
       {safeCart.length === 0 && <p>Your cart is empty.</p>}
-      {safeCart.map(item => (
-        <div key={item.id} className="cart-item">
-          <img src={item.image.src} alt={item.image.alt} /> {/* Image icon */}
-          <p>Product ID: {item.id}</p>
+      {safeCart.map((item, index) => ( // Use index as a part of the key
+        <div key={`${item.variantId}-${item.quantity}-${index}`} className="cart-item">
+          <img src={item.image} alt={item.title} style={{ width: '50px', height: '50px' }} />
+          <p>{item.title}</p>
+          <p>Price: ${item.price}</p>
           <p>Quantity: {item.quantity}</p>
         </div>
       ))}
