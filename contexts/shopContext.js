@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { addItemToCart, removeItemFromCart, createCheckout } from '../lib/shopify';
+import { addItemToCart } from '../utils/addItemToCart';
 
 const ShopContext = createContext();
 
@@ -10,14 +10,20 @@ export const ShopProvider = ({ children }) => {
     const [cartOpen, setCartOpen] = useState(false);
 
     useEffect(() => {
-        const storedCart = localStorage.getItem('cart');
-        if (storedCart) {
-            setGlobalCart(JSON.parse(storedCart));
+        const storedCartData = localStorage.getItem('cartData');
+        if (storedCartData) {
+            try {
+                const parsedCartData = JSON.parse(storedCartData);
+                setGlobalCart(parsedCartData);
+            } catch (error) {
+                console.error('Error parsing cart data from local storage:', error);
+                // Handle the error gracefully, e.g., by resetting the cart or taking appropriate action.
+            }
         }
     }, []);
 
-    const updateLocalStorage = (newCartState) => {
-        localStorage.setItem('cart', JSON.stringify(newCartState));
+    const updateLocalStorage = (newCartData) => {
+        localStorage.setItem('cartData', JSON.stringify(newCartData));
     };
 
     const addToCart = async (product) => {
@@ -57,10 +63,10 @@ export const ShopProvider = ({ children }) => {
                 ...updatedCartData,
             }));
 
-            updateLocalStorage((prevGlobalCart) => ({
-                ...prevGlobalCart,
+            updateLocalStorage({
+                ...globalCart,
                 items: [
-                    ...prevGlobalCart.items,
+                    ...globalCart.items,
                     {
                         variantId: product.variantId,
                         quantity: product.quantity,
@@ -69,7 +75,7 @@ export const ShopProvider = ({ children }) => {
                         image: product.image,
                     },
                 ],
-            }));
+            });
         } catch (error) {
             console.error('Error adding to cart:', error);
         }
@@ -85,10 +91,10 @@ export const ShopProvider = ({ children }) => {
                 items: updatedItems,
             }));
 
-            updateLocalStorage((prevGlobalCart) => ({
-                ...prevGlobalCart,
+            updateLocalStorage({
+                ...globalCart,
                 items: updatedItems,
-            }));
+            });
         } catch (error) {
             console.error('Error removing from cart:', error);
         }
