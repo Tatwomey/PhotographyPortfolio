@@ -1,19 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useShopContext } from '@/contexts/shopContext';
-import { loadCart } from '../utils/load-cart'; // Utility function for fetching cart data
+import { loadCart } from '../utils/load-cart'; // Assuming loadCart is a utility function you have for fetching cart data
 
 export default function Cart() {
-    const { globalCart, setGlobalCart } = useShopContext(); // Function to update global cart state
+    const { setGlobalCart } = useShopContext(); // Function to update global cart state
     const [cart, setCart] = useState({ id: null, lines: [], checkoutUrl: '', estimatedCost: null });
     const [open, setOpen] = useState(false);
-
-    // Function to initialize the cart
-    const initializeCart = async () => {
-        const newCartData = await fetch('/api/create-cart').then(res => res.json());
-        window.localStorage.setItem('trevortwomeyphoto:Shopify:cart', JSON.stringify(newCartData));
-        setCart(newCartData);
-        setGlobalCart(newCartData); // Update global cart state
-    };
 
     useEffect(() => {
         async function getCart() {
@@ -24,8 +16,10 @@ export default function Cart() {
                 setCart(cartData);
                 setGlobalCart(cartData); // Update global cart state
             } else {
-                // If no cart in local storage, initialize a new cart
-                initializeCart();
+                const newCartData = await fetch('/api/create-cart').then(res => res.json());
+                window.localStorage.setItem('trevortwomeyphoto:Shopify:cart', JSON.stringify(newCartData));
+                setCart(newCartData);
+                setGlobalCart(newCartData); // Update global cart state
             }
         }
 

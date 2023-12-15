@@ -6,11 +6,12 @@ export default async function handler(req, res) {
     }
 
     const { cartId, variantId, quantity } = req.body;
- // Validate variantId
- if (!variantId) {
-    console.error("Variant ID is undefined");
-    return res.status(400).json({ message: 'Variant ID is undefined' });
-}
+
+    // Validate variantId
+    if (!variantId) {
+        console.error("Variant ID is undefined");
+        return res.status(400).json({ message: 'Variant ID is undefined' });
+    }
 
     try {
         let cart;
@@ -19,7 +20,8 @@ export default async function handler(req, res) {
             const lineItems = [{ id: variantId, variantQuantity: quantity }];
             cart = await updateCheckout(cartId, lineItems);
         } else {
-            cart = await createCheckout(variantId, quantity);
+            // Change here: Pass as an array
+            cart = await createCheckout([{ variantId: variantId, quantity: quantity }]);
         }
 
         res.status(200).json(cart);

@@ -1,7 +1,6 @@
-// components/CheckoutForm.js
 import React, { useState } from 'react';
 
-const CheckoutForm = ({ onChange }) => {
+const CheckoutForm = ({ onSubmit, cartItems }) => {
     const [customerInfo, setCustomerInfo] = useState({
         name: '',
         email: '',
@@ -11,15 +10,24 @@ const CheckoutForm = ({ onChange }) => {
     });
 
     const handleChange = (e) => {
-        const updatedInfo = { ...customerInfo, [e.target.name]: e.target.value };
-        setCustomerInfo(updatedInfo);
-        if (onChange) {
-            onChange(updatedInfo); // Notify the parent component of the change
-        }
+        setCustomerInfo({
+            ...customerInfo,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        // Process cartItems correctly before sending
+        const processedCartItems = cartItems.map(item => ({
+            variantId: item.variantId,
+            quantity: parseInt(item.quantity, 10)
+        }));
+        onSubmit(customerInfo, processedCartItems);
     };
 
     return (
-        <form className='max-w-[600px] m-auto'>
+        <form className='max-w-[600px] m-auto' onSubmit={handleSubmit}>
             <div className='mb-4'>
                 <label htmlFor="name" className='block mb-2'>Name</label>
                 <input 
@@ -80,7 +88,9 @@ const CheckoutForm = ({ onChange }) => {
                     className='border shadow-lg p-3 w-full'
                 />
             </div>
-            {/* Removed the Submit button */}
+            <button type="submit" className="bg-blue-500 text-white p-3 rounded">
+                Complete Checkout
+            </button>
         </form>
     );
 };

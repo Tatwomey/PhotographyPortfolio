@@ -107,11 +107,19 @@ export const ShopProvider = ({ children }) => {
                 return;
             }
             const checkoutSession = await createCheckout(globalCart.items);
-            window.location.href = checkoutSession.checkoutUrl;
+            console.log('Checkout session:', checkoutSession);
+    
+            if (checkoutSession && typeof checkoutSession.checkoutUrl === 'string' && checkoutSession.checkoutUrl.startsWith('http')) {
+                console.log('Redirecting to:', checkoutSession.checkoutUrl);
+                window.location.href = checkoutSession.checkoutUrl;
+            } else {
+                console.error('Checkout URL is undefined, empty, or checkout failed');
+            }
         } catch (error) {
             console.error('Error during checkout:', error);
         }
     };
+    
 
     return (
         <ShopContext.Provider
