@@ -9,7 +9,7 @@ function Music() {
       <Meta
         title="Music Photography - Trevor Twomey"
         description="Explore the dynamic portfolio of music and concert photography by Trevor Twomey."
-        keywords="music photography, concert photography, band photos, live music performances"
+        keywords="music photography, music photographer, concert photographer, concert photography, band photos, live music photographer,live music performances, band photography, rock photographer, band photographer"
       />
       <Hero />
       <Portfolio />
