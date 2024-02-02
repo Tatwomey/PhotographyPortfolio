@@ -7,7 +7,7 @@ function Music() {
   return (
     <div>
       <Meta
-        title="Music Photography - Trevor Twomey"
+        title="Music Photographer - Trevor Twomey"
         description="Explore the dynamic portfolio of music and concert photography by Trevor Twomey."
         keywords="music photography, music photographer, concert photographer, concert photography, band photos, live music photographer,live music performances, band photography, rock photographer, band photographer"
       />
