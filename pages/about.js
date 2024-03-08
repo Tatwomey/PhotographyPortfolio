@@ -11,7 +11,7 @@ export default function AboutPage() {
   const { lastNavigatedPage } = useNavigation();
 
   // Applying smooth scroll to the about section
-  useSmoothScroll('#about-trevor-twomey', aboutRef);
+  useSmoothScroll('#about', aboutRef);
 
   // If the last navigated page was "/about", scroll to the about section
   useEffect(() => {

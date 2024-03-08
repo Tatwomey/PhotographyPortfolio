@@ -50,12 +50,12 @@ const Navbar = () => {
               About
             
           </Link>
-          <Link href='/music#music' passHref
+          <Link href='/music#music-photography' passHref
             className='p-4'>
               Music
             
           </Link>
-          <Link href='/contact#contact' passHref
+          <Link href='/contact#work-with-me' passHref
             className='p-4'>
               Contact
             
