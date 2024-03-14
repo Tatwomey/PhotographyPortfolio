@@ -50,7 +50,7 @@ export default function Shop({ products }) {
     return (
         <>
             <Head>
-                <title>Trevor Twomey Photo - Shop </title>
+                <title>Shop Page</title>
                 <meta name="description" content="Shop for our products" />
             </Head>
             <Hero />
