@@ -50,7 +50,7 @@ export default function Shop({ products }) {
     return (
         <>
             <Head>
-                <title>The Shop</title>
+                <title>Shop</title>
                 <meta name="description" content="Shop for our products" />
             </Head>
             <Hero />
