@@ -5,7 +5,7 @@ import Product from "@/components/Product";
 import { useShopContext } from '@/contexts/shopContext';
 
 export default function Shop({ products }) {
-    const productListRef = useRef(null);
+    const productListRef = useRef(null);s
     const { addToCart } = useShopContext();
 
     useEffect(() => {
@@ -50,7 +50,7 @@ export default function Shop({ products }) {
     return (
         <>
             <Head>
-                <title>Shop Page</title>
+                <title>Trevor Twomey Photo - Shop </title>
                 <meta name="description" content="Shop for our products" />
             </Head>
             <Hero />
