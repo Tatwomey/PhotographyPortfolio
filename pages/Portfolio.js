@@ -70,7 +70,7 @@ const photos = [
   { src: '/JD-korn-jones-beach-2022-trevor-twomey-2.jpg' , type: 'portrait'},
   { src: '/hash-thievery-corporation-2013-trevor-twomey-1.jpg' , type: 'portrait'},
   { src: '/IAMX-chris-corner-lpr-2023-trevor-twomey-2.jpg' , type: 'portrait'},
-  
+  { src: '/†††(Crosses)_022024_nyc_trevor_twomey.jpg' , type: 'portrait'},
   { src: '/†††(Crosses)_022024_nyc_trevor_twomey.jpg' , type: 'portrait'},
   {src: '/ray-luzier-korn-jones-beach-2022-trevor-twomey.jpg' , type: 'portrait'},
   {src: '/lou-lou-thievery-corporation-capitol-theatre-trevor-twomey-1.jpg', type: 'portrait'},
