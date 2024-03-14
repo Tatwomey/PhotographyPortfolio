@@ -5,7 +5,7 @@ import Product from "@/components/Product";
 import { useShopContext } from '@/contexts/shopContext';
 
 export default function Shop({ products }) {
-    const productListRef = useRef(null);s
+    const productListRef = useRef(null);
     const { addToCart } = useShopContext();
 
     useEffect(() => {
