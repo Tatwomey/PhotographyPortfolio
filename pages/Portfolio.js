@@ -12,7 +12,7 @@ const photos = [
  {src: '/JD-korn-jones-beach-2022-trevor-twomey-5-2.jpg', type: 'portrait' },
   {src: '/q-unique-kings-bounty-denial-video-trevor-twomey-1.jpg', type: 'portrait'},
   {src: '/afi-davey-havok-bodies-tour-2022-nyc-trevor-twomey-1.jpg', type: 'portrait'},
-  {src: '/roots-thievery-corporation-2016-trevor-twomey-1 2.JPG', type: 'portrait'},
+  {src:'/†††(Crosses)_chino_022024_nyc_trevor_twomey-3.jpg', type: 'portrait'},
   {src: '/thievery-corporation-capitol-theatre-trevor-twomey.jpg', type: 'landscape'},
   {src: '/korn-eagles-ballroom-2017-trevor-twomey-1jpg.jpg', type: 'landscape'},
   {src: '/ray-luzier-korn-2020-trevor-twomey.jpg', type: 'landscape'},
@@ -56,8 +56,8 @@ const photos = [
   {src: '/evanescence-troy-mclawhorn--trevor-twomey-2022.jpg', type: 'portrait'},
   {src: '/iamx-chris-corner-LPR-2023-trevortwomey-4.jpg', type: 'portrait'},
   {src: '/mike-dijan-kings-bounty-band-trevor-twomey.JPG', type: 'portrait'},
-  {src: '/fieldy-head-korn-buckcherry-2013-trevor-twomey.jpg', type: 'portrait' },
-  {src: '/mike-dijan-kings-bounty-rehersal-trevor-twomey.jpg', type: 'portrait' },
+  {src: '/†††(Crosses)_chino_022024_nyc_trevor_twomey.jpg', type: 'portrait' },
+  {src: '/lou-lou-thievery-corporation-capitol-theatre-trevor-twomey-1.jpg', type: 'portrait'},
   {src: '/fieldy-korn-allentown-PA-2020-trevor-twomey.jpg', type: 'portrait'},
   {src: '/q-unique-king-bounty-denial-trevor-twomey.jpg', type: 'portrait'},
   {src: '/head-korn-jones-beach-2022-trevor-twomey.jpg', type: 'portrait'},
@@ -71,9 +71,9 @@ const photos = [
   { src: '/hash-thievery-corporation-2013-trevor-twomey-1.jpg' , type: 'portrait'},
   { src: '/IAMX-chris-corner-lpr-2023-trevor-twomey-2.jpg' , type: 'portrait'},
   { src: '/†††(Crosses)_022024_nyc_trevor_twomey.jpg' , type: 'portrait'},
-  { src: '/†††(Crosses)_022024_nyc_trevor_twomey.jpg' , type: 'portrait'},
+  {src: '/roots-thievery-corporation-2016-trevor-twomey-1 2.JPG', type: 'portrait'},
   {src: '/ray-luzier-korn-jones-beach-2022-trevor-twomey.jpg' , type: 'portrait'},
-  {src: '/lou-lou-thievery-corporation-capitol-theatre-trevor-twomey-1.jpg', type: 'portrait'},
+  
  
   
  
