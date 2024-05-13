@@ -7,6 +7,7 @@ import "lightgallery/css/lg-zoom.css";
 import "lightgallery/css/lg-thumbnail.css";
 import lgThumbnail from "lightgallery/plugins/thumbnail";
 import lgZoom from "lightgallery/plugins/zoom";
+import Hero from "@/components/Hero";  // Ensure Hero is imported correctly
 
 const photos = [
     { "src": "/Elias_nonpoint_nyc_trevortwomey.jpg", "type": "portrait" },
@@ -25,7 +26,7 @@ const photos = [
     { "src": "/Elias_nonpoint_nyc_trevortwomey-10.jpg", "type": "portrait" },
     { "src": "/Elias_nonpoint_nyc_trevortwomey-31.jpg", "type": "portrait" },
     { "src": "/Elias_nonpoint_nyc_trevortwomey-36.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-32.jpg", "type": "portrait" },
+    { "src": "/Elias_nonpoint_nyc_trevortwomey-41.jpg", "type": "portrait" },
     { "src": "/Elias_nonpoint_nyc_trevortwomey-33.jpg", "type": "portrait" },
     { "src": "/Elias_nonpoint_nyc_trevortwomey-13.jpg", "type": "portrait" },
     { "src": "/Elias_nonpoint_nyc_trevortwomey-14.jpg", "type": "portrait" },
@@ -81,49 +82,52 @@ const Elias = () => {
   }, []);
 
   return (
-    <div className="max-w-[1240px] mx-auto py-4 sm:py-16 text-center" ref={eliasRef} id="Elias">
-      <h1 className="font-bold text-2xl sm:text-3xl p-4">The Elias Show</h1>
-      <Masonry
-        breakpointCols={breakpointCols}
-        className="my-masonry-grid"
-        columnClassName="my-masonry-grid_column"
-      >
-        {photos.map((photo, index) => (
-          <div
-            className={`relative mb-4 ${photo.type === 'landscape' ? 'my-masonry-grid_column-span-2' : ''}`}
-            key={photo.src}
-            onContextMenu={handleRightClick}
-          >
-            <Image
-              src={photo.src}
-              alt="Photo"
-              width={photo.type === 'portrait' ? 500 : 1000}
-              height={photo.type === 'landscape' ? 750 : 500}
-              layout="responsive"
-              className="relative cursor-pointer"
-              onClick={() => lightboxRef.current?.openGallery(index)}
-           />
-          </div>
-        ))}
-      </Masonry>
+    <div className="max-w-[1240px] mx-auto py-4 sm:py-16">
+      <Hero heading="Elias Photography" message="Explore the captivating visuals of Elias in concert." />
+      <div ref={eliasRef} id="Elias">
+        <h1 className="font-bold text-2xl sm:text-3xl p-4 text-center">The Elias Show</h1>
+        <Masonry
+          breakpointCols={breakpointCols}
+          className="my-masonry-grid"
+          columnClassName="my-masonry-grid_column"
+        >
+          {photos.map((photo, index) => (
+            <div
+              className={`relative mb-4 ${photo.type === 'landscape' ? 'my-masonry-grid_column-span-2' : ''}`}
+              key={photo.src}
+              onContextMenu={handleRightClick}
+            >
+              <Image
+                src={photo.src}
+                alt="Photo"
+                width={photo.type === 'portrait' ? 500 : 1000}
+                height={photo.type === 'landscape' ? 750 : 500}
+                layout="responsive"
+                className="relative cursor-pointer"
+                onClick={() => lightboxRef.current?.openGallery(index)}
+              />
+            </div>
+          ))}
+        </Masonry>
 
-      <LightGallery
-        onInit={(ref) => {
-          if (ref) {
-            lightboxRef.current = ref.instance;
-          }
-        }}
-        id="lightGallery"
-        download={true}
-        zoom={false}
-        speed={500}
-        plugins={[lgThumbnail, lgZoom]}
-        dynamic
-        dynamicEl={photos.map((photo) => ({
-          src: photo.src,
-          thumb: photo.src,
-        }))}
-      />
+        <LightGallery
+          onInit={(ref) => {
+            if (ref) {
+              lightboxRef.current = ref.instance;
+            }
+          }}
+          id="lightGallery"
+          download={true}
+          zoom={false}
+          speed={500}
+          plugins={[lgThumbnail, lgZoom]}
+          dynamic
+          dynamicEl={photos.map((photo) => ({
+            src: photo.src,
+            thumb: photo.src,
+          }))}
+        />
+      </div>
     </div>
   );
 };
