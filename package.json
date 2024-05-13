@@ -6,9 +6,8 @@
     "dev": "next dev",
     "start": "next start",
     "build": "next build",
-    "eject": "next eject" },
-
-  
+    "eject": "next eject"
+  },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
     "@shopify/shopify-api": "^8.0.2",
@@ -20,6 +19,7 @@
     "eslint-config-next": "13.4.12",
     "graceful-fs": "^4.2.11",
     "js-cookie": "^3.0.5",
+    "klaviyo-api": "^8.0.0",
     "lightgallery": "^2.7.1",
     "next": "^13.4.12",
     "next-sitemap": "^4.2.3",
