@@ -48,6 +48,7 @@ const photos = [
 
 const Elias = () => {
   const lightboxRef = useRef(null);
+  const eliasRef = useRef(null); // Ref for the Elias section
 
   const breakpointCols = {
     default: 4,
@@ -69,10 +70,18 @@ const Elias = () => {
         alert("© Trevor Twomey Photography 2023. All Rights Reserved.");
       }
     });
+
+    // Smooth scroll to the Elias section on page load
+    if (eliasRef.current) {
+      window.scroll({
+        top: eliasRef.current.offsetTop,
+        behavior: 'smooth'
+      });
+    }
   }, []);
 
   return (
-    <div className="max-w-[1240px] mx-auto py-4 sm:py-16 text-center" id="Elias">
+    <div className="max-w-[1240px] mx-auto py-4 sm:py-16 text-center" ref={eliasRef} id="Elias">
       <h1 className="font-bold text-2xl sm:text-3xl p-4">The Elias Show</h1>
       <Masonry
         breakpointCols={breakpointCols}
@@ -92,9 +101,7 @@ const Elias = () => {
               height={photo.type === 'landscape' ? 750 : 500}
               layout="responsive"
               className="relative cursor-pointer"
-              onClick={() => {
-                lightboxRef.current?.openGallery(index);
-              }}
+              onClick={() => lightboxRef.current?.openGallery(index)}
            />
           </div>
         ))}
