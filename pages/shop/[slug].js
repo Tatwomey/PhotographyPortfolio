@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
 import Hero from '@/components/Hero';
 import Image from 'next/image';
@@ -122,9 +122,12 @@ const ProductPage = ({ product }) => {
     const router = useRouter();
     const { addToCart } = useShopContext();
     const [addingToCart, setAddingToCart] = useState(false);
+    const productRef = useRef(null);
 
     useEffect(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (productRef.current) {
+            window.scrollTo({ top: productRef.current.getBoundingClientRect().top + window.scrollY, behavior: 'smooth' });
+        }
     }, [product]);
 
     const handleAddToCart = async () => {
@@ -153,8 +156,6 @@ const ProductPage = ({ product }) => {
         }
         setAddingToCart(false);
     };
-    
-    
 
     const handleProceedToCheckout = () => {
         router.push('/checkout');
@@ -171,7 +172,7 @@ const ProductPage = ({ product }) => {
                 <meta name="description" content={product.description} />
             </Head>
             <Hero />
-            <div className="container mx-auto p-4 flex flex-col md:flex-row">
+            <div ref={productRef} className="container mx-auto p-4 flex flex-col md:flex-row">
                 <div className="md:w-1/2">
                     <Image
                         src={product.images.edges[0]?.node.src || '/fallback-image.jpg'}
@@ -182,8 +183,7 @@ const ProductPage = ({ product }) => {
                     />
                 </div>
                 <div className="md:w-1/2 flex flex-col justify-center items-start p-4">
-                    <h1 className="text-2xl font-bold
-">{product.title}</h1>
+                    <h1 className="text-2xl font-bold">{product.title}</h1>
                     <p>{product.description}</p>
                     <p className="font-bold">Price: {product.priceRange?.minVariantPrice?.amount} {product.priceRange?.minVariantPrice?.currencyCode}</p>
                     <button 
