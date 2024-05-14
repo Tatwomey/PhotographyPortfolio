@@ -72,7 +72,7 @@ const Navbar = () => {
           <ul style={{ color: navbarStyle.color }}>
             <li onClick={closeNav}><Link href='/#home'>Home</Link></li>
             <li onClick={closeNav}><Link href='/about#about'>About</Link></li>
-            <li onClick={closeNav}><Link href='/music#music'>Music</Link></li>
+            <li onClick={closeNav}><Link href='/music#music-photography'>Music</Link></li>
             <li onClick={closeNav}><Link href='/contact#contact'>Contact</Link></li>
             <li onClick={closeNav}><Link href='/shop#shop'>Shop</Link></li>
             <li className='flex-start'>
