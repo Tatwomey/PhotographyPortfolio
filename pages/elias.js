@@ -45,6 +45,7 @@ const photos = [
     { "src": "/Elias_nonpoint_nyc_trevortwomey-37.jpg", "type": "portrait" },
     { "src": "/Elias_nonpoint_nyc_trevortwomey-27.jpg", "type": "portrait" },
     { "src": "/Elias_nonpoint_nyc_trevortwomey-28-1.jpg", "type": "portrait" },
+    { "src": "/Elias_nonpoint_nyc_trevortwomey-43.jpg", "type": "portrait" },
 ];
 
 const Elias = () => {
