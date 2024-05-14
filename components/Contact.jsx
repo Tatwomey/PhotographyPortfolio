@@ -165,7 +165,7 @@ const Contact = () => {
 
                 {/* Submit button */}
                 <button type='submit' className='border shadow-lg p-3 w-full mt-2'>
-                    Submit
+                    Submit Now
                 </button>
             </form>
         </div>
