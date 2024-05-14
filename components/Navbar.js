@@ -51,10 +51,10 @@ const Navbar = () => {
           <Link href='/music#music-photography' onClick={closeNav}>Music</Link>
           <Link href='/contact#work-with-me' onClick={closeNav}>Contact</Link>
           <Link href='/shop#shop' onClick={closeNav}>Shop</Link>
-          <div onClick={() => handleSocialClick('https://www.instagram.com/trevortwomey/')}>
+          <div className='hidden md:flex space-x-4' onClick={() => handleSocialClick('https://www.instagram.com/trevortwomey/')}>
             <FaInstagram size={24} className='cursor-pointer' />
           </div>
-          <div onClick={() => handleSocialClick('https://www.linkedin.com/in/trevor-twomey')}>
+          <div className='hidden md:flex space-x-4' onClick={() => handleSocialClick('https://www.linkedin.com/in/trevor-twomey')}>
             <FaLinkedin size={24} className='cursor-pointer' />
           </div>
         </div>
@@ -77,11 +77,12 @@ const Navbar = () => {
             <li onClick={closeNav}><Link href='/shop#shop'>Shop</Link></li>
             <li className='flex-start'>
               <div onClick={() => handleSocialClick('https://www.instagram.com/trevortwomey/')}>
-                <FaInstagram size={24} className='cursor-pointer' />
-              </div>
+                <FaInstagram size={20} className='cursor-pointer' />
+              
               <div onClick={() => handleSocialClick('https://www.linkedin.com/in/trevor-twomey')}>
-                <FaLinkedin size={24} className='cursor-pointer' />
+                <FaLinkedin size={20} className='cursor-pointer' />
               </div>
+</div>
             </li>
           </ul>
         </div>
