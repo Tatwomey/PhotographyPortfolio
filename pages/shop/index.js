@@ -55,7 +55,7 @@ export default function Shop({ products }) {
             </Head>
             <Hero />
             <div ref={productListRef} className="container mx-auto p-4">
-                <h1 className="text-2xl font-bold mb-4">Shop</h1>
+                
                 <div className="flex flex-wrap -mx-2">
                     {safeProducts.map((product) => (
                         <div key={product.id} className="w-full sm:w-1/2 md:w-1/3 px-2 mb-4">

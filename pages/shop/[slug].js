@@ -61,7 +61,7 @@ export async function getStaticProps({ params }) {
                     title
                     handle
                     description
-                    images(first: 1) {
+                    images(first: 10) {
                         edges {
                             node {
                                 src
@@ -75,13 +75,18 @@ export async function getStaticProps({ params }) {
                           currencyCode
                         }
                     }
-                    variants(first: 1) {
+                    variants(first: 10) {
                         edges {
                             node {
                                 id
+                                title
                                 priceV2 {
                                     amount
                                     currencyCode
+                                }
+                                selectedOptions {
+                                    name
+                                    value
                                 }
                             }
                         }
@@ -124,41 +129,53 @@ const ProductPage = ({ product }) => {
     const [addingToCart, setAddingToCart] = useState(false);
     const productRef = useRef(null);
 
+    const [mainImage, setMainImage] = useState(product.images.edges[0]?.node.src || '/fallback-image.jpg');
+    const [selectedVariant, setSelectedVariant] = useState(product.variants.edges[0]?.node);
+
     useEffect(() => {
         if (productRef.current) {
             window.scrollTo({ top: productRef.current.getBoundingClientRect().top + window.scrollY, behavior: 'smooth' });
         }
     }, [product]);
 
+    const handleThumbnailClick = (imageSrc) => {
+        setMainImage(imageSrc);
+    };
+
+    const handleVariantChange = (event) => {
+        const variant = product.variants.edges.find(
+            (v) => v.node.id === event.target.value
+        );
+        setSelectedVariant(variant.node);
+    };
+
     const handleAddToCart = async () => {
         setAddingToCart(true);
         try {
-            if (product.variants && product.variants.edges && product.variants.edges.length > 0) {
-                const variantId = product.variants.edges[0].node.id;
-                const title = product.title;
-                const price = product.variants.edges[0]?.node.priceV2.amount || '0';
-                const image = product.images.edges.length > 0 
-                             ? product.images.edges[0].node.src 
-                             : '/fallback-image.jpg'; // Fallback image
-        
-                await addToCart({
-                    variantId,
-                    quantity: 1,
-                    title,
-                    price,
-                    image
-                });
-            } else {
-                console.error('Variant data is missing');
-            }
+            const variantId = selectedVariant.id;
+            const title = product.title;
+            const price = selectedVariant.priceV2.amount || '0';
+            const image = mainImage;
+
+            await addToCart({
+                variantId,
+                quantity: 1,
+                title,
+                price,
+                image
+            });
+            alert('Added to cart!');
         } catch (error) {
             console.error('Error adding to cart:', error);
         }
         setAddingToCart(false);
     };
 
-    const handleProceedToCheckout = () => {
-        router.push('/checkout');
+    const handleBuyNow = () => {
+        // Add product to cart and proceed to checkout
+        handleAddToCart().then(() => {
+            router.push('/checkout');
+        });
     };
 
     if (router.isFallback || !product) {
@@ -172,33 +189,70 @@ const ProductPage = ({ product }) => {
                 <meta name="description" content={product.description} />
             </Head>
             <Hero />
-            <div ref={productRef} className="container mx-auto p-4 flex flex-col md:flex-row">
-                <div className="md:w-1/2">
-                    <Image
-                        src={product.images.edges[0]?.node.src || '/fallback-image.jpg'}
-                        alt={product.images.edges[0]?.node.altText || 'Product Image'}
-                        width={500}
-                        height={500}
-                        unoptimized
-                    />
-                </div>
-                <div className="md:w-1/2 flex flex-col justify-center items-start p-4">
-                    <h1 className="text-2xl font-bold">{product.title}</h1>
-                    <p>{product.description}</p>
-                    <p className="font-bold">Price: {product.priceRange?.minVariantPrice?.amount} {product.priceRange?.minVariantPrice?.currencyCode}</p>
-                    <button 
-                        onClick={handleAddToCart} 
-                        disabled={addingToCart}
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
-                    >
-                        {addingToCart ? 'Adding...' : 'Add to Cart'}
-                    </button>
-                    <button 
-                        onClick={handleProceedToCheckout}
-                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4"
-                    >
-                        Proceed to Checkout
-                    </button>
+            <div ref={productRef} className="container mx-auto p-8">
+                <div className="bg-white p-8 rounded-lg shadow-md flex flex-col md:flex-row gap-8">
+                    <div className="md:w-1/2 flex flex-col items-center space-y-4">
+                        <div className="relative w-full h-[600px]">
+                            <Image
+                                src={mainImage}
+                                alt="Main Product Image"
+                                layout="fill"
+                                objectFit="contain"
+                                className="rounded-lg"
+                                unoptimized
+                            />
+                        </div>
+                        <div className="flex space-x-4">
+                            {product.images.edges.map((image, index) => (
+                                <div
+                                    key={index}
+                                    className="relative w-24 h-24 cursor-pointer border border-gray-200 rounded-lg overflow-hidden"
+                                    onClick={() => handleThumbnailClick(image.node.src)}
+                                >
+                                    <Image
+                                        src={image.node.src || '/fallback-image.jpg'}
+                                        alt={image.node.altText || 'Product Thumbnail'}
+                                        layout="fill"
+                                        objectFit="cover"
+                                        className="rounded-lg"
+                                        unoptimized
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="md:w-1/2 flex flex-col justify-start items-start text-black">
+                        <h1 className="text-4xl font-bold mb-4">{product.title}</h1>
+                        <p className="text-lg mb-4">{product.description}</p>
+                        <p className="text-2xl font-bold mb-4">
+                            {selectedVariant.priceV2.amount} {selectedVariant.priceV2.currencyCode}
+                        </p>
+                        <div className="mb-4 w-full">
+                            <label htmlFor="variant" className="block mb-1 font-medium">Size</label>
+                            <select id="variant" name="variant" className="w-full border rounded p-2" onChange={handleVariantChange} value={selectedVariant.id}>
+                                {product.variants.edges.map((variant) => (
+                                    <option key={variant.node.id} value={variant.node.id}>
+                                        {variant.node.selectedOptions && variant.node.selectedOptions.find(option => option.name === 'Size')?.value || 'Default'}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="flex items-center mb-4">
+                            <button
+                                onClick={handleAddToCart}
+                                disabled={addingToCart}
+                                className="bg-white text-black border border-black font-bold py-2 px-4 rounded"
+                            >
+                                {addingToCart ? 'Adding...' : 'Add to Cart'}
+                            </button>
+                            <button
+                                onClick={handleBuyNow}
+                                className="ml-4 bg-black text-white font-bold py-2 px-4 rounded"
+                            >
+                                Buy it Now
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </>
