@@ -189,10 +189,10 @@ const ProductPage = ({ product }) => {
                 <meta name="description" content={product.description} />
             </Head>
             <Hero />
-            <div ref={productRef} className="container mx-auto p-8">
-                <div className="bg-white p-8 rounded-lg shadow-md flex flex-col md:flex-row gap-8">
+            <div ref={productRef} className="container mx-auto p-4 md:p-8">
+                <div className="bg-white p-4 md:p-8 rounded-lg shadow-md flex flex-col md:flex-row gap-8">
                     <div className="md:w-1/2 flex flex-col items-center space-y-4">
-                        <div className="relative w-full h-[600px]">
+                        <div className="relative w-full h-80 md:h-[600px]">
                             <Image
                                 src={mainImage}
                                 alt="Main Product Image"
@@ -202,11 +202,11 @@ const ProductPage = ({ product }) => {
                                 unoptimized
                             />
                         </div>
-                        <div className="flex space-x-4">
+                        <div className="flex space-x-2 md:space-x-4 overflow-x-auto">
                             {product.images.edges.map((image, index) => (
                                 <div
                                     key={index}
-                                    className="relative w-24 h-24 cursor-pointer border border-gray-200 rounded-lg overflow-hidden"
+                                    className="relative w-16 h-16 md:w-24 md:h-24 cursor-pointer border border-gray-200 rounded-lg overflow-hidden"
                                     onClick={() => handleThumbnailClick(image.node.src)}
                                 >
                                     <Image
@@ -222,12 +222,12 @@ const ProductPage = ({ product }) => {
                         </div>
                     </div>
                     <div className="md:w-1/2 flex flex-col justify-start items-start text-black">
-                        <h1 className="text-4xl font-bold mb-4">{product.title}</h1>
-                        <p className="text-lg mb-4">{product.description}</p>
-                        <p className="text-2xl font-bold mb-4">
+                        <h1 className="text-2xl md:text-4xl font-bold mb-2 md:mb-4">{product.title}</h1>
+                        <p className="text-md md:text-lg mb-2 md:mb-4">{product.description}</p>
+                        <p className="text-xl md:text-2xl font-bold mb-2 md:mb-4">
                             {selectedVariant.priceV2.amount} {selectedVariant.priceV2.currencyCode}
                         </p>
-                        <div className="mb-4 w-full">
+                        <div className="mb-2 md:mb-4 w-full">
                             <label htmlFor="variant" className="block mb-1 font-medium">Size</label>
                             <select id="variant" name="variant" className="w-full border rounded p-2" onChange={handleVariantChange} value={selectedVariant.id}>
                                 {product.variants.edges.map((variant) => (
@@ -237,17 +237,17 @@ const ProductPage = ({ product }) => {
                                 ))}
                             </select>
                         </div>
-                        <div className="flex items-center mb-4">
+                        <div className="flex flex-col md:flex-row items-center mb-2 md:mb-4 w-full">
                             <button
                                 onClick={handleAddToCart}
                                 disabled={addingToCart}
-                                className="bg-white text-black border border-black font-bold py-2 px-4 rounded"
+                                className="w-full md:w-auto bg-white text-black border border-black font-bold py-2 px-4 rounded mb-2 md:mb-0 md:mr-4"
                             >
                                 {addingToCart ? 'Adding...' : 'Add to Cart'}
                             </button>
                             <button
                                 onClick={handleBuyNow}
-                                className="ml-4 bg-black text-white font-bold py-2 px-4 rounded"
+                                className="w-full md:w-auto bg-black text-white font-bold py-2 px-4 rounded"
                             >
                                 Buy it Now
                             </button>
