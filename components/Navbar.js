@@ -56,7 +56,7 @@ const Navbar = () => {
           <Link href='/#home' onClick={closeNav}>Home</Link>
           <Link href='/about#about' onClick={closeNav}>About</Link>
           <Link href='/music#music-photography' onClick={closeNav}>Music</Link>
-          <Link href='/contact#work-with-me' onClick={closeNav}>Let's talk</Link>
+          <Link href='/contact#work-with-me' onClick={closeNav}>Let&apos;s talk</Link>
           <Link href='/shop#shop' onClick={closeNav}>Shop</Link>
           <div className='flex space-x-2'>
             <FaInstagram
@@ -86,7 +86,7 @@ const Navbar = () => {
             <li onClick={closeNav}><Link href='/#home'>Home</Link></li>
             <li onClick={closeNav}><Link href='/about#about'>About</Link></li>
             <li onClick={closeNav}><Link href='/music#music-photography'>Music</Link></li>
-            <li onClick={closeNav}><Link href='/contact#contact'>Let's Contact</Link></li>
+            <li onClick={closeNav}><Link href='/contact#contact'>Let&apos;s talk Contact</Link></li>
             <li onClick={closeNav}><Link href='/shop#shop'>Shop</Link></li>
             <li className='flex space-x-2'>
               <FaInstagram
