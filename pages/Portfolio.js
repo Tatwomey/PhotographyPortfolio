@@ -65,14 +65,14 @@ const photos = [
   { src: '/JD-korn-jones-beach-2022-trevor-twomey.jpg', type: 'portrait' },
   {src: '/mrs-smith-ibanez-nyc-trevor-twomey.jpg' , type: 'portrait'},
   {src: '/elias-nonpoint-time-square-2022-trevor-twomey.jpg', type: 'portrait'},
-  {src: '/head-korn-los-angeles-2015-trevor-twomey-1.JPG', type: 'portrait'},
+  {src: '/mikey_carvajal_islander_nyc_trevortwomey-4.jpg', type: 'portrait'},
   { src: '/iamx-lpr-2023-trevor-twomey.jpg', type: 'portrait'},
   { src: '/JD-korn-jones-beach-2022-trevor-twomey-2.jpg' , type: 'portrait'},
   { src: '/hash-thievery-corporation-2013-trevor-twomey-1.jpg' , type: 'portrait'},
   { src: '/IAMX-chris-corner-lpr-2023-trevor-twomey-2.jpg' , type: 'portrait'},
   { src: '/†††(Crosses)_022024_nyc_trevor_twomey.jpg' , type: 'portrait'},
   {src: '/roots-thievery-corporation-2016-trevor-twomey-1 2.JPG', type: 'portrait'},
-  {src: '/ray-luzier-korn-jones-beach-2022-trevor-twomey.jpg' , type: 'portrait'},
+  {src: '/munky-korn-camden-nj-2022-trevortwomeytest.jpg', type: 'portrait'},
   
  
   
