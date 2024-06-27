@@ -4,6 +4,8 @@ import Hero from "@/components/Hero";
 import Product from "@/components/Product";
 import { useShopContext } from "@/contexts/shopContext";
 
+ <br>Shop</br>
+
 export default function Shop({ products }) {
   const productListRef = useRef(null);
   const { addToCart } = useShopContext();
