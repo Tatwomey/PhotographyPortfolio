@@ -4,7 +4,6 @@ import Image from 'next/image';
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import { FaInstagram, FaLinkedin } from 'react-icons/fa';
 import CartIcon from './CartIcon';
-import CartDrawer from './CartDrawer';
 import { useShopContext } from '../contexts/shopContext';
 
 const Navbar = () => {
@@ -86,7 +85,7 @@ const Navbar = () => {
             <li onClick={closeNav}><Link href='/#home'>Home</Link></li>
             <li onClick={closeNav}><Link href='/about#about'>About</Link></li>
             <li onClick={closeNav}><Link href='/music#music-photography'>Music</Link></li>
-            <li onClick={closeNav}><Link href='/contact#contact'>Let&apos;s talk Contact</Link></li>
+            <li onClick={closeNav}><Link href='/contact#work-with-me'>Let&apos;s talk</Link></li>
             <li onClick={closeNav}><Link href='/shop#shop'>Shop</Link></li>
             <li className='flex space-x-2'>
               <FaInstagram
@@ -103,7 +102,6 @@ const Navbar = () => {
           </ul>
         </div>
       )}
-      <CartDrawer />
     </div>
   );
 };
