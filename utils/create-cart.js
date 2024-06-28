@@ -16,47 +16,53 @@ export async function sendShopifyStoreFrontRequest({ query, variables }) {
             return result.json();
         });
 
-        if (!data || data.cartCreate.userErrors?.length > 0) {
-            console.error('Cart Creation Errors:', data?.cartCreate?.userErrors);
-            throw new Error('Error in creating cart');
+        if (data.errors) {
+            console.error('GraphQL errors:', data.errors);
+            throw new Error('Error in GraphQL request');
         }
 
-        return data.cartCreate.cart;
+        return data;
     } catch (error) {
         console.error('Error in sendShopifyStoreFrontRequest:', error);
         throw new Error(`Error creating cart: ${error.message}`);
     }
 }
 
-export async function createCart() {
+export async function createCheckout(cartItems) {
+    const lineItems = cartItems.map(item => ({
+        variantId: item.variantId,
+        quantity: item.quantity
+    }));
+
     const query = `
-        mutation CreateCart {
-            cartCreate(input: {}) {
-                cart {
+        mutation CreateCheckout($lineItems: [CheckoutLineItemInput!]!) {
+            checkoutCreate(input: { lineItems: $lineItems }) {
+                checkout {
                     id
-                    checkoutUrl
+                    webUrl
                 }
                 userErrors {
-                    message
                     field
+                    message
                 }
             }
         }
     `;
 
-    const variables = {};
+    const variables = { lineItems };
 
     try {
-        const data = await sendShopifyStoreFrontRequest({ query, variables });
+        const response = await sendShopifyStoreFrontRequest({ query, variables });
+        const { checkoutCreate } = response.data;
 
-        if (!data || data.cartCreate.userErrors?.length > 0) {
-            console.error('Cart Creation Errors:', data?.cartCreate?.userErrors);
-            throw new Error('Error in creating cart');
+        if (checkoutCreate.userErrors.length > 0) {
+            console.error('Checkout creation errors:', checkoutCreate.userErrors);
+            throw new Error('Checkout creation failed');
         }
 
-        return data.cartCreate.cart;
+        return checkoutCreate.checkout;
     } catch (error) {
-        console.error('Error in createCart:', error);
-        throw new Error(`Error creating cart: ${error.message}`);
+        console.error('Error in createCheckout:', error);
+        throw new Error(`Error creating checkout: ${error.message}`);
     }
 }

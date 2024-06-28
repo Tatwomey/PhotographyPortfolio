@@ -1,4 +1,3 @@
-// CartIcon.js
 import React from 'react';
 import { FaShoppingCart } from 'react-icons/fa';
 import { useRouter } from 'next/router';
@@ -9,15 +8,12 @@ const CartIcon = () => {
     const router = useRouter();
     const { globalCart, cartOpen, setCartOpen } = useShopContext();
 
-    // Calculate the total number of items in the cart
     const itemCount = globalCart.items ? globalCart.items.reduce((total, item) => total + item.quantity, 0) : 0;
 
-    // Toggle CartDrawer on hover
     const handleHover = () => {
         setCartOpen(!cartOpen);
     };
 
-    // Navigate to CartPage on click
     const handleClick = () => {
         router.push('/CartPage');
     };

@@ -1,15 +1,11 @@
-import { removeItemFromCart } from "../lib/shopify";
+import { removeFromCart } from "../lib/shopify";
 
 export const removeItemFromCart = async ({ cartId, lineId }) => {
-    try {
-        const shopifyResponse = await removeFromCart({
-            cartId,
-            lineId,
-        });
-
-        return shopifyResponse.cartLinesRemove.cart; // Adjust based on your application's requirements
-    } catch (error) {
-        console.error('Error in removeItemFromCart:', error);
-        throw error;
-    }
+  try {
+    const shopifyResponse = await removeFromCart({ cartId, lineId });
+    return shopifyResponse;
+  } catch (error) {
+    console.error('Error in removeItemFromCart:', error);
+    throw new Error(`Error removing item from cart: ${error.message}`);
+  }
 };

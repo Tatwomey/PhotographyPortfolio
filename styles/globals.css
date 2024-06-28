@@ -13,7 +13,7 @@ body {
   background-color: black;
   color: white;
   scroll-padding-top: 60px;
-  height: 100%; /* Ensure the html and body take full height */
+  height: 100%;
 }
 
 #__next {
@@ -112,7 +112,7 @@ footer {
   width: 100%;
   padding: 1rem 0;
   text-align: center;
-  margin-top: auto; /* Ensures footer sticks to the bottom */
+  margin-top: auto;
 }
 
 .cart-icon-link {

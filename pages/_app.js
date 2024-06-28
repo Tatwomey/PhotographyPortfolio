@@ -1,13 +1,12 @@
-// pages/_app.js
-import React from "react";
-import Navbar from "@/components/Navbar";
-import Head from "next/head";
-import Footer from "@/components/Footer";
+import React from 'react';
+import Navbar from '@/components/Navbar';
+import Head from 'next/head';
+import Footer from '@/components/Footer';
 import "@/styles/globals.css";
-import { NavigationProvider } from "@/contexts/NavigationContext";
-import { ShopProvider } from "@/contexts/shopContext";
-import GoogleAnalytics from "@/components/GoogleAnalytics";
-import Script from "next/script";
+import { NavigationProvider } from '@/contexts/NavigationContext';
+import { ShopProvider } from '@/contexts/shopContext';
+import GoogleAnalytics from '@/components/GoogleAnalytics';
+import Script from 'next/script';
 
 const initialCartData = [];
 
@@ -23,25 +22,23 @@ function MyApp({ Component, pageProps }) {
       </Script>
 
       {/* Add Lucky Orange Tracking Script */}
-      <Script
-        src="https://tools.luckyorange.com/core/lo.js?site-id=800b9eb3"
-        strategy="afterInteractive"
-        async
+      <Script 
+        src="https://tools.luckyorange.com/core/lo.js?site-id=800b9eb3" 
+        strategy="afterInteractive" 
+        async 
         defer
       />
 
       <NavigationProvider>
-        <div className="flex flex-col min-h-screen">
-          <Navbar />
-          <GoogleAnalytics />
-          <main className="flex-grow">
-            <Component {...pageProps} />
-          </main>
-          <Footer />
-        </div>
+        <Navbar />
+        <GoogleAnalytics />
+        <Component {...pageProps} />
+        <Footer />
       </NavigationProvider>
 
-      <noscript>{/* GTM noscript content */}</noscript>
+      <noscript>
+        {/* GTM noscript content */}
+      </noscript>
     </ShopProvider>
   );
 }
