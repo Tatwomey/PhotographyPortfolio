@@ -105,7 +105,7 @@ const Portfolio = () => {
 
   return (
     <div className="max-w-[1240px] mx-auto py-4 sm:py-16 text-center" id="music-photography">
-      <h1 className="font-bold text-2xl sm:text-3xl p-4">Music Photography</h1>
+     
       <Masonry
         breakpointCols={breakpointCols}
         className="my-masonry-grid"
