@@ -7,7 +7,7 @@ console.log('NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN:', process.env.NEXT_PUB
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['cdn.shopify.com'], // Add your image domain here
+    domains: ['cdn.shopify.com', 'via.placeholder.com'], // Add your image domain here
   },
   env: {
     SHOPIFY_API_ENDPOINT: process.env.SHOPIFY_API_ENDPOINT,

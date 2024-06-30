@@ -6,7 +6,7 @@ const ShopContext = createContext();
 export const useShopContext = () => useContext(ShopContext);
 
 export const ShopProvider = ({ children }) => {
-    const [globalCart, setGlobalCart] = useState({ items: [], cartId: null, checkoutUrl: null });
+    const [globalCart, setGlobalCart] = useState({ lines: { edges: [] }, cartId: null, checkoutUrl: null });
     const [cartOpen, setCartOpen] = useState(false);
 
     useEffect(() => {
@@ -17,7 +17,7 @@ export const ShopProvider = ({ children }) => {
                     const parsedCart = JSON.parse(storedCart);
                     if (parsedCart.cartId) {
                         const cartData = await loadCart(parsedCart.cartId);
-                        setGlobalCart(cartData);
+                        setGlobalCart({ ...cartData, cartId: parsedCart.cartId });
                     } else {
                         await createNewCart();
                     }
@@ -69,47 +69,40 @@ export const ShopProvider = ({ children }) => {
                 (edge) => edge.node.merchandise.id === product.variantId
             ).node;
 
-            setGlobalCart((prevGlobalCart) => ({
-                ...prevGlobalCart,
-                items: [...(prevGlobalCart.items || []), { ...product, lineId: newItem.id }],
-                ...updatedCartData,
-            }));
+            const newCartState = {
+                ...globalCart,
+                lines: updatedCartData.lines,
+                items: [...globalCart.lines.edges.map(edge => edge.node), { ...product, lineId: newItem.id }]
+            };
 
-            updateLocalStorage((prevGlobalCart) => ({
-                ...prevGlobalCart,
-                items: [...(prevGlobalCart.items || []), { ...product, lineId: newItem.id }],
-            }));
+            setGlobalCart(newCartState);
+            updateLocalStorage(newCartState);
         } catch (error) {
             console.error('Error adding to cart:', error);
         }
     };
 
-    const removeFromCart = async (variantId) => {
+    const removeFromCart = async (lineId) => {
         try {
             if (!globalCart.cartId) {
                 console.error('Cart ID is missing');
                 return;
             }
 
-            const itemToRemove = globalCart.items.find((item) => item.variantId === variantId);
-            if (!itemToRemove) {
-                console.error('Item not found in cart');
-                return;
-            }
+            const updatedCartData = await removeItemFromCart(globalCart.cartId, lineId);
 
-            await removeItemFromCart(globalCart.cartId, itemToRemove.lineId);
+            const updatedItems = globalCart.lines.edges.filter(
+                (edge) => edge.node.id !== lineId
+            ).map(edge => edge.node);
 
-            const updatedItems = globalCart.items.filter((item) => item.variantId !== variantId);
+            const newCartState = {
+                ...globalCart,
+                lines: updatedCartData.lines,
+                items: updatedItems
+            };
 
-            setGlobalCart((prevGlobalCart) => ({
-                ...prevGlobalCart,
-                items: updatedItems,
-            }));
-
-            updateLocalStorage((prevGlobalCart) => ({
-                ...prevGlobalCart,
-                items: updatedItems,
-            }));
+            setGlobalCart(newCartState);
+            updateLocalStorage(newCartState);
         } catch (error) {
             console.error('Error removing from cart:', error);
         }
@@ -117,11 +110,11 @@ export const ShopProvider = ({ children }) => {
 
     const checkout = async () => {
         try {
-            if (!globalCart.items.length) {
+            if (!globalCart.lines.edges.length) {
                 console.error('Cart is empty');
                 return;
             }
-            const checkoutSession = await createCheckout(globalCart.items);
+            const checkoutSession = await createCheckout(globalCart.lines.edges.map(edge => edge.node));
             if (checkoutSession.checkoutUrl) {
                 window.location.href = checkoutSession.checkoutUrl;
             } else {

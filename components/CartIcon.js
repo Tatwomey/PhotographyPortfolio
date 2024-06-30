@@ -9,7 +9,7 @@ const CartIcon = () => {
   const router = useRouter();
   const { globalCart, cartOpen, setCartOpen } = useShopContext();
 
-  const itemCount = globalCart.items ? globalCart.items.reduce((total, item) => total + item.quantity, 0) : 0;
+  const itemCount = globalCart.lines ? globalCart.lines.edges.reduce((total, { node }) => total + node.quantity, 0) : 0;
 
   const handleClick = () => {
     router.push('/CartPage');
