@@ -182,10 +182,9 @@ const ProductPage = ({ product }) => {
     setAddingToCart(false);
   };
 
-  const handleBuyNow = () => {
-    handleAddToCart().then(() => {
-      router.push("/checkout");
-    });
+  const handleBuyNow = async () => {
+    await handleAddToCart();
+    router.push("/checkout");
   };
 
   if (router.isFallback || !product) {

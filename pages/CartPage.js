@@ -5,8 +5,8 @@ import { useSmoothScroll } from '@/hooks/useSmoothScroll';
 import Hero from '@/components/Hero';
 import Image from 'next/image';
 
-const CartPage = ({ onCheckout }) => {
-  const { globalCart } = useShopContext();
+const CartPage = () => {
+  const { globalCart, removeFromCart } = useShopContext();
   const safeCart = globalCart.items || [];
   const checkoutRef = useRef(null);
 
@@ -25,13 +25,14 @@ const CartPage = ({ onCheckout }) => {
                 <p>{item.title}</p>
                 <p>Price: ${item.price}</p>
                 <p>Quantity: {item.quantity}</p>
+                <button className="remove-btn" onClick={() => removeFromCart(item.variantId)} style={{ marginLeft: '10px' }}>Remove</button>
               </div>
             </div>
           ))}
         </div>
         <div className="cart-summary-column">
-          <Link href="/checkout" className="checkout-button" id="checkout">
-            Proceed to Checkout
+          <Link href="/checkout">
+            <button className="checkout-button" id="checkout" ref={checkoutRef}>Proceed to Checkout</button>
           </Link>
         </div>
       </div>
@@ -40,3 +41,4 @@ const CartPage = ({ onCheckout }) => {
 };
 
 export default CartPage;
+

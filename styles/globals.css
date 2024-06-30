@@ -197,3 +197,42 @@ footer {
   display: block;
   transform: translateY(0);
 }
+
+.cart-page {
+  padding: 20px;
+}
+
+.cart-items-column {
+  flex: 1;
+}
+
+.cart-summary-column {
+  margin-top: 20px;
+}
+
+.checkout-button {
+  background-color: #fdb827;
+  color: black;
+  padding: 10px 20px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.checkout-button:hover {
+  background-color: #e0a800;
+}
+
+.remove-btn {
+  background-color: red;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.remove-btn:hover {
+  background-color: darkred;
+}

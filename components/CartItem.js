@@ -1,6 +1,5 @@
-// components/CartItem.js
 import React from 'react';
-import { useShopContext } from '../contexts/shopContext';
+import { useShopContext } from '@/contexts/shopContext';
 
 const CartItem = ({ item }) => {
   const { removeFromCart } = useShopContext();
@@ -12,10 +11,11 @@ const CartItem = ({ item }) => {
         <span className="item-price">${item.price}</span>
       </div>
       <div className="item-actions">
-        <button onClick={() => removeFromCart(item.variantId)}>Remove</button>
+        <button className="remove-btn" onClick={() => removeFromCart(item.variantId)}>Remove</button>
       </div>
     </div>
   );
 };
 
 export default CartItem;
+

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useShopContext } from '@/contexts/shopContext';
-import { loadCart } from '../utils/load-cart';
+import { loadCart } from '@/utils/load-cart';
 import Image from 'next/image';
 
 export default function Cart() {

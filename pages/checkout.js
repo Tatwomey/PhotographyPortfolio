@@ -20,7 +20,10 @@ const CheckoutPage = () => {
 
   const handleCheckoutSubmit = async () => {
     try {
-      await checkout();
+      const checkoutUrl = await checkout();
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
+      }
     } catch (error) {
       console.error('Checkout submission error:', error);
     }
