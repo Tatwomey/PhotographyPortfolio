@@ -1,4 +1,3 @@
-// CartIcon.js
 import React from 'react';
 import { FaShoppingCart } from 'react-icons/fa';
 import { useRouter } from 'next/router';
@@ -15,24 +14,10 @@ const CartIcon = () => {
     router.push('/CartPage');
   };
 
-  const handleMouseEnter = () => {
-    setCartOpen(true);
-  };
-
-  const handleMouseLeave = () => {
-    setCartOpen(false);
-  };
-
   return (
-    <div
-      className="cart-icon-link"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onClick={handleClick}
-    >
+    <div className="cart-icon-link" onClick={handleClick}>
       <FaShoppingCart />
       {itemCount > 0 && <span className="cart-icon-badge">{itemCount}</span>}
-      {cartOpen && <CartDrawer />}
     </div>
   );
 };

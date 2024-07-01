@@ -21,14 +21,17 @@ const CartDrawer = () => {
       ) : (
         <>
           <div className="cart-items">
-            {safeCart.map(({ node: item }, index) => {
-              const imageSrc = item.merchandise.product?.images?.edges?.[0]?.node?.src || 'https://via.placeholder.com/40';
+            {safeCart.map(({ node: item }) => {
+              const merchandise = item.merchandise;
+              const product = merchandise.product;
+              const imageSrc = product.images?.edges?.[0]?.node?.url || 'https://via.placeholder.com/50';
+              const priceAmount = parseFloat(merchandise.priceV2.amount);
               return (
                 <div key={item.id} className="cart-item flex items-center border-b pb-4 mb-4">
-                  <Image src={imageSrc} alt={item.merchandise.product?.title || 'Product Image'} width={50} height={50} className="mr-4" />
+                  <Image src={imageSrc} alt={product.title || 'Product Image'} width={50} height={50} className="mr-4" />
                   <div className="flex-1">
-                    <p className="font-semibold">{item.merchandise.product?.title || 'Product Title'}</p>
-                    <p>Price: ${item.merchandise.priceV2.amount}</p>
+                    <p className="font-semibold">{product.title || 'Product Title'}</p>
+                    <p>Price: ${priceAmount.toFixed(2)} {merchandise.priceV2.currencyCode}</p>
                     <p>Quantity: {item.quantity}</p>
                   </div>
                   <button className="remove-btn text-red-600 ml-4" onClick={() => removeFromCart(item.id)}>Remove</button>
