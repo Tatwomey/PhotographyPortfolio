@@ -22,7 +22,7 @@ const CartPage = () => {
             <p className="text-center">Your cart is empty.</p>
           ) : (
             safeCart.map(({ node: item }, index) => {
-              const imageSrc = item.merchandise.product?.images?.edges?.[0]?.node?.src || 'https://via.placeholder.com/50';
+              const imageSrc = item.merchandise?.image?.src || 'https://via.placeholder.com/50';
               return (
                 <div key={item.id} className="cart-item flex items-center border-b pb-4 mb-4">
                   <Image src={imageSrc} alt={item.merchandise.product?.title || 'Product Image'} width={100} height={100} className="mr-4" />

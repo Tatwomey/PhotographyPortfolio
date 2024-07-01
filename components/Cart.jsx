@@ -50,19 +50,19 @@ export default function Cart() {
           <>
             <ul>
               {cart.lines.map(({ node: item }, index) => (
-                <li key={index}>
-                  <p>
-                    {item.quantity} &times; {item.merchandise?.product?.title}
-                  </p>
+                <li key={index} className="cart-item flex items-center border-b pb-4 mb-4">
+                  <img src={item.merchandise.image.src} alt={item.merchandise.product.title} style={{ width: '50px', height: '50px', marginRight: '10px' }} />
+                  <div className="flex-1">
+                    <p className="font-semibold">{item.merchandise.product.title}</p>
+                    <p>Price: ${item.merchandise.priceV2.amount}</p>
+                    <p>Quantity: {item.quantity}</p>
+                  </div>
+                  <button className="remove-btn text-red-600 ml-4" onClick={() => removeFromCart(item.id)}>Remove</button>
                 </li>
               ))}
             </ul>
-            <a className="button" href={`${cart.checkoutUrl}?discount=CYBERMON`}>
-              Check Out
-            </a>
-            <button className="empty-cart" onClick={emptyCart}>
-              Empty Cart
-            </button>
+            <a className="button" href={cart.checkoutUrl}>Check Out</a>
+            <button className="empty-cart" onClick={emptyCart}>Empty Cart</button>
           </>
         ) : (
           <p className="no-items">Your cart is empty.</p>

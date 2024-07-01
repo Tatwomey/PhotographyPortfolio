@@ -10,31 +10,33 @@ const CartDrawer = () => {
 
   return (
     <div className={`cart-drawer ${cartOpen ? 'open' : ''}`}>
-      <div className="cart-header flex justify-between items-center border-b pb-2 mb-4">
-        <h3 className="text-xl font-semibold">Your Cart</h3>
-        <button className="close text-xl" onClick={handleClose}>✕</button>
+      <div className="cart-header">
+        <h3>Your Cart</h3>
+        <button className="close" onClick={handleClose}>
+          &times; Close
+        </button>
       </div>
       {safeCart.length === 0 ? (
-        <p className="no-items text-center">Your cart is empty.</p>
+        <p className="no-items">Your cart is empty.</p>
       ) : (
         <>
-          <ul className="cart-items space-y-4">
+          <div className="cart-items">
             {safeCart.map(({ node: item }, index) => {
-              const imageSrc = item.merchandise.product?.images?.edges?.[0]?.node?.src || 'https://via.placeholder.com/50';
+              const imageSrc = item.merchandise.product?.images?.edges?.[0]?.node?.src || 'https://via.placeholder.com/40';
               return (
-                <li key={item.id} className="cart-item flex items-center space-x-4 border-b pb-2">
-                  <Image src={imageSrc} alt={item.merchandise.product?.title || 'Product Image'} width={50} height={50} />
+                <div key={item.id} className="cart-item flex items-center border-b pb-4 mb-4">
+                  <Image src={imageSrc} alt={item.merchandise.product?.title || 'Product Image'} width={50} height={50} className="mr-4" />
                   <div className="flex-1">
-                    <p className="item-title font-semibold">{item.merchandise.product?.title || 'Product Title'}</p>
-                    <p className="item-price text-sm">Price: ${item.merchandise.priceV2.amount}</p>
-                    <p className="item-quantity text-sm">Quantity: {item.quantity}</p>
+                    <p className="font-semibold">{item.merchandise.product?.title || 'Product Title'}</p>
+                    <p>Price: ${item.merchandise.priceV2.amount}</p>
+                    <p>Quantity: {item.quantity}</p>
                   </div>
-                  <button className="remove-btn text-red-600" onClick={() => removeFromCart(item.id)}>Remove</button>
-                </li>
+                  <button className="remove-btn text-red-600 ml-4" onClick={() => removeFromCart(item.id)}>Remove</button>
+                </div>
               );
             })}
-          </ul>
-          <a className="button checkout-button mt-4 block text-center" href={globalCart.checkoutUrl}>Proceed to Checkout</a>
+          </div>
+          <a className="checkout-button" href={globalCart.checkoutUrl}>Proceed to Checkout</a>
         </>
       )}
     </div>
