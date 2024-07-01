@@ -28,18 +28,18 @@ const CartPage = () => {
               safeCart.map(({ node: item }) => {
                 const merchandise = item.merchandise;
                 const product = merchandise.product;
-                const imageSrc = product.images?.edges?.[0]?.node?.url || 'https://via.placeholder.com/50';
+                const imageSrc = product?.images?.edges?.[0]?.node?.url || 'https://via.placeholder.com/50';
                 const priceAmount = parseFloat(merchandise.priceV2.amount);
                 return (
                   <div key={item.id} className="md:flex items-stretch py-8 md:py-10 lg:py-8 border-t border-gray-50">
                     <div className="md:w-4/12 2xl:w-1/4 w-full">
-                      <Image src={imageSrc} alt={product.title || 'Product Image'} className="h-full object-center object-cover md:block hidden" width={100} height={100} />
-                      <Image src={imageSrc} alt={product.title || 'Product Image'} className="md:hidden w-full h-full object-center object-cover" width={100} height={100} />
+                      <Image src={imageSrc} alt={product?.title || 'Product Image'} className="h-full object-center object-cover md:block hidden" width={100} height={100} />
+                      <Image src={imageSrc} alt={product?.title || 'Product Image'} className="md:hidden w-full h-full object-center object-cover" width={100} height={100} />
                     </div>
                     <div className="md:pl-3 md:w-8/12 2xl:w-3/4 flex flex-col justify-center">
                       <p className="text-xs leading-3 text-gray-800 md:pt-0 pt-4">{merchandise.sku}</p>
                       <div className="flex items-center justify-between w-full">
-                        <p className="text-base font-black leading-none text-black">{product.title}</p>
+                        <p className="text-base font-black leading-none text-black">{product?.title}</p>
                         <select aria-label="Select quantity" className="py-2 px-1 border border-gray-200 mr-6 focus:outline-none text-black">
                           {[...Array(10).keys()].map((num) => (
                             <option key={num} value={num + 1}>{num + 1}</option>
