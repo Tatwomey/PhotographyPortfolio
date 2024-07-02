@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useShopContext } from '@/contexts/shopContext';
 import { useSmoothScroll } from '@/hooks/useSmoothScroll';
 import Hero from '@/components/Hero';
@@ -9,13 +9,20 @@ const CartPage = () => {
   const { globalCart, removeFromCart } = useShopContext();
   const safeCart = globalCart.lines ? globalCart.lines.edges : [];
   const checkoutRef = useRef(null);
+  const cartContainerRef = useRef(null);
 
   useSmoothScroll('#checkout', checkoutRef);
+
+  useEffect(() => {
+    if (cartContainerRef.current) {
+      cartContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
 
   return (
     <div>
       <Hero />
-      <div className="container mx-auto mt-10">
+      <div className="container mx-auto mt-10" ref={cartContainerRef}>
         <div className="sm:flex shadow-md my-10">
           <div className="w-full bg-white px-10 py-10">
             <div className="flex justify-between border-b pb-8">
@@ -33,7 +40,14 @@ const CartPage = () => {
                 return (
                   <div key={item.id} className="md:flex items-stretch py-8 md:py-10 lg:py-8 border-t border-gray-50">
                     <div className="md:w-4/12 2xl:w-1/4 w-full">
-                      <Image src={imageSrc} alt={product?.title || 'Product Image'} width={200} height={100} className="h-full object-center object-contain"  />
+                      <Image
+                        src={imageSrc}
+                        alt={product?.title || 'Product Image'}
+                        className="h-full object-center object-contain"
+                        layout="responsive"
+                        width={100}
+                        height={100}
+                      />
                     </div>
                     <div className="md:pl-3 md:w-8/12 2xl:w-3/4 flex flex-col justify-center">
                       <p className="text-xs leading-3 text-gray-800 md:pt-0 pt-4">{merchandise.sku}</p>
