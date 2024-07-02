@@ -11,16 +11,16 @@ export async function getStaticPaths() {
 
   const graphqlQuery = {
     query: `
-            {
-                products(first: 100) {
-                    edges {
-                        node {
-                            handle
-                        }
-                    }
-                }
+      {
+        products(first: 100) {
+          edges {
+            node {
+              handle
             }
-        `,
+          }
+        }
+      }
+    `,
   };
 
   try {
@@ -55,44 +55,44 @@ export async function getStaticProps({ params }) {
 
   const graphqlQuery = {
     query: `
-            query ProductByHandle($handle: String!) {
-                productByHandle(handle: $handle) {
-                    id
-                    title
-                    handle
-                    description
-                    images(first: 10) {
-                        edges {
-                            node {
-                                src
-                                altText
-                            }
-                        }
-                    }
-                    priceRange {
-                        minVariantPrice {
-                          amount
-                          currencyCode
-                        }
-                    }
-                    variants(first: 10) {
-                        edges {
-                            node {
-                                id
-                                title
-                                priceV2 {
-                                    amount
-                                    currencyCode
-                                }
-                                selectedOptions {
-                                    name
-                                    value
-                                }
-                            }
-                        }
-                    }
+      query ProductByHandle($handle: String!) {
+        productByHandle(handle: $handle) {
+          id
+          title
+          handle
+          description
+          images(first: 10) {
+            edges {
+              node {
+                src
+                altText
+              }
+            }
+          }
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          variants(first: 10) {
+            edges {
+              node {
+                id
+                title
+                priceV2 {
+                  amount
+                  currencyCode
                 }
-            }`,
+                selectedOptions {
+                  name
+                  value
+                }
+              }
+            }
+          }
+        }
+      }`,
     variables: { handle: params.slug },
   };
 
@@ -111,11 +111,7 @@ export async function getStaticProps({ params }) {
     }
 
     const responseJson = await res.json();
-    if (
-      !responseJson ||
-      !responseJson.data ||
-      !responseJson.data.productByHandle
-    ) {
+    if (!responseJson || !responseJson.data || !responseJson.data.productByHandle) {
       throw new Error("Product data is not available in the response");
     }
 
@@ -233,7 +229,7 @@ const ProductPage = ({ product }) => {
             <h1 className="text-2xl md:text-4xl font-bold">{product.title}</h1>
             <p className="text-md md:text-lg">{product.description}</p>
             <p className="text-xl md:text-2xl font-bold">
-              {selectedVariant.priceV2.amount}{" "}
+              {parseFloat(selectedVariant.priceV2.amount).toFixed(2)}{" "}
               {selectedVariant.priceV2.currencyCode}
             </p>
             <div className="w-full">
