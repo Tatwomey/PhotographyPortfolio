@@ -1,4 +1,4 @@
-import { shopifyFetch } from '../shopify';
+import { shopifyFetch } from "@/lib/shopify";
 
 export const loadCart = async (cartId) => {
   const query = `

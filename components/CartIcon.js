@@ -12,7 +12,7 @@ const CartIcon = () => {
     : 0;
 
   const handleClick = () => {
-    router.push('/CartPage?scrollToCart=true');
+    router.push('/cart#shopping-cart');
   };
 
   return (

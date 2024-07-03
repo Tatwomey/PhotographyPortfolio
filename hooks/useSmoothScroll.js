@@ -22,5 +22,5 @@ export const useSmoothScroll = (hash, ref) => {
     return () => {
       router.events.off('hashChangeComplete', scrollToRef);  // Clean up listener on unmount
     };
-  }, []);
+  }, [hash, ref, router.events]);
 };

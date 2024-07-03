@@ -1,19 +1,18 @@
 import React, { useRef, useEffect } from 'react';
 import { useShopContext } from '@/contexts/shopContext';
-import { useSmoothScroll } from '@/hooks/useSmoothScroll';
 import Hero from '@/components/Hero';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useSmoothScroll } from '@/hooks/useSmoothScroll';
 
 const CartPage = () => {
   const { cart, handleRemoveFromCart } = useShopContext();
   const safeCart = cart && cart.lines && cart.lines.edges ? cart.lines.edges : [];
-  const checkoutRef = useRef(null);
   const cartPageRef = useRef(null);
   const router = useRouter();
 
-  useSmoothScroll('#checkout', checkoutRef);
+  useSmoothScroll('#shopping-cart', cartPageRef);
 
   useEffect(() => {
     if (router.query.scrollToCart === 'true' && cartPageRef.current) {
@@ -22,11 +21,11 @@ const CartPage = () => {
   }, [router.query]);
 
   return (
-    <div ref={cartPageRef}>
+    <div>
       <Hero />
       <div className="container mx-auto mt-10">
         <div className="sm:flex shadow-md my-10">
-          <div className="w-full bg-white px-10 py-10">
+          <div id="shopping-cart" ref={cartPageRef} className="w-full bg-white px-10 py-10">
             <div className="flex justify-between border-b pb-8">
               <h1 className="font-semibold text-2xl text-black">Shopping Cart</h1>
               <h2 className="font-semibold text-2xl text-color-brown">{safeCart.length} Items</h2>
@@ -79,7 +78,7 @@ const CartPage = () => {
             <div className="flex justify-between">
               {cart && cart.checkoutUrl && (
                 <Link href={cart.checkoutUrl} passHref>
-                  <button className="checkout-button block mb-4" id="checkout" ref={checkoutRef}>Checkout Now</button>
+                  <button className="checkout-button block mb-4" id="checkout">Checkout Now</button>
                 </Link>
               )}
               <Link href="/shop#shop" passHref>
