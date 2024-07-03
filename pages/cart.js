@@ -10,6 +10,7 @@ const CartPage = () => {
   const { cart, handleRemoveFromCart } = useShopContext();
   const safeCart = cart && cart.lines && cart.lines.edges ? cart.lines.edges : [];
   const cartPageRef = useRef(null);
+  const checkoutRef = useRef(null);
   const router = useRouter();
 
   useSmoothScroll('#shopping-cart', cartPageRef);
@@ -19,6 +20,8 @@ const CartPage = () => {
       cartPageRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [router.query]);
+
+  const subtotal = safeCart.reduce((total, { node: item }) => total + parseFloat(item.merchandise.priceV2.amount) * item.quantity, 0).toFixed(2);
 
   return (
     <div>
@@ -75,10 +78,10 @@ const CartPage = () => {
                 );
               })
             )}
-            <div className="flex justify-between">
+            <div className="flex justify-between mt-6">
               {cart && cart.checkoutUrl && (
                 <Link href={cart.checkoutUrl} passHref>
-                  <button className="checkout-button block mb-4" id="checkout">Checkout Now</button>
+                  <button className="checkout-button block mb-4" id="checkout" ref={checkoutRef}>Checkout Now</button>
                 </Link>
               )}
               <Link href="/shop#shop" passHref>
@@ -87,6 +90,9 @@ const CartPage = () => {
             </div>
             <div className="text-center mt-4">
               <p className="text-red-500">* free shipping on all orders over $250, some exceptions may apply</p>
+            </div>
+            <div className="flex justify-between mt-6">
+              <p className="text-lg">Subtotal: ${subtotal}</p>
             </div>
           </div>
         </div>
