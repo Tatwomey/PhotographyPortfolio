@@ -1,4 +1,4 @@
-import { getCart } from '../../lib/shopify';
+import { loadCart } from "@/lib/shopify";
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -13,7 +13,7 @@ export default async function handler(req, res) {
         }
 
         console.log('Fetching cart details for cart ID:', cartId);
-        const cart = await getCart(cartId);
+        const cart = await loadCart(cartId);
 
         // Format cart data as needed before sending response
         const formattedCart = {

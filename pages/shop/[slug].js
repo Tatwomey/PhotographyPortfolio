@@ -125,7 +125,7 @@ export async function getStaticProps({ params }) {
 
 const ProductPage = ({ product }) => {
   const router = useRouter();
-  const { addToCart } = useShopContext();
+  const { handleAddToCart } = useShopContext();
   const [addingToCart, setAddingToCart] = useState(false);
   const productRef = useRef(null);
 
@@ -156,7 +156,7 @@ const ProductPage = ({ product }) => {
     setSelectedVariant(variant.node);
   };
 
-  const handleAddToCart = async () => {
+  const handleAddToCartClick = async () => {
     setAddingToCart(true);
     try {
       const variantId = selectedVariant.id;
@@ -164,12 +164,9 @@ const ProductPage = ({ product }) => {
       const price = selectedVariant.priceV2.amount || "0";
       const image = mainImage;
 
-      await addToCart({
+      await handleAddToCart({
         variantId,
         quantity: 1,
-        title,
-        price,
-        image,
       });
       alert("Added to cart!");
     } catch (error) {
@@ -179,7 +176,7 @@ const ProductPage = ({ product }) => {
   };
 
   const handleBuyNow = async () => {
-    await handleAddToCart();
+    await handleAddToCartClick();
     router.push("/checkout");
   };
 
@@ -212,7 +209,8 @@ const ProductPage = ({ product }) => {
                 <div
                   key={index}
                   className="relative w-16 h-16 md:w-24 md:h-24 cursor-pointer border border-gray-200 rounded-lg overflow-hidden"
-                  onClick={() => handleThumbnailClick(image.node.src)}>
+                  onClick={() => handleThumbnailClick(image.node.src)}
+                >
                   <Image
                     src={image.node.src || "/fallback-image.jpg"}
                     alt={image.node.altText || "Product Thumbnail"}
@@ -241,7 +239,8 @@ const ProductPage = ({ product }) => {
                 name="variant"
                 className="w-full border rounded p-2"
                 onChange={handleVariantChange}
-                value={selectedVariant.id}>
+                value={selectedVariant.id}
+              >
                 {product.variants.edges.map((variant) => (
                   <option key={variant.node.id} value={variant.node.id}>
                     {(variant.node.selectedOptions &&
@@ -255,14 +254,16 @@ const ProductPage = ({ product }) => {
             </div>
             <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4 w-full">
               <button
-                onClick={handleAddToCart}
+                onClick={handleAddToCartClick}
                 disabled={addingToCart}
-                className="w-full md:w-auto bg-white text-black border border-black font-bold py-2 px-4 rounded">
+                className="w-full md:w-auto bg-white text-black border border-black font-bold py-2 px-4 rounded"
+              >
                 {addingToCart ? "Adding..." : "Add to Cart"}
               </button>
               <button
                 onClick={handleBuyNow}
-                className="w-full md:w-auto bg-black text-white font-bold py-2 px-4 rounded">
+                className="w-full md:w-auto bg-black text-white font-bold py-2 px-4 rounded"
+              >
                 Buy it Now
               </button>
             </div>

@@ -3,7 +3,7 @@ import { useShopContext } from '@/contexts/shopContext';
 import Hero from "@/components/Hero";
 
 const CheckoutPage = () => {
-  const { globalCart, checkout } = useShopContext();
+  const { cart, handleCheckout } = useShopContext();
   const checkoutRef = useRef(null);
 
   useEffect(() => {
@@ -13,14 +13,14 @@ const CheckoutPage = () => {
   }, []);
 
   useEffect(() => {
-    if (globalCart.checkoutUrl) {
-      window.location.href = globalCart.checkoutUrl;
+    if (typeof window !== 'undefined' && cart?.checkoutUrl) {
+      window.location.href = cart.checkoutUrl;
     }
-  }, [globalCart.checkoutUrl]);
+  }, [cart?.checkoutUrl]);
 
   const handleCheckoutSubmit = async () => {
     try {
-      const checkoutUrl = await checkout();
+      const checkoutUrl = await handleCheckout();
       if (checkoutUrl) {
         window.location.href = checkoutUrl;
       }

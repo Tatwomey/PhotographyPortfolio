@@ -2,13 +2,14 @@ import React from 'react';
 import { FaShoppingCart } from 'react-icons/fa';
 import { useRouter } from 'next/router';
 import { useShopContext } from '@/contexts/shopContext';
-import CartDrawer from './CartDrawer';
 
 const CartIcon = () => {
   const router = useRouter();
-  const { globalCart, cartOpen, setCartOpen } = useShopContext();
+  const { cart } = useShopContext();
 
-  const itemCount = globalCart.lines ? globalCart.lines.edges.reduce((total, { node }) => total + node.quantity, 0) : 0;
+  const itemCount = cart && cart.lines && cart.lines.edges 
+    ? cart.lines.edges.reduce((total, { node }) => total + node.quantity, 0) 
+    : 0;
 
   const handleClick = () => {
     router.push('/CartPage');

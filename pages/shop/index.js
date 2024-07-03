@@ -1,10 +1,9 @@
+// index.js
 import React, { useRef, useEffect } from "react";
 import Head from "next/head";
 import Hero from "@/components/Hero";
 import Product from "@/components/Product";
 import { useShopContext } from "@/contexts/shopContext";
-
- <br>Shop</br>
 
 export default function Shop({ products }) {
   const productListRef = useRef(null);
@@ -13,8 +12,7 @@ export default function Shop({ products }) {
   useEffect(() => {
     if (productListRef.current) {
       window.scroll({
-        top:
-          productListRef.current.getBoundingClientRect().top + window.scrollY,
+        top: productListRef.current.getBoundingClientRect().top + window.scrollY,
         behavior: "smooth",
       });
     }
@@ -22,17 +20,14 @@ export default function Shop({ products }) {
 
   const handleAddToCart = async (product) => {
     try {
-      // Check if the variant ID is available
       if (!product.variantId) {
         console.error("Variant ID is missing for the product");
-        return; // Exit the function if no variant ID
+        return;
       }
 
-      console.log("Variant ID:", product.variantId);
-
-      const title = product.title;
+      const title = product.title || "Unknown Product";
       const price = product.price || "0";
-      const image = product.imageSrc;
+      const image = product.imageSrc || "/fallback-image.jpg";
 
       await addToCart({
         variantId: product.variantId,
@@ -59,9 +54,7 @@ export default function Shop({ products }) {
       <main ref={productListRef} className="container mx-auto p-4 pb-20">
         <div className="flex flex-wrap -mx-2">
           {safeProducts.map((product) => (
-            <div
-              key={product.id}
-              className="w-full sm:w-1/2 md:w-1/3 px-2 mb-4">
+            <div key={product.id} className="w-full sm:w-1/2 md:w-1/3 px-2 mb-4">
               <Product
                 product={product}
                 onAddToCart={() => handleAddToCart(product)}
@@ -82,40 +75,41 @@ export async function getStaticProps() {
     console.error("Shopify endpoint or token is undefined.");
     return { props: { products: [] } };
   }
+
   const graphqlQuery = {
     query: `
-          query getProductList {
-            products(sortKey: PRICE, first: 10, reverse: true) {
-              edges {
-                node {
-                  id
-                  title
-                  handle
-                  description
-                  images(first: 1) {
-                    edges {
-                      node {
-                        src
-                        altText
-                      }
-                    }
+      query getProductList {
+        products(sortKey: PRICE, first: 10, reverse: true) {
+          edges {
+            node {
+              id
+              title
+              handle
+              description
+              images(first: 1) {
+                edges {
+                  node {
+                    src
+                    altText
                   }
-                  variants(first: 1) {
-                    edges {
-                      node {
-                        id
-                        priceV2 {
-                          amount
-                          currencyCode
-                        }
-                      }
+                }
+              }
+              variants(first: 1) {
+                edges {
+                  node {
+                    id
+                    priceV2 {
+                      amount
+                      currencyCode
                     }
                   }
                 }
               }
             }
           }
-        `,
+        }
+      }
+    `,
   };
 
   try {
@@ -156,8 +150,6 @@ export async function getStaticProps() {
         variantId: variant?.id || null,
       };
     });
-
-    console.log("Products with Variant ID:", products);
 
     return { props: { products } };
   } catch (error) {

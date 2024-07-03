@@ -4,7 +4,7 @@ import { loadCart } from '@/utils/load-cart';
 import Image from 'next/image';
 
 export default function Cart() {
-  const { setGlobalCart, removeFromCart } = useShopContext();
+  const { setGlobalCart } = useShopContext();
   const [cart, setCart] = useState({ id: null, lines: [], checkoutUrl: '', estimatedCost: null });
   const [open, setOpen] = useState(false);
 
