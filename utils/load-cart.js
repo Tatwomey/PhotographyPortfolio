@@ -1,4 +1,3 @@
-// utils/load-cart.js
 import { shopifyFetch } from '../shopify';
 
 export const loadCart = async (cartId) => {

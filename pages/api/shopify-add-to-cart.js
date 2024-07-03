@@ -7,26 +7,27 @@ export default async function handler(req, res) {
 
   const { cartId, variantId, quantity } = req.body;
 
-  // Validate variantId
-  if (!variantId) {
-    console.error("Variant ID is undefined");
-    return res.status(400).json({ message: 'Variant ID is undefined' });
+  // Validate variantId and quantity
+  if (!variantId || !quantity) {
+    return res.status(400).json({ message: 'Missing required fields' });
   }
 
   try {
-    let cart;
-
-    if (cartId) {
-      const lineItems = [{ id: variantId, variantQuantity: quantity }];
-      cart = await updateCheckout(cartId, lineItems);
+    let checkout;
+    if (!cartId) {
+      checkout = await createCheckout([{ variantId, quantity }]);
     } else {
-      // Change here: Pass as an array
-      cart = await createCheckout([{ variantId: variantId, quantity: quantity }]);
+      checkout = await updateCheckout(cartId, [{ variantId, quantity }]);
     }
 
-    res.status(200).json(cart);
+    // Store the cartId for persistence
+    if (checkout.id) {
+      localStorage.setItem('cartId', checkout.id);
+    }
+
+    return res.status(200).json(checkout);
   } catch (error) {
-    console.error('Error in shopify-add-to-cart handler:', error);
-    res.status(500).json({ message: 'Error processing your request' });
+    console.error('Error adding to cart:', error);
+    return res.status(500).json({ message: 'Error adding to cart' });
   }
 }

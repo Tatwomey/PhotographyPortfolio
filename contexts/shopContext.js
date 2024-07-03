@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState } from 'react';
-import { addItemToCart, createCart, loadCart, removeItemFromCart, updateCheckout } from '@/lib/shopify';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { addItemToCart, createCart, loadCart, removeItemFromCart } from '@/lib/shopify';
 
 const ShopContext = createContext();
 
@@ -10,16 +10,33 @@ export const ShopProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleAddToCart = async ({ variantId, quantity, title, price, image }) => {
+  useEffect(() => {
+    const localCartData = JSON.parse(window.localStorage.getItem('trevortwomeyphoto:Shopify:cart'));
+    console.log('Retrieved cart data from local storage:', localCartData);
+    if (localCartData && localCartData.cartId) {
+      handleLoadCart(localCartData.cartId);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (cart && cart.id) {
+      window.localStorage.setItem('trevortwomeyphoto:Shopify:cart', JSON.stringify({ cartId: cart.id }));
+      console.log('Stored cart data in local storage:', { cartId: cart.id });
+    }
+  }, [cart]);
+
+  const handleAddToCart = async ({ variantId, quantity }) => {
     setLoading(true);
     setError(null);
     try {
       let updatedCart;
       if (cart && cart.id) {
+        console.log('Adding to existing cart:', cart.id);
         updatedCart = await addItemToCart({ cartId: cart.id, variantId, quantity });
       } else {
-        updatedCart = await createCart();
-        updatedCart = await addItemToCart({ cartId: updatedCart.cartId, variantId, quantity });
+        const newCart = await createCart();
+        console.log('Created new cart:', newCart.id);
+        updatedCart = await addItemToCart({ cartId: newCart.id, variantId, quantity });
       }
       setCart(updatedCart);
       console.log('Cart updated:', updatedCart);
@@ -37,6 +54,7 @@ export const ShopProvider = ({ children }) => {
       if (!cart || !cart.id) {
         throw new Error('Cart ID is missing');
       }
+      console.log('Removing item from cart:', cart.id);
       const updatedCart = await removeItemFromCart(cart.id, lineId);
       setCart(updatedCart);
       console.log('Cart updated:', updatedCart);
@@ -51,6 +69,7 @@ export const ShopProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
+      console.log('Loading cart with ID:', cartId);
       const loadedCart = await loadCart(cartId);
       setCart(loadedCart);
       console.log('Cart loaded:', loadedCart);

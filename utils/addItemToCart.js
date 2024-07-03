@@ -1,23 +1,17 @@
-// utils/addItemToCart.js
+export const addItemToCart = async (cartId, variantId, quantity) => {
+  const response = await fetch('/api/shopify-add-to-cart', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ cartId, variantId, quantity })
+  });
 
-export const addItemToCart = async ({ cartId, variantId, quantity }) => {
-  try {
-    const response = await fetch(`/api/shopify-add-to-cart`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ cartId, variantId, quantity }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    const cart = await response.json();
-    return cart;
-  } catch (error) {
-    console.error('Error in addItemToCart:', error);
-    throw error;
+  if (!response.ok) {
+    throw new Error('Failed to add item to cart');
   }
+
+  const updatedCart = await response.json();
+  console.log('Updated cart:', updatedCart);
+  return updatedCart;
 };

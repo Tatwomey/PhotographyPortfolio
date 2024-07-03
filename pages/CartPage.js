@@ -4,23 +4,22 @@ import { useSmoothScroll } from '@/hooks/useSmoothScroll';
 import Hero from '@/components/Hero';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 const CartPage = () => {
   const { cart, handleRemoveFromCart } = useShopContext();
   const safeCart = cart && cart.lines && cart.lines.edges ? cart.lines.edges : [];
   const checkoutRef = useRef(null);
   const cartPageRef = useRef(null);
+  const router = useRouter();
 
   useSmoothScroll('#checkout', checkoutRef);
 
   useEffect(() => {
-    if (cartPageRef.current) {
-      window.scrollTo({
-        top: cartPageRef.current.offsetTop,
-        behavior: 'smooth',
-      });
+    if (router.query.scrollToCart === 'true' && cartPageRef.current) {
+      cartPageRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, []);
+  }, [router.query]);
 
   return (
     <div ref={cartPageRef}>
@@ -38,7 +37,7 @@ const CartPage = () => {
               safeCart.map(({ node: item }) => {
                 const merchandise = item.merchandise;
                 const product = merchandise.product;
-                const imageSrc = product?.images?.edges?.[0]?.node?.url || '/fallback-image.jpg';
+                const imageSrc = product?.images?.edges?.[0]?.node?.src || '/fallback-image.jpg';
                 const priceAmount = parseFloat(merchandise.priceV2.amount);
 
                 return (
