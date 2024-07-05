@@ -160,10 +160,6 @@ const ProductPage = ({ product }) => {
     setAddingToCart(true);
     try {
       const variantId = selectedVariant.id;
-      const title = product.title;
-      const price = selectedVariant.priceV2.amount || "0";
-      const image = mainImage;
-
       await handleAddToCart({
         variantId,
         quantity: 1,
@@ -176,8 +172,32 @@ const ProductPage = ({ product }) => {
   };
 
   const handleBuyNow = async () => {
-    await handleAddToCartClick();
-    router.push("/checkout");
+    setAddingToCart(true);
+    try {
+      const variantId = selectedVariant.id;
+      await handleAddToCart({
+        variantId,
+        quantity: 1,
+      });
+
+      // Ensure cart is updated before navigating
+      let localCart = JSON.parse(localStorage.getItem('trevortwomeyphoto:Shopify:cart'));
+      if (localCart && localCart.cartId) {
+        const updatedCart = await loadCart(localCart.cartId);
+        localStorage.setItem('trevortwomeyphoto:Shopify:cart', JSON.stringify(updatedCart));
+        localCart = updatedCart;
+      }
+      
+      if (localCart && localCart.checkoutUrl) {
+        console.log('Redirecting to checkout:', localCart.checkoutUrl);
+        window.location.href = localCart.checkoutUrl;
+      } else {
+        console.error('Checkout URL not found in cart:', localCart);
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
+    setAddingToCart(false);
   };
 
   if (router.isFallback || !product) {
@@ -262,9 +282,10 @@ const ProductPage = ({ product }) => {
               </button>
               <button
                 onClick={handleBuyNow}
+                disabled={addingToCart}
                 className="w-full md:w-auto bg-black text-white font-bold py-2 px-4 rounded"
               >
-                Buy it Now
+                {addingToCart ? "Processing..." : "Buy it Now"}
               </button>
             </div>
           </div>
