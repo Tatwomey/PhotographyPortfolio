@@ -1,80 +1,78 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { addItemToCart, createCart, loadCart, removeItemFromCart, updateCheckout } from '@/lib/shopify';
+import { createCart, loadCart, addItemToCart, removeItemFromCart } from '@/lib/shopify';
 
 const ShopContext = createContext();
 
-export const useShopContext = () => useContext(ShopContext);
+export function useShopContext() {
+  return useContext(ShopContext);
+}
 
-export const ShopProvider = ({ children }) => {
+export function ShopProvider({ children }) {
   const [cart, setCart] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const localCartData = JSON.parse(window.localStorage.getItem('trevortwomeyphoto:Shopify:cart'));
-    if (localCartData && localCartData.cartId) {
-      handleLoadCart(localCartData.cartId);
-    }
+    const initializeCart = async () => {
+      const storedCartId = localStorage.getItem('shopify_cart_id');
+      console.log('Stored Cart ID:', storedCartId);
+
+      if (storedCartId) {
+        try {
+          const existingCart = await loadCart(storedCartId);
+          console.log('Loaded existing cart:', existingCart);
+          setCart(existingCart);
+        } catch (error) {
+          console.error('Failed to load existing cart:', error);
+          await createNewCart();
+        }
+      } else {
+        await createNewCart();
+      }
+    };
+
+    const createNewCart = async () => {
+      try {
+        const newCart = await createCart();
+        console.log('Created new cart:', newCart);
+        localStorage.setItem('shopify_cart_id', newCart.cartId);
+        setCart(newCart);
+      } catch (error) {
+        console.error('Failed to create new cart:', error);
+      }
+    };
+
+    initializeCart();
   }, []);
 
-  const handleAddToCart = async ({ variantId, quantity, title, price, image }) => {
-    setLoading(true);
-    setError(null);
-    try {
-      let updatedCart;
-      const localCart = JSON.parse(window.localStorage.getItem('trevortwomeyphoto:Shopify:cart'));
-      if (localCart && localCart.cartId) {
-        updatedCart = await addItemToCart({ cartId: localCart.cartId, variantId, quantity });
-      } else {
-        const newCartData = await createCart();
-        updatedCart = await addItemToCart({ cartId: newCartData.cartId, variantId, quantity });
-      }
-      window.localStorage.setItem('trevortwomeyphoto:Shopify:cart', JSON.stringify(updatedCart));
-      setCart(updatedCart);
-      console.log('Cart updated:', updatedCart);
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      setError('Error adding to cart');
+  const handleAddToCart = async ({ variantId, quantity }) => {
+    if (!cart || !cart.id) {
+      console.error('Cart or cart ID is not available.');
+      return;
     }
-    setLoading(false);
+
+    console.log("Adding to cart:", cart.id, variantId, quantity);
+
+    try {
+      const updatedCart = await addItemToCart({ cartId: cart.id, variantId, quantity });
+      setCart(updatedCart);
+    } catch (error) {
+      console.error('Error adding item to cart:', error);
+    }
   };
 
   const handleRemoveFromCart = async (lineId) => {
-    setLoading(true);
-    setError(null);
+    if (!cart || !cart.id) return;
+
     try {
-      if (!cart || !cart.id) {
-        throw new Error('Cart ID is missing');
-      }
       const updatedCart = await removeItemFromCart(cart.id, lineId);
       setCart(updatedCart);
-      window.localStorage.setItem('trevortwomeyphoto:Shopify:cart', JSON.stringify(updatedCart));
-      console.log('Cart updated:', updatedCart);
     } catch (error) {
-      console.error('Error removing from cart:', error);
-      setError('Error removing from cart');
+      console.error('Error removing item from cart:', error);
     }
-    setLoading(false);
-  };
-
-  const handleLoadCart = async (cartId) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const loadedCart = await loadCart(cartId);
-      setCart(loadedCart);
-      window.localStorage.setItem('trevortwomeyphoto:Shopify:cart', JSON.stringify(loadedCart));
-      console.log('Cart loaded:', loadedCart);
-    } catch (error) {
-      console.error('Error loading cart:', error);
-      setError('Error loading cart');
-    }
-    setLoading(false);
   };
 
   return (
-    <ShopContext.Provider value={{ cart, loading, error, handleAddToCart, handleRemoveFromCart, handleLoadCart }}>
+    <ShopContext.Provider value={{ cart, handleAddToCart, handleRemoveFromCart }}>
       {children}
     </ShopContext.Provider>
   );
-};
+}

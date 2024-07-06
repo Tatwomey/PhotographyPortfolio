@@ -181,10 +181,10 @@ const ProductPage = ({ product }) => {
       });
 
       // Ensure cart is updated before navigating
-      let localCart = JSON.parse(localStorage.getItem('trevortwomeyphoto:Shopify:cart'));
-      if (localCart && localCart.cartId) {
-        const updatedCart = await loadCart(localCart.cartId);
-        localStorage.setItem('trevortwomeyphoto:Shopify:cart', JSON.stringify(updatedCart));
+      let localCart = JSON.parse(localStorage.getItem('shopify_cart_id'));
+      if (localCart) {
+        const updatedCart = await loadCart(localCart);
+        localStorage.setItem('shopify_cart_id', updatedCart.id);
         localCart = updatedCart;
       }
       
@@ -282,10 +282,9 @@ const ProductPage = ({ product }) => {
               </button>
               <button
                 onClick={handleBuyNow}
-                disabled={addingToCart}
                 className="w-full md:w-auto bg-black text-white font-bold py-2 px-4 rounded"
               >
-                {addingToCart ? "Processing..." : "Buy it Now"}
+                Buy it Now
               </button>
             </div>
           </div>

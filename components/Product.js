@@ -6,7 +6,6 @@ import { useShopContext } from '@/contexts/shopContext';
 const Product = ({ product }) => {
   const { handleAddToCart } = useShopContext();
 
-  // Check if the price is available and is a number
   const price = product.price;
 
   const formattedPrice = price

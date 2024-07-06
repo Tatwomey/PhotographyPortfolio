@@ -3,7 +3,7 @@ import { useShopContext } from '@/contexts/shopContext';
 import Image from 'next/image';
 
 export default function Cart() {
-  const { cart, handleAddToCart, handleRemoveFromCart, handleLoadCart } = useShopContext();
+  const { cart, handleRemoveFromCart } = useShopContext();
   const [localCart, setLocalCart] = useState(cart || { id: null, lines: [], checkoutUrl: '', estimatedCost: null });
   const [open, setOpen] = useState(false);
 
@@ -18,7 +18,6 @@ export default function Cart() {
   function emptyCart() {
     window.localStorage.removeItem('trevortwomeyphoto:Shopify:cart');
     setLocalCart({ id: null, lines: [], checkoutUrl: '', estimatedCost: null });
-    handleLoadCart(null);
   }
 
   return (

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useRouter } from 'next/router'; 
+import { useRouter } from 'next/router';
 
 export const useSmoothScroll = (hash, ref) => {
   const router = useRouter();
@@ -13,7 +13,7 @@ export const useSmoothScroll = (hash, ref) => {
         behavior: 'smooth'
       });
     }
-  }
+  };
 
   useEffect(() => {
     scrollToRef();
