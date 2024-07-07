@@ -74,13 +74,13 @@ export function ShopProvider({ children }) {
   useEffect(() => {
     const storedCartId = window.localStorage.getItem('shopify_cart_id');
     console.log(`Stored cart ID: ${storedCartId}`);
-    if (storedCartId) {
+    if (storedCartId && storedCartId !== cartId) {
       setCartId(storedCartId);
       refreshCart(storedCartId);
-    } else {
+    } else if (!storedCartId) {
       refreshCart(null);
     }
-  }, []); // Only run once when the component mounts
+  }, [cartId]); // Only run once when the component mounts or cartId changes
 
   return (
     <ShopContext.Provider value={{ cart, loading, handleAddToCart, handleRemoveFromCart, refreshCart }}>
