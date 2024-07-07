@@ -3,21 +3,32 @@ import { useShopContext } from '@/contexts/shopContext';
 import Image from 'next/image';
 
 export default function Cart() {
-  const { cart, handleRemoveFromCart } = useShopContext();
+  const { cart, handleRemoveFromCart, refreshCart } = useShopContext();
   const [localCart, setLocalCart] = useState(cart || { id: null, lines: [], checkoutUrl: '', estimatedCost: null });
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    setLocalCart(cart);
+    if (cart) {
+      setLocalCart(cart);
+    }
   }, [cart]);
+
+  useEffect(() => {
+    const fetchCart = async () => {
+      await refreshCart();
+    };
+
+    fetchCart();
+  }, [refreshCart]);
 
   function toggleCart() {
     setOpen(!open);
   }
 
   function emptyCart() {
-    window.localStorage.removeItem('trevortwomeyphoto:Shopify:cart');
+    window.localStorage.removeItem('shopify_cart_id');
     setLocalCart({ id: null, lines: [], checkoutUrl: '', estimatedCost: null });
+    refreshCart(null);
   }
 
   return (
@@ -36,7 +47,13 @@ export default function Cart() {
             <ul>
               {localCart.lines.map(({ node: item }, index) => (
                 <li key={index} className="cart-item flex items-center border-b pb-4 mb-4">
-                  <img src={item.merchandise.product.images.edges[0].node.src} alt={item.merchandise.product.title} style={{ width: '50px', height: '50px', marginRight: '10px' }} />
+                  <Image
+                    src={item.merchandise.product.images.edges[0].node.url}
+                    alt={item.merchandise.product.title}
+                    width={50}
+                    height={50}
+                    style={{ marginRight: '10px' }}
+                  />
                   <div className="flex-1">
                     <p className="font-semibold">{item.merchandise.product.title}</p>
                     <p>Price: ${item.merchandise.priceV2.amount}</p>

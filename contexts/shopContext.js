@@ -9,38 +9,36 @@ export function useShopContext() {
 
 export function ShopProvider({ children }) {
   const [cart, setCart] = useState(null);
+  const [cartInitialized, setCartInitialized] = useState(false);
 
-  useEffect(() => {
-    const initializeCart = async () => {
-      const storedCartId = localStorage.getItem('shopify_cart_id');
-      console.log('Stored Cart ID:', storedCartId);
-
-      if (storedCartId) {
-        try {
-          const existingCart = await loadCart(storedCartId);
-          console.log('Loaded existing cart:', existingCart);
-          setCart(existingCart);
-        } catch (error) {
-          console.error('Failed to load existing cart:', error);
-          await createNewCart();
-        }
-      } else {
+  const refreshCart = async () => {
+    const storedCartId = localStorage.getItem('shopify_cart_id');
+    if (storedCartId) {
+      try {
+        const existingCart = await loadCart(storedCartId);
+        setCart(existingCart);
+      } catch (error) {
+        console.error('Failed to load existing cart:', error);
         await createNewCart();
       }
-    };
+    } else {
+      await createNewCart();
+    }
+    setCartInitialized(true);
+  };
 
-    const createNewCart = async () => {
-      try {
-        const newCart = await createCart();
-        console.log('Created new cart:', newCart);
-        localStorage.setItem('shopify_cart_id', newCart.cartId);
-        setCart(newCart);
-      } catch (error) {
-        console.error('Failed to create new cart:', error);
-      }
-    };
+  const createNewCart = async () => {
+    try {
+      const newCart = await createCart();
+      localStorage.setItem('shopify_cart_id', newCart.cartId);
+      setCart(newCart);
+    } catch (error) {
+      console.error('Failed to create new cart:', error);
+    }
+  };
 
-    initializeCart();
+  useEffect(() => {
+    refreshCart();
   }, []);
 
   const handleAddToCart = async ({ variantId, quantity }) => {
@@ -48,8 +46,6 @@ export function ShopProvider({ children }) {
       console.error('Cart or cart ID is not available.');
       return;
     }
-
-    console.log("Adding to cart:", cart.id, variantId, quantity);
 
     try {
       const updatedCart = await addItemToCart({ cartId: cart.id, variantId, quantity });
@@ -71,7 +67,7 @@ export function ShopProvider({ children }) {
   };
 
   return (
-    <ShopContext.Provider value={{ cart, handleAddToCart, handleRemoveFromCart }}>
+    <ShopContext.Provider value={{ cart, handleAddToCart, handleRemoveFromCart, cartInitialized, refreshCart }}>
       {children}
     </ShopContext.Provider>
   );

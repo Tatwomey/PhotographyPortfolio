@@ -125,7 +125,7 @@ export async function getStaticProps({ params }) {
 
 const ProductPage = ({ product }) => {
   const router = useRouter();
-  const { handleAddToCart } = useShopContext();
+  const { handleAddToCart, cartLoading, cart } = useShopContext(); // Added cartLoading and cart
   const [addingToCart, setAddingToCart] = useState(false);
   const productRef = useRef(null);
 
@@ -157,6 +157,11 @@ const ProductPage = ({ product }) => {
   };
 
   const handleAddToCartClick = async () => {
+    if (cartLoading || !cart) {
+      console.error('Cart is still loading or not available. Please wait.');
+      return;
+    }
+
     setAddingToCart(true);
     try {
       const variantId = selectedVariant.id;
@@ -172,6 +177,11 @@ const ProductPage = ({ product }) => {
   };
 
   const handleBuyNow = async () => {
+    if (cartLoading || !cart) {
+      console.error('Cart is still loading or not available. Please wait.');
+      return;
+    }
+
     setAddingToCart(true);
     try {
       const variantId = selectedVariant.id;
@@ -181,18 +191,15 @@ const ProductPage = ({ product }) => {
       });
 
       // Ensure cart is updated before navigating
-      let localCart = JSON.parse(localStorage.getItem('shopify_cart_id'));
+      const localCart = JSON.parse(localStorage.getItem('shopify_cart_id'));
       if (localCart) {
         const updatedCart = await loadCart(localCart);
         localStorage.setItem('shopify_cart_id', updatedCart.id);
-        localCart = updatedCart;
-      }
-      
-      if (localCart && localCart.checkoutUrl) {
-        console.log('Redirecting to checkout:', localCart.checkoutUrl);
-        window.location.href = localCart.checkoutUrl;
-      } else {
-        console.error('Checkout URL not found in cart:', localCart);
+        if (updatedCart.checkoutUrl) {
+          window.location.href = updatedCart.checkoutUrl;
+        } else {
+          console.error('Checkout URL not found in cart:', updatedCart);
+        }
       }
     } catch (error) {
       console.error("Error adding to cart:", error);

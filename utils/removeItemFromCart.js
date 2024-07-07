@@ -1,4 +1,4 @@
-import { removeFromCart } from "../lib/shopify";
+import { removeItemFromCart } from "@/lib/shopify";
 
 export const removeItemFromCart = async ({ cartId, lineId }) => {
   try {

@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useShopContext } from '@/contexts/shopContext';
 
 const Product = ({ product }) => {
-  const { handleAddToCart } = useShopContext();
+  const { handleAddToCart, cartInitialized, refreshCart } = useShopContext();
+  const [addingToCart, setAddingToCart] = useState(false);
+
+  useEffect(() => {
+    if (!cartInitialized) {
+      refreshCart(); // Ensure cart is refreshed on component mount
+    }
+  }, [cartInitialized, refreshCart]);
 
   const price = product.price;
 
@@ -12,8 +19,20 @@ const Product = ({ product }) => {
     ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(price)
     : 'Price Not Available';
 
-  const handleAddToCartClick = () => {
-    handleAddToCart({ variantId: product.variantId, quantity: 1 });
+  const handleAddToCartClick = async () => {
+    if (!cartInitialized) {
+      console.error('Cart is still loading or not available. Please wait.');
+      return;
+    }
+
+    setAddingToCart(true);
+    try {
+      await handleAddToCart({ variantId: product.variantId, quantity: 1 });
+      alert('Added to cart!');
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    }
+    setAddingToCart(false);
   };
 
   return (
@@ -35,11 +54,13 @@ const Product = ({ product }) => {
       <button
         onClick={handleAddToCartClick}
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+        disabled={addingToCart}
       >
-        Add to Cart
+        {addingToCart ? 'Adding...' : 'Add to Cart'}
       </button>
     </div>
   );
 };
 
 export default Product;
+

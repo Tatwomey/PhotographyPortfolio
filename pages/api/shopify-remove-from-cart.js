@@ -1,4 +1,4 @@
-import { removeItemFromCart } from '../../lib/shopify';
+import { removeItemFromCart } from "@/lib/shopify";
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {

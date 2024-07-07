@@ -1,4 +1,4 @@
-import { createCheckout, updateCheckout } from "@/lib/shopify";
+import { createCheckout, addItemToCart, createCart } from "@/lib/shopify";
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -13,19 +13,19 @@ export default async function handler(req, res) {
   }
 
   try {
-    let checkout;
+    let cart;
+
     if (!cartId) {
-      checkout = await createCheckout([{ variantId, quantity }]);
+      // If no cart ID, create a new cart and add item to it
+      cart = await createCart();
+      await addItemToCart({ cartId: cart.cartId, variantId, quantity });
     } else {
-      checkout = await updateCheckout(cartId, [{ variantId, quantity }]);
+      // Add item to the existing cart
+      cart = await addItemToCart({ cartId, variantId, quantity });
     }
 
-    // Store the cartId for persistence
-    if (checkout.id) {
-      localStorage.setItem('cartId', checkout.id);
-    }
-
-    return res.status(200).json(checkout);
+    // Send the cartId back to the client to store it
+    return res.status(200).json({ cartId: cart.cartId, checkoutUrl: cart.checkoutUrl });
   } catch (error) {
     console.error('Error adding to cart:', error);
     return res.status(500).json({ message: 'Error adding to cart' });

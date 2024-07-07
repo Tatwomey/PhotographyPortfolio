@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useShopContext } from '@/contexts/shopContext';
 import Hero from '@/components/Hero';
 import Image from 'next/image';
@@ -12,6 +12,7 @@ const CartPage = () => {
   const cartPageRef = useRef(null);
   const checkoutRef = useRef(null);
   const router = useRouter();
+  const [localCart, setLocalCart] = useState(cart || { id: null, lines: [], checkoutUrl: '', estimatedCost: null });
 
   useSmoothScroll('#shopping-cart', cartPageRef);
 
@@ -20,6 +21,12 @@ const CartPage = () => {
       cartPageRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [router.query]);
+
+  useEffect(() => {
+    if (cart) {
+      setLocalCart(cart);
+    }
+  }, [cart]);
 
   const subtotal = safeCart.reduce((total, { node: item }) => total + parseFloat(item.merchandise.priceV2.amount) * item.quantity, 0).toFixed(2);
 
@@ -39,7 +46,7 @@ const CartPage = () => {
               safeCart.map(({ node: item }) => {
                 const merchandise = item.merchandise;
                 const product = merchandise.product;
-                const imageSrc = product?.images?.edges?.[0]?.node?.src || '/fallback-image.jpg';
+                const imageSrc = product?.images?.edges?.[0]?.node?.url || '/fallback-image.jpg';
                 const priceAmount = parseFloat(merchandise.priceV2.amount);
 
                 return (

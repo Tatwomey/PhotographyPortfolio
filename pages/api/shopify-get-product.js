@@ -1,4 +1,4 @@
-import { getProduct } from '../../lib/shopify';
+import { getProduct } from "@/lib/shopify";
 
 export default async function handler(req, res) {
     // Only allow POST method for this endpoint
