@@ -16,7 +16,7 @@ export function ShopProvider({ children }) {
     try {
       let cartData;
       if (!currentCartId) {
-        console.log("No cart ID found, creating a new cart...");
+        console.log("No cart ID found, creating a new freakin cart...");
         cartData = await createCart();
         window.localStorage.setItem('shopify_cart_id', cartData.id);
         setCartId(cartData.id);
