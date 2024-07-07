@@ -6,7 +6,7 @@ import { useShopContext } from "@/contexts/shopContext";
 
 export default function Shop({ products }) {
   const productListRef = useRef(null);
-  const { handleAddToCart } = useShopContext();
+  const { handleAddToCart, loading } = useShopContext();
 
   useEffect(() => {
     if (productListRef.current) {
@@ -19,6 +19,11 @@ export default function Shop({ products }) {
 
   const handleAddToCartClick = async (product) => {
     try {
+      if (loading) {
+        console.error("Cart is still loading or not available. Please wait.");
+        return;
+      }
+
       if (!product.variantId) {
         console.error("Variant ID is missing for the product");
         return;
@@ -28,13 +33,7 @@ export default function Shop({ products }) {
       const price = product.price || "0";
       const image = product.imageSrc || "/fallback-image.jpg";
 
-      await handleAddToCart({
-        variantId: product.variantId,
-        quantity: 1,
-        title,
-        price,
-        image,
-      });
+      await handleAddToCart(product.variantId, 1);
       alert("Added to cart!");
     } catch (error) {
       console.error("Error in handleAddToCart:", error);
