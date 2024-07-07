@@ -12,17 +12,17 @@ export function ShopProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [cartId, setCartId] = useState(null);
 
-  const refreshCart = async (cartId) => {
+  const refreshCart = async (currentCartId) => {
     try {
       let cartData;
-      if (!cartId) {
+      if (!currentCartId) {
         console.log("No cart ID found, creating a new cart...");
         cartData = await createCart();
         window.localStorage.setItem('shopify_cart_id', cartData.id);
         setCartId(cartData.id);
       } else {
-        console.log(`Fetching cart with ID: ${cartId}`);
-        cartData = await fetchCart(cartId);
+        console.log(`Fetching cart with ID: ${currentCartId}`);
+        cartData = await fetchCart(currentCartId);
       }
       if (!cartData || !cartData.id) {
         throw new Error('Invalid cart data');
@@ -71,6 +71,7 @@ export function ShopProvider({ children }) {
 
   useEffect(() => {
     const storedCartId = window.localStorage.getItem('shopify_cart_id');
+    console.log(`Stored cart ID: ${storedCartId}`);
     if (storedCartId) {
       setCartId(storedCartId);
       refreshCart(storedCartId);
