@@ -29,10 +29,6 @@ export default function Shop({ products }) {
         return;
       }
 
-      const title = product.title || "Unknown Product";
-      const price = product.price || "0";
-      const image = product.imageSrc || "/fallback-image.jpg";
-
       await handleAddToCart(product.variantId, 1);
       alert("Added to cart!");
     } catch (error) {

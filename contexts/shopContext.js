@@ -72,7 +72,7 @@ export function ShopProvider({ children }) {
 
   useEffect(() => {
     refreshCart();
-  }, []);
+  }, []); // Only run once when the component mounts
 
   return (
     <ShopContext.Provider value={{ cart, loading, handleAddToCart, handleRemoveFromCart, refreshCart }}>
