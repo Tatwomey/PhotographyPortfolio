@@ -20,6 +20,7 @@ export function ShopProvider({ children }) {
         cartData = await createCart();
         window.localStorage.setItem('shopify_cart_id', cartData.id);
         setCartId(cartData.id);
+        console.log(`New cart ID created and stored: ${cartData.id}`);
       } else {
         console.log(`Fetching cart with ID: ${currentCartId}`);
         cartData = await fetchCart(currentCartId);
@@ -46,6 +47,7 @@ export function ShopProvider({ children }) {
         window.localStorage.setItem('shopify_cart_id', newCart.id);
         currentCartId = newCart.id;
         setCartId(newCart.id);
+        console.log(`New cart ID created and stored: ${newCart.id}`);
       }
       await addItemToCart({ cartId: currentCartId, variantId, quantity });
       await refreshCart(currentCartId);
