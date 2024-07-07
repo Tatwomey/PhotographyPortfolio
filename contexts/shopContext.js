@@ -75,9 +75,11 @@ export function ShopProvider({ children }) {
     const storedCartId = window.localStorage.getItem('shopify_cart_id');
     console.log(`Stored cart ID: ${storedCartId}`);
     if (storedCartId && storedCartId !== cartId) {
+      console.log(`Setting cart ID to: ${storedCartId}`);
       setCartId(storedCartId);
       refreshCart(storedCartId);
     } else if (!storedCartId) {
+      console.log('No stored cart ID found, refreshing cart with null');
       refreshCart(null);
     }
   }, [cartId]); // Only run once when the component mounts or cartId changes

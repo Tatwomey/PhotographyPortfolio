@@ -27,7 +27,7 @@ const Product = ({ product }) => {
 
     setAddingToCart(true);
     try {
-      await handleAddToCart({ variantId: product.variantId, quantity: 1 });
+      await handleAddToCart(product.variantId, 1);
       alert('Added to cart!');
     } catch (error) {
       console.error('Error adding to cart:', error);
@@ -63,4 +63,3 @@ const Product = ({ product }) => {
 };
 
 export default Product;
-
