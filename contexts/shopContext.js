@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { createCart, loadCart, addItemToCart, removeItemFromCart } from '@/lib/shopify';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { createCart, fetchCart, removeItemFromCart, addItemToCart } from '@/lib/shopify';
 
 const ShopContext = createContext();
 
@@ -9,31 +9,51 @@ export function useShopContext() {
 
 export function ShopProvider({ children }) {
   const [cart, setCart] = useState(null);
-  const [cartInitialized, setCartInitialized] = useState(false);
 
   const refreshCart = async () => {
-    const storedCartId = localStorage.getItem('shopify_cart_id');
-    if (storedCartId) {
-      try {
-        const existingCart = await loadCart(storedCartId);
-        setCart(existingCart);
-      } catch (error) {
-        console.error('Failed to load existing cart:', error);
-        await createNewCart();
+    try {
+      const cartId = window.localStorage.getItem('shopify_cart_id');
+      let cartData;
+      if (!cartId) {
+        cartData = await createCart();
+        window.localStorage.setItem('shopify_cart_id', cartData.id);
+      } else {
+        cartData = await fetchCart(cartId);
       }
-    } else {
-      await createNewCart();
+      if (!cartData || !cartData.id) {
+        throw new Error('Invalid cart data');
+      }
+      setCart(cartData);
+    } catch (error) {
+      console.error("Failed to refresh cart:", error);
     }
-    setCartInitialized(true);
   };
 
-  const createNewCart = async () => {
+  const handleAddToCart = async (variantId, quantity) => {
     try {
-      const newCart = await createCart();
-      localStorage.setItem('shopify_cart_id', newCart.cartId);
-      setCart(newCart);
+      const cartId = window.localStorage.getItem('shopify_cart_id');
+      if (!cartId) {
+        const newCart = await createCart();
+        window.localStorage.setItem('shopify_cart_id', newCart.id);
+        await addItemToCart({ cartId: newCart.id, variantId, quantity });
+        await refreshCart();
+      } else {
+        await addItemToCart({ cartId, variantId, quantity });
+        await refreshCart();
+      }
     } catch (error) {
-      console.error('Failed to create new cart:', error);
+      console.error("Failed to add item to cart:", error);
+    }
+  };
+
+  const handleRemoveFromCart = async (itemId) => {
+    try {
+      const cartId = window.localStorage.getItem('shopify_cart_id');
+      if (!cartId) throw new Error("Cart ID not found in localStorage");
+      await removeItemFromCart(cartId, itemId);
+      await refreshCart();
+    } catch (error) {
+      console.error("Failed to remove item from cart:", error);
     }
   };
 
@@ -41,33 +61,8 @@ export function ShopProvider({ children }) {
     refreshCart();
   }, []);
 
-  const handleAddToCart = async ({ variantId, quantity }) => {
-    if (!cart || !cart.id) {
-      console.error('Cart or cart ID is not available.');
-      return;
-    }
-
-    try {
-      const updatedCart = await addItemToCart({ cartId: cart.id, variantId, quantity });
-      setCart(updatedCart);
-    } catch (error) {
-      console.error('Error adding item to cart:', error);
-    }
-  };
-
-  const handleRemoveFromCart = async (lineId) => {
-    if (!cart || !cart.id) return;
-
-    try {
-      const updatedCart = await removeItemFromCart(cart.id, lineId);
-      setCart(updatedCart);
-    } catch (error) {
-      console.error('Error removing item from cart:', error);
-    }
-  };
-
   return (
-    <ShopContext.Provider value={{ cart, handleAddToCart, handleRemoveFromCart, cartInitialized, refreshCart }}>
+    <ShopContext.Provider value={{ cart, handleAddToCart, handleRemoveFromCart, refreshCart }}>
       {children}
     </ShopContext.Provider>
   );

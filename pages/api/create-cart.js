@@ -1,4 +1,3 @@
-// pages/api/create-cart.js
 import { createCart } from "@/lib/shopify";
 
 export default async function handler(req, res) {

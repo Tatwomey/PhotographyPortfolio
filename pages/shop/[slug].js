@@ -125,7 +125,7 @@ export async function getStaticProps({ params }) {
 
 const ProductPage = ({ product }) => {
   const router = useRouter();
-  const { handleAddToCart, cartLoading, cart } = useShopContext(); // Added cartLoading and cart
+  const { handleAddToCart, cartLoading, cart } = useShopContext();
   const [addingToCart, setAddingToCart] = useState(false);
   const productRef = useRef(null);
 
@@ -165,10 +165,7 @@ const ProductPage = ({ product }) => {
     setAddingToCart(true);
     try {
       const variantId = selectedVariant.id;
-      await handleAddToCart({
-        variantId,
-        quantity: 1,
-      });
+      await handleAddToCart(variantId, 1);
       alert("Added to cart!");
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -185,10 +182,7 @@ const ProductPage = ({ product }) => {
     setAddingToCart(true);
     try {
       const variantId = selectedVariant.id;
-      await handleAddToCart({
-        variantId,
-        quantity: 1,
-      });
+      await handleAddToCart(variantId, 1);
 
       // Ensure cart is updated before navigating
       const localCart = JSON.parse(localStorage.getItem('shopify_cart_id'));

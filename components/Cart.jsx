@@ -28,21 +28,21 @@ export default function Cart() {
   function emptyCart() {
     window.localStorage.removeItem('shopify_cart_id');
     setLocalCart({ id: null, lines: [], checkoutUrl: '', estimatedCost: null });
-    refreshCart(null);
+    refreshCart();
   }
 
   return (
     <div className="cart">
       <button className="icon" onClick={toggleCart}>
         <Image src="/images/cart.svg" alt="cart" width={20} height={20} />
-        <div className="count">{localCart ? localCart.lines.length : 0}</div>
+        <div className="count">{localCart && localCart.lines ? localCart.lines.length : 0}</div>
       </button>
       <div className={`drawer ${open ? 'open' : ''}`}>
         <button className="close" onClick={toggleCart}>
           &times; Close
         </button>
         <h3>Your Cart</h3>
-        {localCart && localCart.lines.length > 0 ? (
+        {localCart && localCart.lines && localCart.lines.length > 0 ? (
           <>
             <ul>
               {localCart.lines.map(({ node: item }, index) => (

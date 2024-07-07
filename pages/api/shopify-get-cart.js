@@ -1,4 +1,4 @@
-import { loadCart } from '@/utils/load-cart';
+import { fetchCart } from "@/lib/shopify";
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const cart = await loadCart(cartId);
+    const cart = await fetchCart(cartId);
     return res.status(200).json(cart);
   } catch (error) {
     console.error('Error getting cart:', error);
