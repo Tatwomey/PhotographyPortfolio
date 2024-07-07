@@ -10,15 +10,16 @@ export function useShopContext() {
 export function ShopProvider({ children }) {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [cartId, setCartId] = useState(null);
 
-  const refreshCart = async () => {
+  const refreshCart = async (cartId) => {
     try {
-      const cartId = window.localStorage.getItem('shopify_cart_id');
       let cartData;
       if (!cartId) {
         console.log("No cart ID found, creating a new cart...");
         cartData = await createCart();
         window.localStorage.setItem('shopify_cart_id', cartData.id);
+        setCartId(cartData.id);
       } else {
         console.log(`Fetching cart with ID: ${cartId}`);
         cartData = await fetchCart(cartId);
@@ -38,17 +39,16 @@ export function ShopProvider({ children }) {
   const handleAddToCart = async (variantId, quantity) => {
     try {
       setLoading(true);
-      const cartId = window.localStorage.getItem('shopify_cart_id');
-      if (!cartId) {
+      let currentCartId = cartId;
+      if (!currentCartId) {
         console.log("No cart ID found, creating a new cart...");
         const newCart = await createCart();
         window.localStorage.setItem('shopify_cart_id', newCart.id);
-        await addItemToCart({ cartId: newCart.id, variantId, quantity });
-        await refreshCart();
-      } else {
-        await addItemToCart({ cartId, variantId, quantity });
-        await refreshCart();
+        currentCartId = newCart.id;
+        setCartId(newCart.id);
       }
+      await addItemToCart({ cartId: currentCartId, variantId, quantity });
+      await refreshCart(currentCartId);
       setLoading(false);
     } catch (error) {
       console.error("Failed to add item to cart:", error);
@@ -59,10 +59,9 @@ export function ShopProvider({ children }) {
   const handleRemoveFromCart = async (itemId) => {
     try {
       setLoading(true);
-      const cartId = window.localStorage.getItem('shopify_cart_id');
       if (!cartId) throw new Error("Cart ID not found in localStorage");
       await removeItemFromCart(cartId, itemId);
-      await refreshCart();
+      await refreshCart(cartId);
       setLoading(false);
     } catch (error) {
       console.error("Failed to remove item from cart:", error);
@@ -71,7 +70,13 @@ export function ShopProvider({ children }) {
   };
 
   useEffect(() => {
-    refreshCart();
+    const storedCartId = window.localStorage.getItem('shopify_cart_id');
+    if (storedCartId) {
+      setCartId(storedCartId);
+      refreshCart(storedCartId);
+    } else {
+      refreshCart(null);
+    }
   }, []); // Only run once when the component mounts
 
   return (
