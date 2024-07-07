@@ -18,8 +18,11 @@ export default function Cart() {
       await refreshCart();
     };
 
-    fetchCart();
-  }, [refreshCart]);
+    // Only fetch the cart if it hasn't been fetched yet
+    if (!cart || !cart.id) {
+      fetchCart();
+    }
+  }, [refreshCart, cart]);
 
   function toggleCart() {
     setOpen(!open);
