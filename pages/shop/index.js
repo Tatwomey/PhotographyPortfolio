@@ -6,7 +6,7 @@ import { useShopContext } from "@/contexts/shopContext";
 
 export default function Shop({ products }) {
   const productListRef = useRef(null);
-  const { handleAddToCart, loading, cart } = useShopContext();
+  const { handleAddToCart, loading, cart, refreshCart } = useShopContext();
 
   useEffect(() => {
     if (productListRef.current) {
@@ -15,11 +15,15 @@ export default function Shop({ products }) {
         behavior: "smooth",
       });
     }
-  }, []);
+
+    if (!cart || !cart.id) {
+      refreshCart();
+    }
+  }, [cart, refreshCart]);
 
   const handleAddToCartClick = async (product) => {
     try {
-      if (loading || !cart) {
+      if (loading) {
         console.error("Cart is still loading or not available. Please wait.");
         return;
       }

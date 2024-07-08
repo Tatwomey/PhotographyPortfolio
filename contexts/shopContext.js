@@ -80,7 +80,7 @@ export function ShopProvider({ children }) {
     } else {
       refreshCart(null);
     }
-  }, []); // Only run once when the component mounts
+  }, []);
 
   return (
     <ShopContext.Provider value={{ cart, loading, handleAddToCart, handleRemoveFromCart, refreshCart }}>
