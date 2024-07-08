@@ -1,5 +1,10 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { createCart, fetchCart, removeItemFromCart, addItemToCart } from '@/lib/shopify';
+import { createContext, useContext, useState, useEffect } from "react";
+import {
+  createCart,
+  fetchCart,
+  removeItemFromCart,
+  addItemToCart,
+} from "@/lib/shopify";
 
 const ShopContext = createContext();
 
@@ -11,6 +16,7 @@ export function ShopProvider({ children }) {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [cartId, setCartId] = useState(null);
+  const [cartInitialized, setCartInitialized] = useState(false);
 
   const refreshCart = async (currentCartId) => {
     try {
@@ -18,7 +24,7 @@ export function ShopProvider({ children }) {
       if (!currentCartId) {
         console.log("No cart ID found, creating a new cart...");
         cartData = await createCart();
-        window.localStorage.setItem('shopify_cart_id', cartData.id);
+        window.localStorage.setItem("shopify_cart_id", cartData.id);
         setCartId(cartData.id);
         console.log(`New cart ID created and stored: ${cartData.id}`);
       } else {
@@ -26,9 +32,10 @@ export function ShopProvider({ children }) {
         cartData = await fetchCart(currentCartId);
       }
       if (!cartData || !cartData.id) {
-        throw new Error('Invalid cart data');
+        throw new Error("Invalid cart data");
       }
       setCart(cartData);
+      setCartInitialized(true); // Set cart initialized
       setLoading(false);
       console.log("Cart successfully refreshed:", cartData);
     } catch (error) {
@@ -44,7 +51,7 @@ export function ShopProvider({ children }) {
       if (!currentCartId) {
         console.log("No cart ID found, creating a new cart...");
         const newCart = await createCart();
-        window.localStorage.setItem('shopify_cart_id', newCart.id);
+        window.localStorage.setItem("shopify_cart_id", newCart.id);
         currentCartId = newCart.id;
         setCartId(newCart.id);
         console.log(`New cart ID created and stored: ${newCart.id}`);
@@ -72,7 +79,7 @@ export function ShopProvider({ children }) {
   };
 
   useEffect(() => {
-    const storedCartId = window.localStorage.getItem('shopify_cart_id');
+    const storedCartId = window.localStorage.getItem("shopify_cart_id");
     console.log(`Stored cart ID: ${storedCartId}`);
     if (storedCartId) {
       setCartId(storedCartId);
@@ -83,7 +90,15 @@ export function ShopProvider({ children }) {
   }, []);
 
   return (
-    <ShopContext.Provider value={{ cart, loading, handleAddToCart, handleRemoveFromCart, refreshCart }}>
+    <ShopContext.Provider
+      value={{
+        cart,
+        loading,
+        handleAddToCart,
+        handleRemoveFromCart,
+        refreshCart,
+        cartInitialized,
+      }}>
       {children}
     </ShopContext.Provider>
   );
