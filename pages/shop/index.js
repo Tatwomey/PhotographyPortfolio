@@ -19,7 +19,7 @@ export default function Shop({ products }) {
 
   const handleAddToCartClick = async (product) => {
     try {
-      if (loading) {
+      if (loading || !cart) {
         console.error("Cart is still loading or not available. Please wait.");
         return;
       }

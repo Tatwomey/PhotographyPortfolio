@@ -4,7 +4,6 @@ import Image from 'next/image';
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import { FaInstagram, FaLinkedin } from 'react-icons/fa';
 import CartIcon from './CartIcon';
-import { useShopContext } from '@/contexts/shopContext';
 
 const Navbar = () => {
   const [nav, setNav] = useState(false);
@@ -12,7 +11,6 @@ const Navbar = () => {
     backgroundColor: 'transparent',
     color: 'white',
   });
-  const { cart } = useShopContext();
 
   useEffect(() => {
     const changeColor = () => {
