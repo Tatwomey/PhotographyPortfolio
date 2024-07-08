@@ -40,7 +40,6 @@ export function ShopProvider({ children }) {
   const handleAddToCart = async (variantId, quantity) => {
     try {
       setLoading(true);
-      console.log(`Adding item to cart: variantId=${variantId}, quantity=${quantity}`);
       let currentCartId = cartId;
       if (!currentCartId) {
         console.log("No cart ID found, creating a new cart...");
@@ -62,7 +61,6 @@ export function ShopProvider({ children }) {
   const handleRemoveFromCart = async (itemId) => {
     try {
       setLoading(true);
-      console.log(`Removing item from cart: itemId=${itemId}`);
       if (!cartId) throw new Error("Cart ID not found in localStorage");
       await removeItemFromCart(cartId, itemId);
       await refreshCart(cartId);
@@ -77,20 +75,12 @@ export function ShopProvider({ children }) {
     const storedCartId = window.localStorage.getItem('shopify_cart_id');
     console.log(`Stored cart ID: ${storedCartId}`);
     if (storedCartId) {
-      console.log(`Setting cart ID to: ${storedCartId}`);
       setCartId(storedCartId);
       refreshCart(storedCartId);
     } else {
       refreshCart(null);
     }
   }, []); // Only run once when the component mounts
-
-  useEffect(() => {
-    if (cartId && cartId !== window.localStorage.getItem('shopify_cart_id')) {
-      console.log(`Updating localStorage with cart ID: ${cartId}`);
-      window.localStorage.setItem('shopify_cart_id', cartId);
-    }
-  }, [cartId]);
 
   return (
     <ShopContext.Provider value={{ cart, loading, handleAddToCart, handleRemoveFromCart, refreshCart }}>

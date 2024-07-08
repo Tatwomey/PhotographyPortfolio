@@ -6,7 +6,7 @@ import { useShopContext } from "@/contexts/shopContext";
 
 export default function Shop({ products }) {
   const productListRef = useRef(null);
-  const { handleAddToCart, loading } = useShopContext();
+  const { handleAddToCart, loading, cart } = useShopContext();
 
   useEffect(() => {
     if (productListRef.current) {

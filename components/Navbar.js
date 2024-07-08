@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import { FaInstagram, FaLinkedin } from 'react-icons/fa';
 import CartIcon from './CartIcon';
-import { useShopContext } from '../contexts/shopContext';
+import { useShopContext } from '@/contexts/shopContext';
 
 const Navbar = () => {
   const [nav, setNav] = useState(false);
