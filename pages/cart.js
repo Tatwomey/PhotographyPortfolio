@@ -39,7 +39,7 @@ const CartPage = () => {
               safeCart.map(({ node: item }) => {
                 const merchandise = item.merchandise;
                 const product = merchandise.product;
-                const imageSrc = product?.images?.edges?.[0]?.node?.url || '/fallback-image.jpg';
+                const imageSrc = product?.images?.edges?.[0]?.node?.src || '/fallback-image.jpg';
                 const priceAmount = parseFloat(merchandise.priceV2.amount);
 
                 return (
