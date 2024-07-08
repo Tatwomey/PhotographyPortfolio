@@ -1,4 +1,4 @@
-import { getProductsInCollection } from '../../lib/shopify';
+import { getProductsInCollection } from "@/lib/shopify";
 
 export default async function handler(_req, res) {
     try {
