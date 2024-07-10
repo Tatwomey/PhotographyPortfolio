@@ -4,7 +4,6 @@ import Hero from "@/components/Hero";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useShopContext } from "@/contexts/shopContext";
-import { fetchCart } from '@/lib/shopify';
 
 export async function getStaticPaths() {
   const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
@@ -126,7 +125,7 @@ export async function getStaticProps({ params }) {
 
 const ProductPage = ({ product }) => {
   const router = useRouter();
-  const { handleAddToCart, cartLoading, cart } = useShopContext();
+  const { handleAddToCart, cartLoading, cart, refreshCart } = useShopContext();
   const [addingToCart, setAddingToCart] = useState(false);
   const productRef = useRef(null);
 
@@ -145,6 +144,10 @@ const ProductPage = ({ product }) => {
       });
     }
   }, [product]);
+
+  useEffect(() => {
+    refreshCart();
+  }, [refreshCart]);
 
   const handleThumbnailClick = (imageSrc) => {
     setMainImage(imageSrc);
@@ -186,7 +189,7 @@ const ProductPage = ({ product }) => {
       await handleAddToCart(variantId, 1);
 
       // Ensure cart is updated before navigating
-      const localCartId = localStorage.getItem('shopify_cart_id');
+      const localCartId = window.localStorage.getItem('shopify_cart_id');
       if (localCartId) {
         const updatedCart = await fetchCart(localCartId);
         if (updatedCart.checkoutUrl) {

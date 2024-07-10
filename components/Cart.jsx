@@ -18,7 +18,6 @@ export default function Cart() {
       await refreshCart();
     };
 
-    // Only fetch the cart if it hasn't been fetched yet
     if (!cart || !cart.id) {
       fetchCart();
     }

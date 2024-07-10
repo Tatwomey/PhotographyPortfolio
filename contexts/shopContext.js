@@ -31,6 +31,9 @@ export function ShopProvider({ children }) {
         console.log(`Fetching cart with ID: ${currentCartId}`);
         cartData = await fetchCart(currentCartId);
       }
+
+      console.log("Fetched cart data:", cartData);
+
       if (!cartData || !cartData.id) {
         throw new Error("Invalid cart data");
       }
@@ -98,8 +101,7 @@ export function ShopProvider({ children }) {
         handleRemoveFromCart,
         refreshCart,
         cartInitialized,
-      }}
-    >
+      }}>
       {children}
     </ShopContext.Provider>
   );
