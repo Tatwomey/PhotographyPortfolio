@@ -35,7 +35,7 @@ export function ShopProvider({ children }) {
         throw new Error("Invalid cart data");
       }
       setCart(cartData);
-      setCartInitialized(true); // Set cart initialized
+      setCartInitialized(true);
       setLoading(false);
       console.log("Cart successfully refreshed:", cartData);
     } catch (error) {
@@ -98,7 +98,8 @@ export function ShopProvider({ children }) {
         handleRemoveFromCart,
         refreshCart,
         cartInitialized,
-      }}>
+      }}
+    >
       {children}
     </ShopContext.Provider>
   );
