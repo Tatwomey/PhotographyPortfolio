@@ -85,6 +85,7 @@ export async function getStaticProps({ params }) {
                   amount
                   currencyCode
                 }
+                availableForSale
                 selectedOptions {
                   name
                   value
@@ -130,12 +131,9 @@ const ProductPage = ({ product }) => {
   const [addingToCart, setAddingToCart] = useState(false);
   const productRef = useRef(null);
 
-  const [mainImage, setMainImage] = useState(
-    product.images.edges[0]?.node.src || "/fallback-image.jpg"
-  );
-  const [selectedVariant, setSelectedVariant] = useState(
-    product.variants.edges[0]?.node
-  );
+  const mainImageSrc = product.images.edges && product.images.edges[0]?.node.src ? product.images.edges[0].node.src : "/fallback-image.jpg";
+  const [mainImage, setMainImage] = useState(mainImageSrc);
+  const selectedVariant = product.variants.edges && product.variants.edges[0]?.node ? product.variants.edges[0].node : null;
 
   useEffect(() => {
     if (productRef.current) {
@@ -146,15 +144,12 @@ const ProductPage = ({ product }) => {
     }
   }, [product]);
 
+  useEffect(() => {
+    refreshCart();
+  }, [refreshCart]);
+
   const handleThumbnailClick = (imageSrc) => {
     setMainImage(imageSrc);
-  };
-
-  const handleVariantChange = (event) => {
-    const variant = product.variants.edges.find(
-      (v) => v.node.id === event.target.value
-    );
-    setSelectedVariant(variant.node);
   };
 
   const handleAddToCartClick = async () => {
@@ -185,7 +180,6 @@ const ProductPage = ({ product }) => {
       const variantId = selectedVariant.id;
       await handleAddToCart(variantId, 1);
 
-      // Ensure cart is updated before navigating
       const localCartId = window.localStorage.getItem('shopify_cart_id');
       if (localCartId) {
         const updatedCart = await fetchCart(localCartId);
@@ -224,6 +218,11 @@ const ProductPage = ({ product }) => {
                 className="rounded-lg"
                 unoptimized
               />
+              {!selectedVariant.availableForSale && (
+                <div className="absolute top-0 left-0 bg-red-500 text-white p-2">
+                  Sold Out
+                </div>
+              )}
             </div>
             <div className="flex space-x-2 md:space-x-4 overflow-x-auto">
               {product.images.edges.map((image, index) => (
@@ -259,7 +258,12 @@ const ProductPage = ({ product }) => {
                 id="variant"
                 name="variant"
                 className="w-full border rounded p-2"
-                onChange={handleVariantChange}
+                onChange={(e) => {
+                  const variant = product.variants.edges.find(
+                    (v) => v.node.id === e.target.value
+                  );
+                  setSelectedVariant(variant.node);
+                }}
                 value={selectedVariant.id}
               >
                 {product.variants.edges.map((variant) => (
@@ -274,18 +278,21 @@ const ProductPage = ({ product }) => {
               </select>
             </div>
             <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4 w-full">
-              <button
-                onClick={handleAddToCartClick}
-                disabled={addingToCart}
-                className="w-full md:w-auto bg-white text-black border border-black font-bold py-2 px-4 rounded"
-              >
-                {addingToCart ? "Adding..." : "Add to Cart"}
-              </button>
+              {selectedVariant.availableForSale && (
+                <button
+                  onClick={handleAddToCartClick}
+                  disabled={addingToCart}
+                  className="w-full md:w-auto bg-white text-black border border-black font-bold py-2 px-4 rounded"
+                >
+                  {addingToCart ? "Adding..." : "Add to Cart"}
+                </button>
+              )}
               <button
                 onClick={handleBuyNow}
-                className="w-full md:w-auto bg-black text-white font-bold py-2 px-4 rounded"
+                disabled={!selectedVariant.availableForSale}
+                className={`w-full md:w-auto font-bold py-2 px-4 rounded ${selectedVariant.availableForSale ? "bg-black text-white" : "bg-gray-400 text-gray-200"}`}
               >
-                Buy it Now
+                {selectedVariant.availableForSale ? "Buy it Now" : "Sold Out"}
               </button>
             </div>
           </div>

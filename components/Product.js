@@ -46,6 +46,11 @@ const Product = ({ product }) => {
             height={400}
             unoptimized
           />
+          {!product.availableForSale && (
+            <div className="absolute top-0 left-0 bg-red-500 text-white p-2">
+              Sold out
+            </div>
+          )}
         </div>
       </Link>
       <h2 className="text-xl font-semibold mt-2">{product.title}</h2>
@@ -53,13 +58,14 @@ const Product = ({ product }) => {
       <p className="font-bold mt-1">{formattedPrice}</p>
       <button
         onClick={handleAddToCartClick}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
-        disabled={addingToCart}
+        className={`product-btn ${!product.availableForSale ? 'sold-out-btn' : 'add-to-cart-btn'}`}
+        disabled={addingToCart || !product.availableForSale}
       >
-        {addingToCart ? 'Adding...' : 'Add to Cart'}
+        {addingToCart ? 'Adding...' : !product.availableForSale ? 'Sold Out' : 'Add to Cart'}
       </button>
     </div>
   );
 };
 
 export default Product;
+

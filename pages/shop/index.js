@@ -96,6 +96,7 @@ export async function getStaticProps() {
                       amount
                       currencyCode
                     }
+                    availableForSale
                   }
                 }
               }
@@ -142,6 +143,7 @@ export async function getStaticProps() {
         imageAlt: edge.node.images.edges[0]?.node.altText || "Product Image",
         price: variant?.priceV2.amount || "0",
         variantId: variant?.id || null,
+        availableForSale: variant?.availableForSale || false,
       };
     });
 
