@@ -1,42 +1,14 @@
-import React, { useRef, useEffect } from "react";
-import Head from "next/head";
-import Hero from "@/components/Hero";
-import Product from "@/components/Product";
-import { useShopContext } from "@/contexts/shopContext";
+import React, { useRef } from 'react';
+import Head from 'next/head';
+import Hero from '@/components/Hero';
+import Product from '@/components/Product';
+import { useSmoothScroll } from '@/hooks/useSmoothScroll';
 
 export default function Shop({ products }) {
-  const productListRef = useRef(null);
-  const { handleAddToCart, loading, cart } = useShopContext();
-
-  useEffect(() => {
-    if (productListRef.current) {
-      window.scroll({
-        top: productListRef.current.getBoundingClientRect().top + window.scrollY,
-        behavior: "smooth",
-      });
-    }
-  }, []);
-
-  const handleAddToCartClick = async (product) => {
-    try {
-      if (loading) {
-        console.error("Cart is still loading or not available. Please wait.");
-        return;
-      }
-
-      if (!product.variantId) {
-        console.error("Variant ID is missing for the product");
-        return;
-      }
-
-      await handleAddToCart(product.variantId, 1);
-      alert("Added to cart!");
-    } catch (error) {
-      console.error("Error in handleAddToCart:", error);
-    }
-  };
-
   const safeProducts = products || [];
+  const shopPageRef = useRef(null);
+
+  useSmoothScroll('#shop', shopPageRef);
 
   return (
     <>
@@ -45,13 +17,14 @@ export default function Shop({ products }) {
         <meta name="description" content="Shop for our products" />
       </Head>
       <Hero />
-      <main ref={productListRef} className="container mx-auto p-4 pb-20">
+      <main ref={shopPageRef} className="container mx-auto p-4 pb-20">
         <div className="flex flex-wrap -mx-2">
           {safeProducts.map((product) => (
-            <div key={product.id} className="w-full sm:w-1/2 md:w-1/3 px-2 mb-4">
+            <div key={product.id} className="w-full sm:w-1/2 md:w-1/3 px-2 mb-4 product-item">
+              {/* .product-item class is applied here */}
               <Product
                 product={product}
-                onAddToCart={() => handleAddToCartClick(product)}
+                isSoldOut={!product.availableForSale}
               />
             </div>
           ))}
@@ -80,6 +53,7 @@ export async function getStaticProps() {
               title
               handle
               description
+              availableForSale
               images(first: 1) {
                 edges {
                   node {
@@ -96,7 +70,6 @@ export async function getStaticProps() {
                       amount
                       currencyCode
                     }
-                    availableForSale
                   }
                 }
               }
@@ -139,11 +112,11 @@ export async function getStaticProps() {
         title: edge.node.title,
         handle: edge.node.handle,
         description: edge.node.description,
+        availableForSale: edge.node.availableForSale,
         imageSrc: edge.node.images.edges[0]?.node.src || "/fallback-image.jpg",
         imageAlt: edge.node.images.edges[0]?.node.altText || "Product Image",
         price: variant?.priceV2.amount || "0",
         variantId: variant?.id || null,
-        availableForSale: variant?.availableForSale || false,
       };
     });
 

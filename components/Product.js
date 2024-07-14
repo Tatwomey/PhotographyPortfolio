@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useShopContext } from '@/contexts/shopContext';
 
-const Product = ({ product }) => {
+const Product = ({ product, isSoldOut }) => {
   const { handleAddToCart, cartInitialized, refreshCart } = useShopContext();
   const [addingToCart, setAddingToCart] = useState(false);
 
@@ -46,7 +46,7 @@ const Product = ({ product }) => {
             height={400}
             unoptimized
           />
-          {!product.availableForSale && (
+          {isSoldOut && (
             <div className="absolute top-0 left-0 bg-red-500 text-white p-2">
               Sold out
             </div>
@@ -58,10 +58,10 @@ const Product = ({ product }) => {
       <p className="font-bold mt-1">{formattedPrice}</p>
       <button
         onClick={handleAddToCartClick}
-        className={`product-btn ${!product.availableForSale ? 'sold-out-btn' : 'add-to-cart-btn'}`}
-        disabled={addingToCart || !product.availableForSale}
+        className={`product-btn ${isSoldOut ? 'sold-out-btn' : 'add-to-cart-btn'}`}
+        disabled={addingToCart || isSoldOut}
       >
-        {addingToCart ? 'Adding...' : !product.availableForSale ? 'Sold Out' : 'Add to Cart'}
+        {addingToCart ? 'Adding...' : isSoldOut ? 'Sold Out' : 'Add to Cart'}
       </button>
     </div>
   );
