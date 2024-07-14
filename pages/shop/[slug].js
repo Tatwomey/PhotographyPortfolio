@@ -4,7 +4,7 @@ import Hero from "@/components/Hero";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useShopContext } from "@/contexts/shopContext";
-import { fetchCart } from "@/lib/shopify"; // Import fetchCart here
+import { fetchCart } from "@/lib/shopify";
 
 export async function getStaticPaths() {
   const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
@@ -145,10 +145,6 @@ const ProductPage = ({ product }) => {
       });
     }
   }, [product]);
-
-  useEffect(() => {
-    refreshCart();
-  }, [refreshCart]);
 
   const handleThumbnailClick = (imageSrc) => {
     setMainImage(imageSrc);

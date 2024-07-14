@@ -1,9 +1,10 @@
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import {
   createCart,
   fetchCart,
   removeItemFromCart,
   addItemToCart,
+  updateCartItemQuantity
 } from "@/lib/shopify";
 
 const ShopContext = createContext();
@@ -14,12 +15,11 @@ export function useShopContext() {
 
 export function ShopProvider({ children }) {
   const [cart, setCart] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [cartId, setCartId] = useState(null);
   const [cartInitialized, setCartInitialized] = useState(false);
 
-  const refreshCart = useCallback(async (currentCartId) => {
-    setLoading(true);
+  const refreshCart = async (currentCartId) => {
     try {
       let cartData;
       if (!currentCartId) {
@@ -33,23 +33,24 @@ export function ShopProvider({ children }) {
         cartData = await fetchCart(currentCartId);
       }
 
+      console.log("Fetched cart data:", cartData);
+
       if (!cartData || !cartData.id) {
         throw new Error("Invalid cart data");
       }
-
       setCart(cartData);
       setCartInitialized(true);
+      setLoading(false);
       console.log("Cart successfully refreshed:", cartData);
     } catch (error) {
       console.error("Failed to refresh cart:", error);
-    } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
   const handleAddToCart = async (variantId, quantity) => {
-    setLoading(true);
     try {
+      setLoading(true);
       let currentCartId = cartId;
       if (!currentCartId) {
         console.log("No cart ID found, creating a new cart...");
@@ -59,25 +60,33 @@ export function ShopProvider({ children }) {
         setCartId(newCart.id);
         console.log(`New cart ID created and stored: ${newCart.id}`);
       }
-
       await addItemToCart({ cartId: currentCartId, variantId, quantity });
       await refreshCart(currentCartId);
+      setLoading(false);
     } catch (error) {
       console.error("Failed to add item to cart:", error);
-    } finally {
       setLoading(false);
     }
   };
 
-  const handleRemoveFromCart = async (itemId) => {
-    setLoading(true);
+  const handleRemoveFromCart = async (item) => {
     try {
+      setLoading(true);
       if (!cartId) throw new Error("Cart ID not found in localStorage");
-      await removeItemFromCart(cartId, itemId);
-      await refreshCart(cartId);
+
+      if (item.quantity > 1) {
+        // Decrease quantity by 1
+        const updatedCart = await updateCartItemQuantity(cartId, item.id, item.quantity - 1);
+        setCart(updatedCart);
+      } else {
+        // Remove item from cart
+        await removeItemFromCart(cartId, item.id);
+        await refreshCart(cartId);
+      }
+      
+      setLoading(false);
     } catch (error) {
       console.error("Failed to remove item from cart:", error);
-    } finally {
       setLoading(false);
     }
   };
@@ -91,7 +100,7 @@ export function ShopProvider({ children }) {
     } else {
       refreshCart(null);
     }
-  }, [refreshCart]);
+  }, []);
 
   return (
     <ShopContext.Provider
@@ -102,8 +111,7 @@ export function ShopProvider({ children }) {
         handleRemoveFromCart,
         refreshCart,
         cartInitialized,
-      }}
-    >
+      }}>
       {children}
     </ShopContext.Provider>
   );

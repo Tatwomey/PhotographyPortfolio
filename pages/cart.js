@@ -69,7 +69,7 @@ const CartPage = () => {
                       <div className="flex items-center justify-between pt-5">
                         <div className="flex items-center">
                           <p className="text-xs leading-3 underline text-gray-800 cursor-pointer">Add to favorites</p>
-                          <p className="text-xs leading-3 underline text-red-500 pl-5 cursor-pointer remove-btn" onClick={() => handleRemoveFromCart(item.id)}>Remove</p>
+                          <p className="text-xs leading-3 underline text-red-500 pl-5 cursor-pointer remove-btn" onClick={() => handleRemoveFromCart(item)}>Remove</p>
                         </div>
                         <p className="text-base font-black leading-none text-color-brown">${(priceAmount * item.quantity).toFixed(2)} {merchandise.priceV2.currencyCode}</p>
                       </div>
