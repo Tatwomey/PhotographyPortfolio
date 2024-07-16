@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import Head from 'next/head';
 import Hero from '@/components/Hero';
 import Product from '@/components/Product';
@@ -9,6 +9,17 @@ export default function Shop({ products }) {
   const shopPageRef = useRef(null);
 
   useSmoothScroll('#shop', shopPageRef);
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = `https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=${process.env.NEXT_PUBLIC_KLAVIYO_API_KEY}`;
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   return (
     <>
