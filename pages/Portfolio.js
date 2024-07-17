@@ -82,12 +82,18 @@ const Portfolio = () => {
     default: 4,
     1100: 3,
     700: 2,
-    500: 2
+    500: 2,
   };
 
   const handleRightClick = (e) => {
     e.preventDefault();
     alert('© Trevor Twomey Photography 2023. All Rights Reserved.');
+  };
+
+  const disableLongPressSave = (e) => {
+    if (e.touches.length > 1) {
+      e.preventDefault();
+    }
   };
 
   useEffect(() => {
@@ -98,16 +104,6 @@ const Portfolio = () => {
         alert("© Trevor Twomey Photography 2023. All Rights Reserved.");
       }
     });
-
-    const disableLongPressSave = (e) => {
-      e.preventDefault();
-    };
-
-    document.addEventListener("touchstart", disableLongPressSave, { passive: false });
-
-    return () => {
-      document.removeEventListener("touchstart", disableLongPressSave);
-    };
   }, []);
 
   return (
@@ -122,19 +118,22 @@ const Portfolio = () => {
             className={`relative mb-4 ${photo.type === 'landscape' ? 'my-masonry-grid_column-span-2' : ''}`}
             key={photo.src}
             onContextMenu={handleRightClick}
+            onTouchStart={disableLongPressSave}
           >
-            <div className="absolute inset-0 z-10 pointer-events-none"></div> {/* Transparent overlay with pointer-events-none */}
-            <Image
-              src={photo.src}
-              alt="Photo"
-              width={photo.type === 'portrait' ? 500 : 1000}
-              height={photo.type === 'landscape' ? 750 : 500}
-              className="relative cursor-pointer"
-              onClick={() => {
-                lightboxRef.current?.openGallery(index);
-              }}
-              priority={index < 10} // Adding priority to the first 10 images for faster loading
-            />
+            <div className="image-wrapper">
+              <Image
+                src={photo.src}
+                alt="Photo"
+                width={photo.type === 'portrait' ? 500 : 1000}
+                height={photo.type === 'landscape' ? 750 : 500}
+                className="relative cursor-pointer"
+                onClick={() => {
+                  lightboxRef.current?.openGallery(index);
+                }}
+                priority={index < 10} // Adding priority to the first 10 images for faster loading
+              />
+              <div className="transparent-overlay"></div>
+            </div>
           </div>
         ))}
       </Masonry>
@@ -161,4 +160,5 @@ const Portfolio = () => {
 };
 
 export default Portfolio;
+
 
