@@ -7,6 +7,7 @@ import { NavigationProvider } from '@/contexts/NavigationContext';
 import { ShopProvider } from '@/contexts/shopContext';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import Script from 'next/script';
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const initialCartData = [];
 
@@ -32,6 +33,7 @@ function MyApp({ Component, pageProps }) {
       <NavigationProvider>
         <Navbar />
         <GoogleAnalytics />
+        <SpeedInsights />
         <Component {...pageProps} />
         <Footer />
       </NavigationProvider>

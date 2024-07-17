@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useShopContext } from '@/contexts/shopContext';
 
-const Product = ({ product, isSoldOut }) => {
+const Product = ({ product, isSoldOut, onAddToCart }) => {
   const { cart, handleAddToCart, refreshCart } = useShopContext();
-  const [addingToCart, setAddingToCart] = useState(false);
+  const [addingToCart, setAddingToCart] = React.useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     refreshCart(); // Ensure cart is refreshed on component mount
   }, [refreshCart]);
 
@@ -42,6 +42,7 @@ const Product = ({ product, isSoldOut }) => {
             alt={product.imageAlt || 'Product Image'}
             width={400}
             height={400}
+            priority={true} // Adding the priority property
             unoptimized
           />
           {isSoldOut && (
