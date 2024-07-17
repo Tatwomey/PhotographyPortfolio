@@ -3,10 +3,12 @@ import Head from 'next/head';
 import Hero from '@/components/Hero';
 import Product from '@/components/Product';
 import { useSmoothScroll } from '@/hooks/useSmoothScroll';
+import { useShopContext } from '@/contexts/shopContext';
 
 export default function Shop({ products }) {
   const safeProducts = products || [];
   const shopPageRef = useRef(null);
+  const { cart, loading, handleAddToCart } = useShopContext();
 
   useSmoothScroll('#shop', shopPageRef);
 
@@ -21,6 +23,19 @@ export default function Shop({ products }) {
     };
   }, []);
 
+  const handleAddToCartClick = async (product) => {
+    if (loading || !cart) {
+      console.error('Cart is still loading or not available. Please wait.');
+      return;
+    }
+
+    try {
+      await handleAddToCart(product.variantId, 1);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
+  };
+
   return (
     <>
       <Head>
@@ -32,10 +47,10 @@ export default function Shop({ products }) {
         <div className="flex flex-wrap -mx-2">
           {safeProducts.map((product) => (
             <div key={product.id} className="w-full sm:w-1/2 md:w-1/3 px-2 mb-4 product-item">
-              {/* .product-item class is applied here */}
               <Product
                 product={product}
                 isSoldOut={!product.availableForSale}
+                onAddToCart={() => handleAddToCartClick(product)}
               />
             </div>
           ))}
@@ -133,6 +148,7 @@ export async function getStaticProps() {
 
     return { props: { products } };
   } catch (error) {
+    console.error("Error fetching products:", error);
     return { props: { products: [] } };
   }
 }

@@ -4,14 +4,12 @@ import Image from 'next/image';
 import { useShopContext } from '@/contexts/shopContext';
 
 const Product = ({ product, isSoldOut }) => {
-  const { handleAddToCart, cartInitialized, refreshCart } = useShopContext();
+  const { cart, handleAddToCart, refreshCart } = useShopContext();
   const [addingToCart, setAddingToCart] = useState(false);
 
   useEffect(() => {
-    if (!cartInitialized) {
-      refreshCart(); // Ensure cart is refreshed on component mount
-    }
-  }, [cartInitialized, refreshCart]);
+    refreshCart(); // Ensure cart is refreshed on component mount
+  }, [refreshCart]);
 
   const price = product.price;
 
@@ -20,7 +18,7 @@ const Product = ({ product, isSoldOut }) => {
     : 'Price Not Available';
 
   const handleAddToCartClick = async () => {
-    if (!cartInitialized) {
+    if (!cart) {
       console.error('Cart is still loading or not available. Please wait.');
       return;
     }
@@ -68,4 +66,3 @@ const Product = ({ product, isSoldOut }) => {
 };
 
 export default Product;
-

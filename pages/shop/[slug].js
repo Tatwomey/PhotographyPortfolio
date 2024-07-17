@@ -4,7 +4,7 @@ import Hero from "@/components/Hero";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useShopContext } from "@/contexts/shopContext";
-import { fetchCart } from "@/lib/shopify";
+import { fetchCart, createCart, addItemToCart } from "@/lib/shopify";
 
 export async function getStaticPaths() {
   const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
@@ -133,7 +133,7 @@ const ProductPage = ({ product }) => {
 
   const mainImageSrc = product.images.edges && product.images.edges[0]?.node.src ? product.images.edges[0].node.src : "/fallback-image.jpg";
   const [mainImage, setMainImage] = useState(mainImageSrc);
-  const selectedVariant = product.variants.edges && product.variants.edges[0]?.node ? product.variants.edges[0].node : null;
+  const [selectedVariant, setSelectedVariant] = useState(product.variants.edges[0]?.node);
 
   useEffect(() => {
     if (productRef.current) {
@@ -170,24 +170,29 @@ const ProductPage = ({ product }) => {
   };
 
   const handleBuyNow = async () => {
-    if (cartLoading || !cart) {
-      console.error('Cart is still loading or not available. Please wait.');
+    if (cartLoading) {
+      console.error('Cart is still loading. Please wait.');
       return;
     }
 
     setAddingToCart(true);
     try {
       const variantId = selectedVariant.id;
-      await handleAddToCart(variantId, 1);
+      let localCartId = window.localStorage.getItem('shopify_cart_id');
 
-      const localCartId = window.localStorage.getItem('shopify_cart_id');
-      if (localCartId) {
-        const updatedCart = await fetchCart(localCartId);
-        if (updatedCart.checkoutUrl) {
-          window.location.href = updatedCart.checkoutUrl;
-        } else {
-          console.error('Checkout URL not found in cart:', updatedCart);
-        }
+      if (!localCartId) {
+        const newCart = await createCart();
+        localCartId = newCart.id;
+        window.localStorage.setItem('shopify_cart_id', localCartId);
+      } else {
+        await addItemToCart({ cartId: localCartId, variantId, quantity: 1 });
+      }
+
+      const updatedCart = await fetchCart(localCartId);
+      if (updatedCart.checkoutUrl) {
+        window.location.href = updatedCart.checkoutUrl;
+      } else {
+        console.error('Checkout URL not found in cart:', updatedCart);
       }
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -213,8 +218,8 @@ const ProductPage = ({ product }) => {
               <Image
                 src={mainImage}
                 alt="Main Product Image"
-                layout="fill"
-                objectFit="contain"
+                fill
+                style={{ objectFit: 'contain' }}
                 className="rounded-lg"
                 unoptimized
               />
@@ -234,8 +239,8 @@ const ProductPage = ({ product }) => {
                   <Image
                     src={image.node.src || "/fallback-image.jpg"}
                     alt={image.node.altText || "Product Thumbnail"}
-                    layout="fill"
-                    objectFit="cover"
+                    fill
+                    style={{ objectFit: 'cover' }}
                     className="rounded-lg"
                     unoptimized
                   />
