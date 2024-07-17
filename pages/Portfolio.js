@@ -82,16 +82,12 @@ const Portfolio = () => {
     default: 4,
     1100: 3,
     700: 2,
-    500: 2
+    500: 1, // Change to 1 column on mobile devices
   };
 
   const handleRightClick = (e) => {
     e.preventDefault();
     alert('© Trevor Twomey Photography 2023. All Rights Reserved.');
-  };
-
-  const handleLongPress = (e) => {
-    e.preventDefault();
   };
 
   useEffect(() => {
@@ -102,17 +98,6 @@ const Portfolio = () => {
         alert("© Trevor Twomey Photography 2023. All Rights Reserved.");
       }
     });
-
-    // Disable long-press save on mobile devices
-    document.addEventListener("touchstart", handleLongPress, { passive: false });
-    document.addEventListener("touchmove", handleLongPress, { passive: false });
-    document.addEventListener("touchend", handleLongPress, { passive: false });
-
-    return () => {
-      document.removeEventListener("touchstart", handleLongPress);
-      document.removeEventListener("touchmove", handleLongPress);
-      document.removeEventListener("touchend", handleLongPress);
-    };
   }, []);
 
   return (
@@ -127,6 +112,9 @@ const Portfolio = () => {
             className={`relative mb-4 ${photo.type === 'landscape' ? 'my-masonry-grid_column-span-2' : ''}`}
             key={photo.src}
             onContextMenu={handleRightClick}
+            onClick={() => {
+              lightboxRef.current?.openGallery(index);
+            }}
           >
             <div className="image-container">
               <Image
@@ -135,12 +123,9 @@ const Portfolio = () => {
                 width={photo.type === 'portrait' ? 500 : 1000}
                 height={photo.type === 'landscape' ? 750 : 500}
                 className="relative cursor-pointer"
-                onClick={() => {
-                  lightboxRef.current?.openGallery(index);
-                }}
                 priority={index < 10} // Adding priority to the first 10 images for faster loading
               />
-              <div className="overlay"></div>
+              <div className="overlay" />
             </div>
           </div>
         ))}
@@ -168,4 +153,3 @@ const Portfolio = () => {
 };
 
 export default Portfolio;
-
