@@ -82,7 +82,7 @@ const Portfolio = () => {
     default: 4,
     1100: 3,
     700: 2,
-    500: 2,
+    500: 2
   };
 
   const handleRightClick = (e) => {
@@ -90,10 +90,8 @@ const Portfolio = () => {
     alert('© Trevor Twomey Photography 2023. All Rights Reserved.');
   };
 
-  const disableLongPressSave = (e) => {
-    if (e.touches.length > 1) {
-      e.preventDefault();
-    }
+  const handleLongPress = (e) => {
+    e.preventDefault();
   };
 
   useEffect(() => {
@@ -104,6 +102,17 @@ const Portfolio = () => {
         alert("© Trevor Twomey Photography 2023. All Rights Reserved.");
       }
     });
+
+    // Disable long-press save on mobile devices
+    document.addEventListener("touchstart", handleLongPress, { passive: false });
+    document.addEventListener("touchmove", handleLongPress, { passive: false });
+    document.addEventListener("touchend", handleLongPress, { passive: false });
+
+    return () => {
+      document.removeEventListener("touchstart", handleLongPress);
+      document.removeEventListener("touchmove", handleLongPress);
+      document.removeEventListener("touchend", handleLongPress);
+    };
   }, []);
 
   return (
@@ -118,9 +127,8 @@ const Portfolio = () => {
             className={`relative mb-4 ${photo.type === 'landscape' ? 'my-masonry-grid_column-span-2' : ''}`}
             key={photo.src}
             onContextMenu={handleRightClick}
-            onTouchStart={disableLongPressSave}
           >
-            <div className="image-wrapper">
+            <div className="image-container">
               <Image
                 src={photo.src}
                 alt="Photo"
@@ -132,7 +140,7 @@ const Portfolio = () => {
                 }}
                 priority={index < 10} // Adding priority to the first 10 images for faster loading
               />
-              <div className="transparent-overlay"></div>
+              <div className="overlay"></div>
             </div>
           </div>
         ))}
@@ -160,5 +168,4 @@ const Portfolio = () => {
 };
 
 export default Portfolio;
-
 
