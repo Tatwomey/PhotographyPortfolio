@@ -98,6 +98,16 @@ const Portfolio = () => {
         alert("© Trevor Twomey Photography 2023. All Rights Reserved.");
       }
     });
+
+    const disableLongPressSave = (e) => {
+      e.preventDefault();
+    };
+
+    document.addEventListener("touchstart", disableLongPressSave, { passive: false });
+
+    return () => {
+      document.removeEventListener("touchstart", disableLongPressSave);
+    };
   }, []);
 
   return (
@@ -113,6 +123,7 @@ const Portfolio = () => {
             key={photo.src}
             onContextMenu={handleRightClick}
           >
+            <div className="absolute inset-0 z-10 pointer-events-none"></div> {/* Transparent overlay with pointer-events-none */}
             <Image
               src={photo.src}
               alt="Photo"
@@ -150,5 +161,4 @@ const Portfolio = () => {
 };
 
 export default Portfolio;
-
 
