@@ -82,7 +82,7 @@ const Portfolio = () => {
     default: 4,
     1100: 3,
     700: 2,
-    500: 2, // Change to 1 column on mobile devices
+    500: 2,
   };
 
   const handleRightClick = (e) => {
@@ -91,13 +91,37 @@ const Portfolio = () => {
   };
 
   useEffect(() => {
-    document.addEventListener("contextmenu", function (e) {
+    const handleContextMenu = (e) => {
       const clickedElement = e.target;
       if (clickedElement.closest(".lg-img-wrap")) {
         e.preventDefault();
-        alert("© Trevor Twomey Photography 2024. All Rights Reserved.");
+        alert("© Trevor Twomey Photography 2023. All Rights Reserved.");
       }
-    });
+    };
+
+    const handleTouchStart = (e) => {
+      const clickedElement = e.target;
+      if (clickedElement.closest(".prevent-save")) {
+        e.preventDefault();
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      const clickedElement = e.target;
+      if (clickedElement.closest(".prevent-save")) {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener("contextmenu", handleContextMenu);
+    document.addEventListener("touchstart", handleTouchStart);
+    document.addEventListener("touchmove", handleTouchMove);
+
+    return () => {
+      document.removeEventListener("contextmenu", handleContextMenu);
+      document.removeEventListener("touchstart", handleTouchStart);
+      document.removeEventListener("touchmove", handleTouchMove);
+    };
   }, []);
 
   return (
@@ -112,20 +136,20 @@ const Portfolio = () => {
             className={`relative mb-4 ${photo.type === 'landscape' ? 'my-masonry-grid_column-span-2' : ''}`}
             key={photo.src}
             onContextMenu={handleRightClick}
-            onClick={() => {
-              lightboxRef.current?.openGallery(index);
-            }}
           >
-            <div className="image-container">
+            <div className="prevent-save">
               <Image
                 src={photo.src}
                 alt="Photo"
                 width={photo.type === 'portrait' ? 500 : 1000}
                 height={photo.type === 'landscape' ? 750 : 500}
                 className="relative cursor-pointer"
+                onClick={() => {
+                  lightboxRef.current?.openGallery(index);
+                }}
                 priority={index < 10} // Adding priority to the first 10 images for faster loading
               />
-              <div className="overlay" />
+              <div className="overlay"></div> {/* Adding overlay for extra protection */}
             </div>
           </div>
         ))}

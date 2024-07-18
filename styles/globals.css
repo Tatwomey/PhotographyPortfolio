@@ -239,7 +239,8 @@ h1 {
   margin-bottom: 12rem; /* Adds space between product items */
 }
 
-.image-container {
+/* CSS for preventing image theft */
+.prevent-save {
   position: relative;
 }
 
@@ -247,8 +248,10 @@ h1 {
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
   width: 100%;
   height: 100%;
-  background: transparent;
-  z-index: 10;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0); /* Transparent overlay */
 }
