@@ -82,7 +82,7 @@ const Portfolio = () => {
     default: 4,
     1100: 3,
     700: 2,
-    500: 1, // Change to 1 column on mobile devices
+    500: 2, // Change to 1 column on mobile devices
   };
 
   const handleRightClick = (e) => {
@@ -95,7 +95,7 @@ const Portfolio = () => {
       const clickedElement = e.target;
       if (clickedElement.closest(".lg-img-wrap")) {
         e.preventDefault();
-        alert("© Trevor Twomey Photography 2023. All Rights Reserved.");
+        alert("© Trevor Twomey Photography 2024. All Rights Reserved.");
       }
     });
   }, []);
