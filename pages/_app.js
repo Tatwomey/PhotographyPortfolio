@@ -33,10 +33,11 @@ function MyApp({ Component, pageProps }) {
       <NavigationProvider>
         <Navbar />
         <GoogleAnalytics />
-        <SpeedInsights />
         <Component {...pageProps} />
         <Footer />
       </NavigationProvider>
+
+      <SpeedInsights />
 
       <noscript>
         {/* GTM noscript content */}

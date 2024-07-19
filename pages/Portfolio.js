@@ -82,7 +82,7 @@ const Portfolio = () => {
     default: 4,
     1100: 3,
     700: 2,
-    500: 2,
+    500: 2
   };
 
   const handleRightClick = (e) => {
@@ -91,38 +91,21 @@ const Portfolio = () => {
   };
 
   useEffect(() => {
-    const handleContextMenu = (e) => {
+    document.addEventListener("contextmenu", function (e) {
       const clickedElement = e.target;
       if (clickedElement.closest(".lg-img-wrap")) {
         e.preventDefault();
         alert("© Trevor Twomey Photography 2023. All Rights Reserved.");
       }
-    };
-
-    const handleTouchStart = (e) => {
-      const clickedElement = e.target;
-      if (clickedElement.closest(".prevent-save")) {
-        e.preventDefault();
-      }
-    };
-
-    const handleTouchMove = (e) => {
-      const clickedElement = e.target;
-      if (clickedElement.closest(".prevent-save")) {
-        e.preventDefault();
-      }
-    };
-
-    document.addEventListener("contextmenu", handleContextMenu);
-    document.addEventListener("touchstart", handleTouchStart);
-    document.addEventListener("touchmove", handleTouchMove);
-
-    return () => {
-      document.removeEventListener("contextmenu", handleContextMenu);
-      document.removeEventListener("touchstart", handleTouchStart);
-      document.removeEventListener("touchmove", handleTouchMove);
-    };
+    });
   }, []);
+
+  const handleAfterOpen = () => {
+    const lightboxImages = document.querySelectorAll("#lightGallery .lg-img-wrap img");
+    lightboxImages.forEach((img) => {
+      img.addEventListener("contextmenu", handleRightClick);
+    });
+  };
 
   return (
     <div className="max-w-[1240px] mx-auto py-4 sm:py-16 text-center" id="music-photography">
@@ -137,20 +120,18 @@ const Portfolio = () => {
             key={photo.src}
             onContextMenu={handleRightClick}
           >
-            <div className="prevent-save">
-              <Image
-                src={photo.src}
-                alt="Photo"
-                width={photo.type === 'portrait' ? 500 : 1000}
-                height={photo.type === 'landscape' ? 750 : 500}
-                className="relative cursor-pointer"
-                onClick={() => {
-                  lightboxRef.current?.openGallery(index);
-                }}
-                priority={index < 10} // Adding priority to the first 10 images for faster loading
-              />
-              <div className="overlay"></div> {/* Adding overlay for extra protection */}
-            </div>
+            <Image
+              src={photo.src}
+              alt="Photo"
+              width={photo.type === 'portrait' ? 500 : 1000}
+              height={photo.type === 'landscape' ? 750 : 500}
+              className="relative cursor-pointer"
+              onClick={() => {
+                lightboxRef.current?.openGallery(index);
+              }}
+              priority={index < 10} // Adding priority to the first 10 images for faster loading
+            />
+            <div className="watermark-overlay"></div>
           </div>
         ))}
       </Masonry>
@@ -161,6 +142,7 @@ const Portfolio = () => {
             lightboxRef.current = ref.instance;
           }
         }}
+        onAfterOpen={handleAfterOpen}
         id="lightGallery"
         download={false}
         zoom={false}
@@ -177,3 +159,4 @@ const Portfolio = () => {
 };
 
 export default Portfolio;
+
