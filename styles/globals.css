@@ -239,14 +239,13 @@ h1 {
   margin-bottom: 12rem; /* Adds space between product items */
 }
 
-/* Watermark Overlay */
 .watermark-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('/Watermarklogo.png'); /* Ensure this path is correct */
+  background-image: url('/Watermarklogo 2.png'); /* Your watermark image */
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;

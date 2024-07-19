@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Masonry from "react-masonry-css";
 import LightGallery from "lightgallery/react";
@@ -82,30 +82,49 @@ const Portfolio = () => {
     default: 4,
     1100: 3,
     700: 2,
-    500: 2
+    500: 2,
   };
 
-  const handleRightClick = (e) => {
+  const handleRightClick = useCallback((e) => {
     e.preventDefault();
     alert('© Trevor Twomey Photography 2023. All Rights Reserved.');
-  };
-
-  useEffect(() => {
-    document.addEventListener("contextmenu", function (e) {
-      const clickedElement = e.target;
-      if (clickedElement.closest(".lg-img-wrap")) {
-        e.preventDefault();
-        alert("© Trevor Twomey Photography 2023. All Rights Reserved.");
-      }
-    });
   }, []);
 
-  const handleAfterOpen = () => {
-    const lightboxImages = document.querySelectorAll("#lightGallery .lg-img-wrap img");
-    lightboxImages.forEach((img) => {
+  const handleLongPress = useCallback((e) => {
+    e.preventDefault();
+    alert('© Trevor Twomey Photography 2023. All Rights Reserved.');
+  }, []);
+
+  const attachEventListeners = useCallback((images) => {
+    console.log("Attaching event listeners to images:", images.length);
+    images.forEach((img) => {
       img.addEventListener("contextmenu", handleRightClick);
+      img.addEventListener("touchstart", handleLongPress);
     });
-  };
+  }, [handleRightClick, handleLongPress]);
+
+  const handleAfterOpen = useCallback(() => {
+    const lightboxImages = document.querySelectorAll(".lg-current img");
+    console.log("Lightbox opened, attaching event listeners.");
+    attachEventListeners(lightboxImages);
+  }, [attachEventListeners]);
+
+  useEffect(() => {
+    const initialImages = document.querySelectorAll(".my-masonry-grid img");
+    console.log("Initial images:", initialImages.length);
+    attachEventListeners(initialImages);
+
+    const lightboxInstance = lightboxRef.current?.instance;
+    if (lightboxInstance) {
+      lightboxInstance.on("lgAfterOpen", handleAfterOpen);
+    }
+
+    return () => {
+      if (lightboxInstance) {
+        lightboxInstance.off("lgAfterOpen", handleAfterOpen);
+      }
+    };
+  }, [attachEventListeners, handleAfterOpen]);
 
   return (
     <div className="max-w-[1240px] mx-auto py-4 sm:py-16 text-center" id="music-photography">
@@ -119,6 +138,7 @@ const Portfolio = () => {
             className={`relative mb-4 ${photo.type === 'landscape' ? 'my-masonry-grid_column-span-2' : ''}`}
             key={photo.src}
             onContextMenu={handleRightClick}
+            onTouchStart={handleLongPress}
           >
             <Image
               src={photo.src}
@@ -126,9 +146,7 @@ const Portfolio = () => {
               width={photo.type === 'portrait' ? 500 : 1000}
               height={photo.type === 'landscape' ? 750 : 500}
               className="relative cursor-pointer"
-              onClick={() => {
-                lightboxRef.current?.openGallery(index);
-              }}
+              onClick={() => lightboxRef.current?.openGallery(index)}
               priority={index < 10} // Adding priority to the first 10 images for faster loading
             />
             <div className="watermark-overlay"></div>
@@ -142,7 +160,6 @@ const Portfolio = () => {
             lightboxRef.current = ref.instance;
           }
         }}
-        onAfterOpen={handleAfterOpen}
         id="lightGallery"
         download={false}
         zoom={false}
@@ -159,4 +176,3 @@ const Portfolio = () => {
 };
 
 export default Portfolio;
-
