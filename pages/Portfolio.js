@@ -88,11 +88,25 @@ const Portfolio = () => {
   const handleRightClick = useCallback((e) => {
     e.preventDefault();
     alert('© Trevor Twomey Photography 2023. All Rights Reserved.');
+    const watermarkOverlay = e.target.closest(".lg-img-wrap").querySelector(".watermark-overlay");
+    if (watermarkOverlay) {
+      watermarkOverlay.style.opacity = 1;
+      setTimeout(() => {
+        watermarkOverlay.style.opacity = 0;
+      }, 2000);
+    }
   }, []);
 
   const handleLongPress = useCallback((e) => {
     e.preventDefault();
     alert('© Trevor Twomey Photography 2023. All Rights Reserved.');
+    const watermarkOverlay = e.target.closest(".lg-img-wrap").querySelector(".watermark-overlay");
+    if (watermarkOverlay) {
+      watermarkOverlay.style.opacity = 1;
+      setTimeout(() => {
+        watermarkOverlay.style.opacity = 0;
+      }, 2000);
+    }
   }, []);
 
   const attachEventListeners = useCallback((images) => {
@@ -110,10 +124,6 @@ const Portfolio = () => {
   }, [attachEventListeners]);
 
   useEffect(() => {
-    const initialImages = document.querySelectorAll(".my-masonry-grid img");
-    console.log("Initial images:", initialImages.length);
-    attachEventListeners(initialImages);
-
     const lightboxInstance = lightboxRef.current?.instance;
     if (lightboxInstance) {
       lightboxInstance.on("lgAfterOpen", handleAfterOpen);
@@ -124,7 +134,7 @@ const Portfolio = () => {
         lightboxInstance.off("lgAfterOpen", handleAfterOpen);
       }
     };
-  }, [attachEventListeners, handleAfterOpen]);
+  }, [handleAfterOpen]);
 
   return (
     <div className="max-w-[1240px] mx-auto py-4 sm:py-16 text-center" id="music-photography">
@@ -137,8 +147,6 @@ const Portfolio = () => {
           <div
             className={`relative mb-4 ${photo.type === 'landscape' ? 'my-masonry-grid_column-span-2' : ''}`}
             key={photo.src}
-            onContextMenu={handleRightClick}
-            onTouchStart={handleLongPress}
           >
             <Image
               src={photo.src}
