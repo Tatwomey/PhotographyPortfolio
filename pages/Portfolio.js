@@ -85,45 +85,42 @@ const Portfolio = () => {
     500: 2,
   };
 
-  const handleRightClick = useCallback((e) => {
+  const handleContextMenu = useCallback((e) => {
     e.preventDefault();
-    alert('© Trevor Twomey Photography 2023. All Rights Reserved.');
-    const watermarkOverlay = e.target.closest(".lg-img-wrap").querySelector(".watermark-overlay");
-    if (watermarkOverlay) {
-      watermarkOverlay.style.opacity = 1;
-      setTimeout(() => {
-        watermarkOverlay.style.opacity = 0;
-      }, 2000);
-    }
+    const watermarkOverlay = document.createElement("div");
+    watermarkOverlay.className = "watermark-overlay";
+    document.body.appendChild(watermarkOverlay);
+    setTimeout(() => {
+      watermarkOverlay.remove();
+    }, 2000);
   }, []);
 
   const handleLongPress = useCallback((e) => {
     e.preventDefault();
-    alert('© Trevor Twomey Photography 2023. All Rights Reserved.');
-    const watermarkOverlay = e.target.closest(".lg-img-wrap").querySelector(".watermark-overlay");
-    if (watermarkOverlay) {
-      watermarkOverlay.style.opacity = 1;
-      setTimeout(() => {
-        watermarkOverlay.style.opacity = 0;
-      }, 2000);
-    }
+    const watermarkOverlay = document.createElement("div");
+    watermarkOverlay.className = "watermark-overlay";
+    document.body.appendChild(watermarkOverlay);
+    setTimeout(() => {
+      watermarkOverlay.remove();
+    }, 2000);
   }, []);
 
   const attachEventListeners = useCallback((images) => {
-    console.log("Attaching event listeners to images:", images.length);
     images.forEach((img) => {
-      img.addEventListener("contextmenu", handleRightClick);
+      img.addEventListener("contextmenu", handleContextMenu);
       img.addEventListener("touchstart", handleLongPress);
     });
-  }, [handleRightClick, handleLongPress]);
+  }, [handleContextMenu, handleLongPress]);
 
   const handleAfterOpen = useCallback(() => {
     const lightboxImages = document.querySelectorAll(".lg-current img");
-    console.log("Lightbox opened, attaching event listeners.");
     attachEventListeners(lightboxImages);
   }, [attachEventListeners]);
 
   useEffect(() => {
+    const initialImages = document.querySelectorAll(".my-masonry-grid img");
+    attachEventListeners(initialImages);
+
     const lightboxInstance = lightboxRef.current?.instance;
     if (lightboxInstance) {
       lightboxInstance.on("lgAfterOpen", handleAfterOpen);
@@ -134,7 +131,7 @@ const Portfolio = () => {
         lightboxInstance.off("lgAfterOpen", handleAfterOpen);
       }
     };
-  }, [handleAfterOpen]);
+  }, [handleAfterOpen, attachEventListeners]);
 
   return (
     <div className="max-w-[1240px] mx-auto py-4 sm:py-16 text-center" id="music-photography">
