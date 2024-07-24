@@ -67,11 +67,6 @@ main {
     width: 62.39px;
     height: 62.39px;
   }
-
-  .watermark-overlay {
-    width: 75%;
-    height: 75%;
-  }
 }
 
 .masonry-grid {
@@ -237,20 +232,4 @@ h1 {
 /* New styles to ensure spacing between product items on mobile */
 .product-item {
   margin-bottom: 12rem; /* Adds space between product items */
-}
-
-.watermark-overlay {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 20px;
-  border-radius: 5px;
-  z-index: 9999;
-  font-size: 16px;
-  text-align: center;
-  pointer-events: none;
-  display: none;
 }

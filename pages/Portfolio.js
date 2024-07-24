@@ -1,12 +1,6 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Masonry from "react-masonry-css";
-import LightGallery from "lightgallery/react";
-import "lightgallery/css/lightgallery.css";
-import "lightgallery/css/lg-zoom.css";
-import "lightgallery/css/lg-thumbnail.css";
-import lgThumbnail from "lightgallery/plugins/thumbnail";
-import lgZoom from "lightgallery/plugins/zoom";
 
 const photos = [
   { src: '/JD-korn-jones-beach-2022-trevor-twomey-5-2.jpg', type: 'portrait' },
@@ -76,7 +70,7 @@ const photos = [
 ];
 
 const Portfolio = () => {
-  const lightboxRef = useRef(null);
+  let touchTimer = null;
 
   const breakpointCols = {
     default: 4,
@@ -85,53 +79,39 @@ const Portfolio = () => {
     500: 2,
   };
 
-  const handleRightClick = (e) => {
+  const handleContextMenu = (e) => {
     e.preventDefault();
     alert('© Trevor Twomey Photography 2023. All Rights Reserved.');
   };
 
-  const handleLongPress = (e) => {
-    e.preventDefault();
-    alert('© Trevor Twomey Photography 2023. All Rights Reserved.');
+  const handleTouchStart = (e) => {
+    touchTimer = setTimeout(() => {
+      alert('© Trevor Twomey Photography 2023. All Rights Reserved.');
+    }, 500);
   };
+
+  const handleTouchEnd = (e) => {
+    clearTimeout(touchTimer);
+  };
+
+  const handleDragStart = (e) => {
+    e.preventDefault();
+  };
+
+  const attachEventListeners = useCallback((elements) => {
+    elements.forEach((el) => {
+      el.addEventListener("contextmenu", handleContextMenu);
+      el.addEventListener("touchstart", handleTouchStart);
+      el.addEventListener("touchend", handleTouchEnd);
+      el.addEventListener("touchmove", handleTouchEnd);
+      el.addEventListener("dragstart", handleDragStart);
+    });
+  }, []);
 
   useEffect(() => {
     const initialImages = document.querySelectorAll(".my-masonry-grid img");
-    initialImages.forEach((img) => {
-      img.addEventListener("contextmenu", handleRightClick);
-      img.addEventListener("touchstart", handleLongPress);
-    });
-
-    const lightboxInstance = lightboxRef.current?.instance;
-    if (lightboxInstance) {
-      lightboxInstance.on("lgAfterOpen", () => {
-        const lightboxImages = document.querySelectorAll(".lg-current img");
-        lightboxImages.forEach((img) => {
-          img.addEventListener("contextmenu", handleRightClick);
-          img.addEventListener("touchstart", handleLongPress);
-        });
-      });
-    }
-
-    document.addEventListener("contextmenu", (e) => {
-      const clickedElement = e.target;
-      if (clickedElement.closest(".lg-img-wrap")) {
-        e.preventDefault();
-        alert("© Trevor Twomey Photography 2023. All Rights Reserved.");
-      }
-    });
-
-    return () => {
-      initialImages.forEach((img) => {
-        img.removeEventListener("contextmenu", handleRightClick);
-        img.removeEventListener("touchstart", handleLongPress);
-      });
-
-      if (lightboxInstance) {
-        lightboxInstance.off("lgAfterOpen");
-      }
-    };
-  }, []);
+    attachEventListeners(initialImages);
+  }, [attachEventListeners]);
 
   return (
     <div className="max-w-[1240px] mx-auto py-4 sm:py-16 text-center" id="music-photography">
@@ -142,7 +122,7 @@ const Portfolio = () => {
       >
         {photos.map((photo, index) => (
           <div
-            className={`relative cursor-pointer mb-4 ${photo.type === 'landscape' ? 'my-masonry-grid_column-span-2' : ''}`}
+            className={`relative mb-4 ${photo.type === 'landscape' ? 'my-masonry-grid_column-span-2' : ''}`}
             key={photo.src}
           >
             <Image
@@ -150,31 +130,12 @@ const Portfolio = () => {
               alt="Photo"
               width={photo.type === 'portrait' ? 500 : 1000}
               height={photo.type === 'landscape' ? 750 : 500}
-              className="relative cursor-pointer"
-              onClick={() => lightboxRef.current?.openGallery(index)}
-              priority={index < 10} // Adding priority to the first 10 images for faster loading
+              className="relative cursor-default"
+              draggable="false" // Prevent dragging images
             />
           </div>
         ))}
       </Masonry>
-
-      <LightGallery
-        onInit={(ref) => {
-          if (ref) {
-            lightboxRef.current = ref.instance;
-          }
-        }}
-        id="lightGallery"
-        download={false}
-        zoom={false}
-        speed={500}
-        plugins={[lgThumbnail, lgZoom]}
-        dynamic
-        dynamicEl={photos.map((photo) => ({
-          src: photo.src,
-          thumb: photo.src,
-        }))}
-      />
     </div>
   );
 };
