@@ -70,7 +70,7 @@ const photos = [
 ];
 
 const Portfolio = () => {
-  let touchTimer = null;
+  const touchTimer = useRef(null);
 
   const breakpointCols = {
     default: 4,
@@ -79,38 +79,51 @@ const Portfolio = () => {
     500: 2,
   };
 
-  const handleContextMenu = (e) => {
+  const handleContextMenu = useCallback((e) => {
     e.preventDefault();
     alert('© Trevor Twomey Photography 2023. All Rights Reserved.');
-  };
+  }, []);
 
-  const handleTouchStart = (e) => {
-    touchTimer = setTimeout(() => {
+  const handleTouchStart = useCallback((e) => {
+    touchTimer.current = setTimeout(() => {
       alert('© Trevor Twomey Photography 2023. All Rights Reserved.');
     }, 500);
-  };
+  }, []);
 
-  const handleTouchEnd = (e) => {
-    clearTimeout(touchTimer);
-  };
+  const handleTouchEnd = useCallback(() => {
+    clearTimeout(touchTimer.current);
+  }, []);
 
-  const handleDragStart = (e) => {
+  const handleDragStart = useCallback((e) => {
     e.preventDefault();
-  };
+  }, []);
 
   const attachEventListeners = useCallback((elements) => {
     elements.forEach((el) => {
+      el.removeEventListener("contextmenu", handleContextMenu);
+      el.removeEventListener("touchstart", handleTouchStart);
+      el.removeEventListener("touchend", handleTouchEnd);
+      el.removeEventListener("touchmove", handleTouchEnd);
+      el.removeEventListener("dragstart", handleDragStart);
+
       el.addEventListener("contextmenu", handleContextMenu);
       el.addEventListener("touchstart", handleTouchStart);
       el.addEventListener("touchend", handleTouchEnd);
       el.addEventListener("touchmove", handleTouchEnd);
       el.addEventListener("dragstart", handleDragStart);
     });
-  }, []);
+  }, [handleContextMenu, handleTouchStart, handleTouchEnd, handleDragStart]);
 
   useEffect(() => {
     const initialImages = document.querySelectorAll(".my-masonry-grid img");
     attachEventListeners(initialImages);
+
+    // Repeatedly attach event listeners to ensure they remain active
+    const intervalId = setInterval(() => {
+      attachEventListeners(initialImages);
+    }, 1000);
+
+    return () => clearInterval(intervalId);
   }, [attachEventListeners]);
 
   return (
