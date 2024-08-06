@@ -16,16 +16,10 @@ function MyApp({ Component, pageProps }) {
     <ShopProvider initialCart={initialCartData}>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-H3MT6ZKKN4"></script>
-        <script>
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-H3MT6ZKKN4');
-          `}
-        </script>
       </Head>
+
+      {/* Google Analytics Script */}
+      <GoogleAnalytics />
 
       <Script id="gtm-script" strategy="afterInteractive">
         {/* GTM script here */}
@@ -41,7 +35,6 @@ function MyApp({ Component, pageProps }) {
 
       <NavigationProvider>
         <Navbar />
-        <GoogleAnalytics />
         <Component {...pageProps} />
         <Footer />
       </NavigationProvider>
