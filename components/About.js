@@ -8,7 +8,7 @@ const About = () => {
                 <div className="md:w-1/2">
                     <Image 
                         src="/trevor-twomey-1.jpg" 
-                        alt="Trevor A. Twomey" 
+                        alt="Trevor Twomey" 
                         width={500} 
                         height={500} 
                         className="rounded"
