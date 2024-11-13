@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react";
-import Image from "next/image";
 import Masonry from "react-masonry-css";
 import LightGallery from "lightgallery/react";
 import "lightgallery/css/lightgallery.css";
@@ -7,7 +6,7 @@ import "lightgallery/css/lg-zoom.css";
 import "lightgallery/css/lg-thumbnail.css";
 import lgThumbnail from "lightgallery/plugins/thumbnail";
 import lgZoom from "lightgallery/plugins/zoom";
-import Hero from "@/components/Hero";  // Ensure Hero is imported correctly
+import Hero from "@/components/Hero"; // Assuming Hero is correctly imported
 
 const photos = [
     { "src": "/Elias_nonpoint_nyc_trevortwomey.jpg", "type": "portrait" },
@@ -50,7 +49,6 @@ const photos = [
 
 const Elias = () => {
   const lightboxRef = useRef(null);
-  const eliasRef = useRef(null); // Ref for the Elias section
 
   const breakpointCols = {
     default: 4,
@@ -72,63 +70,51 @@ const Elias = () => {
         alert("© Trevor Twomey Photography 2023. All Rights Reserved.");
       }
     });
-
-    // Smooth scroll to the Elias section on page load
-    if (eliasRef.current) {
-      window.scroll({
-        top: eliasRef.current.offsetTop,
-        behavior: 'smooth'
-      });
-    }
   }, []);
 
   return (
     <div className="max-w-[1240px] mx-auto py-4 sm:py-16">
       <Hero heading="Elias Photography" message="Explore the captivating visuals of Elias in concert." />
-      <div ref={eliasRef} id="Elias">
-        <h1 className="font-bold text-2xl sm:text-3xl p-4 text-center">The Elias Show</h1>
-        <Masonry
-          breakpointCols={breakpointCols}
-          className="my-masonry-grid"
-          columnClassName="my-masonry-grid_column"
-        >
-          {photos.map((photo, index) => (
-            <div
-              className={`relative mb-4 ${photo.type === 'landscape' ? 'my-masonry-grid_column-span-2' : ''}`}
-              key={photo.src}
-              onContextMenu={handleRightClick}
-            >
-              <Image
-                src={photo.src}
-                alt="Photo"
-                width={photo.type === 'portrait' ? 500 : 1000}
-                height={photo.type === 'landscape' ? 750 : 500}
-                layout="responsive"
-                className="relative cursor-pointer"
-                onClick={() => lightboxRef.current?.openGallery(index)}
-              />
-            </div>
-          ))}
-        </Masonry>
+      <Masonry
+        breakpointCols={breakpointCols}
+        className="my-masonry-grid"
+        columnClassName="my-masonry-grid_column"
+      >
+        {photos.map((photo, index) => (
+          <div
+            className={`relative mb-4 ${photo.type === 'landscape' ? 'my-masonry-grid_column-span-2' : ''}`}
+            key={photo.src}
+            onContextMenu={handleRightClick}
+          >
+            <img
+              src={photo.src}
+              alt="Photo"
+              width={photo.type === 'portrait' ? 500 : 1000}
+              height={photo.type === 'landscape' ? 750 : 500}
+              className="relative cursor-pointer"
+              onClick={() => lightboxRef.current?.openGallery(index)}
+            />
+          </div>
+        ))}
+      </Masonry>
 
-        <LightGallery
-          onInit={(ref) => {
-            if (ref) {
-              lightboxRef.current = ref.instance;
-            }
-          }}
-          id="lightGallery"
-          download={true}
-          zoom={false}
-          speed={500}
-          plugins={[lgThumbnail, lgZoom]}
-          dynamic
-          dynamicEl={photos.map((photo) => ({
-            src: photo.src,
-            thumb: photo.src,
-          }))}
-        />
-      </div>
+      <LightGallery
+        onInit={(ref) => {
+          if (ref) {
+            lightboxRef.current = ref.instance;
+          }
+        }}
+        id="lightGallery"
+        download={true}
+        zoom={false}
+        speed={500}
+        plugins={[lgThumbnail, lgZoom]}
+        dynamic
+        dynamicEl={photos.map((photo) => ({
+          src: photo.src,
+          thumb: photo.src,
+        }))}
+      />
     </div>
   );
 };
