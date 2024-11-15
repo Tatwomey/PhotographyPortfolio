@@ -131,9 +131,9 @@ const ProductPage = ({ product }) => {
   const [addingToCart, setAddingToCart] = useState(false);
   const productRef = useRef(null);
 
-  const mainImageSrc = product.images.edges && product.images.edges[0]?.node.src ? product.images.edges[0].node.src : "/fallback-image.jpg";
+  const mainImageSrc = product.images.edges.length > 0 ? product.images.edges[0].node.src : "/fallback-image.jpg";
   const [mainImage, setMainImage] = useState(mainImageSrc);
-  const selectedVariant = product.variants.edges && product.variants.edges[0]?.node ? product.variants.edges[0].node : null;
+  const selectedVariant = product.variants.edges.length > 0 ? product.variants.edges[0].node : null;
 
   useEffect(() => {
     if (productRef.current) {
@@ -231,15 +231,15 @@ const ProductPage = ({ product }) => {
                   className="relative w-16 h-16 md:w-24 md:h-24 cursor-pointer border border-gray-200 rounded-lg overflow-hidden"
                   onClick={() => handleThumbnailClick(image.node.src)}
                 >
-                  <Image
-                    src={image.node.src || "/fallback-image.jpg"}
-                    alt={image.node.altText || "Product Thumbnail"}
-                    layout="fill"
-                    objectFit="cover"
-                    className="rounded-lg"
-                    unoptimized
-                  />
-                </div>
+                 <Image
+  src={image.node.src || "/fallback-image.jpg"}
+  alt={image.node.altText || "Product Thumbnail"}
+  layout="fill"
+  objectFit="cover"
+  className="rounded-lg"
+  unoptimized
+/>
+</div>
               ))}
             </div>
           </div>

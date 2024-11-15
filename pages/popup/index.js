@@ -4,15 +4,25 @@ import Hero from '@/components/Hero';
 import Product from '@/components/Product';
 import { useSmoothScroll } from '@/hooks/useSmoothScroll';
 import { useShopContext } from '@/contexts/shopContext';
+import { useRouter } from 'next/router';
 
-export default function Shop({ products }) {
+export default function Popup({ products }) {
   const safeProducts = products || [];
-  const shopPageRef = useRef(null);
+  const popupPageRef = useRef(null);
   const { cart, loading, handleAddToCart } = useShopContext();
+  const router = useRouter();
 
-  useSmoothScroll('#shop', shopPageRef);
+  // Redirect to #popup if the hash is not present
+  useEffect(() => {
+    if (window.location.hash !== '#popup') {
+      router.replace('/popup#popup', undefined, { shallow: true });
+    }
+  }, []);
+
+  useSmoothScroll('#popup', popupPageRef);
 
   useEffect(() => {
+    // Placeholder for third-party scripts or environment specific scripts
     const script = document.createElement('script');
     script.src = `https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=${process.env.NEXT_PUBLIC_KLAVIYO_API_KEY}`;
     script.async = true;
@@ -39,14 +49,14 @@ export default function Shop({ products }) {
   return (
     <>
       <Head>
-        <title>The Shop</title>
-        <meta name="description" content="Shop for our products" />
+        <title>Popup Shop</title>
+        <meta name="description" content="Exclusive popup shop products" />
       </Head>
       <Hero />
-      <main ref={shopPageRef} className="container mx-auto p-4 pb-20">
+      <main ref={popupPageRef} className="container mx-auto p-4 pb-20">
         <div className="flex flex-wrap -mx-2">
           {safeProducts.map((product) => (
-            <div key={product.id} className="w-full sm:w-1/2 md:w-1/3 px-2 mb-4 product-item">
+            <div key={product.id} className="w-full sm:w-1/2 md:w-1/3 px-2 mb-4">
               <Product
                 product={product}
                 isSoldOut={!product.availableForSale}
@@ -60,14 +70,10 @@ export default function Shop({ products }) {
   );
 }
 
+// Adjust the getStaticProps function to fetch popup exclusive products when necessary
 export async function getStaticProps() {
   const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
   const token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN;
-
-  if (!endpoint || !token) {
-    console.error("Shopify endpoint or token is undefined.");
-    return { props: { products: [] } };
-  }
 
   const graphqlQuery = {
     query: `
@@ -79,7 +85,6 @@ export async function getStaticProps() {
               title
               handle
               description
-              availableForSale
               images(first: 1) {
                 edges {
                   node {
@@ -108,10 +113,10 @@ export async function getStaticProps() {
 
   try {
     const res = await fetch(endpoint, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": token,
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': token,
       },
       body: JSON.stringify(graphqlQuery),
     });
@@ -122,31 +127,25 @@ export async function getStaticProps() {
 
     const responseJson = await res.json();
 
-    if (
-      !responseJson ||
-      !responseJson.data ||
-      !responseJson.data.products ||
-      !responseJson.data.products.edges
-    ) {
-      throw new Error("Products data is not available in the response");
+    if (!responseJson || !responseJson.data || !responseJson.data.products || !responseJson.data.products.edges) {
+      throw new Error('Products data is not available in the response');
     }
 
-    const products = responseJson.data.products.edges.map((edge) => {
+    const products = responseJson.data.products.edges.map(edge => {
       const variant = edge.node.variants.edges[0]?.node;
       return {
         id: edge.node.id,
         title: edge.node.title,
         handle: edge.node.handle,
         description: edge.node.description,
-        availableForSale: edge.node.availableForSale,
-        imageSrc: edge.node.images.edges[0]?.node.src || "/fallback-image.jpg",
-        imageAlt: edge.node.images.edges[0]?.node.altText || "Product Image",
-        price: variant?.priceV2.amount || "0",
-        variantId: variant?.id || null,
+        imageSrc: edge.node.images.edges[0]?.node.src || '/fallback-image.jpg',
+        imageAlt: edge.node.images.edges[0]?.node.altText || 'Product Image',
+        price: variant?.priceV2.amount || '0',
+        variantId: variant?.id || null
       };
     });
 
-    return { props: { products } };
+    return { props: { products }};
   } catch (error) {
     console.error("Error fetching products:", error);
     return { props: { products: [] } };
