@@ -40,7 +40,7 @@ export default function Shop({ products }) {
     <>
       <Head>
         <title>The Shop</title>
-        <meta name="description" content="Shop for our products" />
+        <meta name="description" content="Shop our exclusive products" />
       </Head>
       <Hero />
       <main ref={shopPageRef} className="container mx-auto p-4 pb-20">
@@ -64,37 +64,34 @@ export async function getStaticProps() {
   const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
   const token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
-  if (!endpoint || !token) {
-    console.error("Shopify endpoint or token is undefined.");
-    return { props: { products: [] } };
-  }
-
   const graphqlQuery = {
     query: `
       query getProductList {
-        products(sortKey: PRICE, first: 10, reverse: true) {
-          edges {
-            node {
-              id
-              title
-              handle
-              description
-              availableForSale
-              images(first: 1) {
-                edges {
-                  node {
-                    src
-                    altText
+        collectionByHandle(handle: "shop") {
+          products(first: 10, sortKey: PRICE, reverse: true) {
+            edges {
+              node {
+                id
+                title
+                handle
+                description
+                availableForSale
+                images(first: 1) {
+                  edges {
+                    node {
+                      src
+                      altText
+                    }
                   }
                 }
-              }
-              variants(first: 1) {
-                edges {
-                  node {
-                    id
-                    priceV2 {
-                      amount
-                      currencyCode
+                variants(first: 1) {
+                  edges {
+                    node {
+                      id
+                      priceV2 {
+                        amount
+                        currencyCode
+                      }
                     }
                   }
                 }
@@ -122,29 +119,17 @@ export async function getStaticProps() {
 
     const responseJson = await res.json();
 
-    if (
-      !responseJson ||
-      !responseJson.data ||
-      !responseJson.data.products ||
-      !responseJson.data.products.edges
-    ) {
-      throw new Error("Products data is not available in the response");
-    }
-
-    const products = responseJson.data.products.edges.map((edge) => {
-      const variant = edge.node.variants.edges[0]?.node;
-      return {
-        id: edge.node.id,
-        title: edge.node.title,
-        handle: edge.node.handle,
-        description: edge.node.description,
-        availableForSale: edge.node.availableForSale,
-        imageSrc: edge.node.images.edges[0]?.node.src || "/fallback-image.jpg",
-        imageAlt: edge.node.images.edges[0]?.node.altText || "Product Image",
-        price: variant?.priceV2.amount || "0",
-        variantId: variant?.id || null,
-      };
-    });
+    const products = responseJson.data.collectionByHandle.products.edges.map((edge) => ({
+      id: edge.node.id,
+      title: edge.node.title,
+      handle: edge.node.handle,
+      description: edge.node.description,
+      availableForSale: edge.node.availableForSale,
+      imageSrc: edge.node.images.edges[0]?.node.src || "/fallback-image.jpg",
+      imageAlt: edge.node.images.edges[0]?.node.altText || "Product Image",
+      price: edge.node.variants.edges[0]?.node.priceV2.amount || "0",
+      variantId: edge.node.variants.edges[0]?.node.id || null,
+    }));
 
     return { props: { products } };
   } catch (error) {
