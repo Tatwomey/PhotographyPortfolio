@@ -2,17 +2,24 @@ import React, { useRef, useEffect } from 'react';
 import Head from 'next/head';
 import Hero from '@/components/Hero';
 import Product from '@/components/Product';
-import { useSmoothScroll } from '@/hooks/useSmoothScroll';
+import { useRouter } from 'next/router';
 import { useShopContext } from '@/contexts/shopContext';
 
 export default function Popup({ products }) {
     const safeProducts = products || [];
     const popupPageRef = useRef(null);
     const { cart, loading, handleAddToCart } = useShopContext();
-
-    useSmoothScroll('#popup', popupPageRef);
+    const router = useRouter();
 
     useEffect(() => {
+        if (typeof window !== 'undefined') {
+            // Check if the current hash is not '#popup'
+            if (window.location.hash !== '#popup') {
+                // Redirect and replace the URL without adding a history entry
+                router.replace('/popup#popup', undefined, { shallow: true });
+            }
+        }
+
         const script = document.createElement('script');
         script.src = `https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=${process.env.NEXT_PUBLIC_KLAVIYO_API_KEY}`;
         script.async = true;
@@ -21,7 +28,17 @@ export default function Popup({ products }) {
         return () => {
             document.body.removeChild(script);
         };
-    }, []);
+    }, [router]);
+
+    // Additional useEffect to manage smooth scrolling after URL update
+    useEffect(() => {
+        if (window.location.hash === '#popup' && popupPageRef.current) {
+            window.scrollTo({
+                top: popupPageRef.current.offsetTop,
+                behavior: 'smooth'
+            });
+        }
+    }, [popupPageRef]);
 
     const handleAddToCartClick = async (product) => {
         if (loading || !cart) {
@@ -119,12 +136,7 @@ export async function getStaticProps() {
 
         const responseJson = await res.json();
 
-        if (
-            !responseJson ||
-            !responseJson.data ||
-            !responseJson.data.collectionByHandle ||
-            !responseJson.data.collectionByHandle.products
-        ) {
+        if (!responseJson || !responseJson.data || !responseJson.data.collectionByHandle || !responseJson.data.collectionByHandle.products) {
             throw new Error("Products data is not available in the response");
         }
 
