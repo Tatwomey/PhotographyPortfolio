@@ -8,18 +8,19 @@ import { useShopContext } from '@/contexts/shopContext';
 export default function Popup({ products }) {
     const safeProducts = products || [];
     const popupPageRef = useRef(null);
+    const heroRef = useRef(null); // Reference for the Hero section
     const { cart, loading, handleAddToCart } = useShopContext();
     const router = useRouter();
 
     useEffect(() => {
+        // Redirect to include #popup in the URL if not present
         if (typeof window !== 'undefined') {
-            // Check if the current hash is not '#popup'
             if (window.location.hash !== '#popup') {
-                // Redirect and replace the URL without adding a history entry
                 router.replace('/popup#popup', undefined, { shallow: true });
             }
         }
 
+        // Load Klaviyo script
         const script = document.createElement('script');
         script.src = `https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=${process.env.NEXT_PUBLIC_KLAVIYO_API_KEY}`;
         script.async = true;
@@ -30,14 +31,22 @@ export default function Popup({ products }) {
         };
     }, [router]);
 
-    // Additional useEffect to manage smooth scrolling after URL update
     useEffect(() => {
-        if (window.location.hash === '#popup' && popupPageRef.current) {
-            window.scrollTo({
-                top: popupPageRef.current.offsetTop,
-                behavior: 'smooth'
-            });
-        }
+        // Ensure the scroll happens once the page is loaded and the DOM is ready
+        const scrollToContent = () => {
+            if (window.location.hash === '#popup' && popupPageRef.current) {
+                const heroHeight = heroRef.current?.offsetHeight || 0; // Get height of Hero section
+                const scrollTarget = popupPageRef.current.offsetTop - heroHeight;
+
+                window.scrollTo({
+                    top: scrollTarget,
+                    behavior: 'smooth',
+                });
+            }
+        };
+
+        // Delay the scroll slightly to ensure layout rendering is complete
+        setTimeout(scrollToContent, 100); // 100ms delay
     }, [popupPageRef]);
 
     const handleAddToCartClick = async (product) => {
@@ -59,7 +68,7 @@ export default function Popup({ products }) {
                 <title>Popup Shop</title>
                 <meta name="description" content="Exclusive products available for a limited time." />
             </Head>
-            <Hero />
+            <Hero ref={heroRef} />
             <main ref={popupPageRef} className="container mx-auto p-4 pb-20">
                 <div className="flex flex-wrap -mx-2">
                     {safeProducts.map((product) => (
