@@ -14,7 +14,7 @@ const Licensing = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
       <div style={styles.container}>
-        <h1 style={styles.heading}>Licensing Page Coming Soon</h1>
+        <h1 style={styles.heading}>Licensing Page Coming January 2025</h1>
         <p style={styles.text}>
           Thank you for your interest in licensing images from Trevor Twomey Photography. This page is currently under construction.
         </p>
@@ -25,7 +25,7 @@ const Licensing = () => {
           </a>.
         </p>
         <Link href="/" passHref>
-          <a style={styles.button}>Return to Homepage</a>
+          <span style={styles.button}>Return to Homepage</span>
         </Link>
       </div>
     </>
@@ -65,9 +65,7 @@ const styles = {
     textDecoration: "none",
     borderRadius: "5px",
     transition: "background-color 0.3s ease",
-  },
-  buttonHover: {
-    backgroundColor: "#555",
+    cursor: "pointer",
   },
 };
 
