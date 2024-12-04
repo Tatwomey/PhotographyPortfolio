@@ -1,5 +1,6 @@
 import React from "react";
 import Head from "next/head";
+import Link from "next/link";
 
 const Licensing = () => {
   return (
@@ -23,9 +24,9 @@ const Licensing = () => {
             info@trevortwomeyphoto.com
           </a>.
         </p>
-        <a href="/" style={styles.button}>
-          Return to Homepage
-        </a>
+        <Link href="/" passHref>
+          <a style={styles.button}>Return to Homepage</a>
+        </Link>
       </div>
     </>
   );
