@@ -24,7 +24,7 @@ const photos = [
      { src: "/†††(Crosses)_022024_nyc_trevor_twomey-5.jpg", type: "portrait" },
       { src: "/munky-korn-glitch-ftl20-2018-trevor-twomey.jpg", type: "portrait" },
        { src: "/q-unique-bowery-ballroom-trevortwomey-1.jpg", type: "portrait" },
-        { src: "/aaron-lewis-staind-camden-NJ-2021-trevor-twomeytwomey.jpg", type: "portrait", },
+    
          { src: "/voxmana-nublu-natalia-clavier-trevor-twomey-1.JPG", type: "portrait", }, 
          { src: "/iamx-chris-corner-lpr-2023-trevor-twomey-3.jpg", type: "portrait" }, 
          { src: "/JD-korn-jones-beach-2022-trevor-twomey-3.jpg", type: "portrait" },
@@ -47,9 +47,9 @@ const photos = [
                  { src: "/Hash-thievery-corporation-trevor-twomey.jpg", type: "portrait" }, 
                  { src: "/Korn-JD-Jones-Beach-2022-trevor-twomey.jpg", type: "portrait" }, 
                  { src: "/evanescence-troy-mclawhorn--trevor-twomey-2022.jpg", type: "portrait", },
-                  { src: "/iamx-chris-corner-LPR-2023-trevortwomey-4.jpg", type: "portrait" },
+               
                    { src: "/mike-dijan-kings-bounty-band-trevor-twomey.JPG", type: "portrait" },
-                    { src: "/†††(Crosses)_chino_022024_nyc_trevor_twomey.jpg", type: "portrait" },
+                  
                      { src: "/lou-lou-thievery-corporation-capitol-theatre-trevor-twomey-1.jpg", type: "portrait", }, 
                      { src: "/fieldy-korn-allentown-PA-2020-trevor-twomey.jpg", type: "portrait" }, 
                      { src: "/q-unique-king-bounty-denial-trevor-twomey.jpg", type: "portrait" },
@@ -62,7 +62,7 @@ const photos = [
                           { src: "/iamx-lpr-2023-trevor-twomey.jpg", type: "portrait" }, 
                           { src: "/JD-korn-jones-beach-2022-trevor-twomey-2.jpg", type: "portrait" },
                            { src: "/hash-thievery-corporation-2013-trevor-twomey-1.jpg", type: "portrait", }, 
-                           { src: "/IAMX-chris-corner-lpr-2023-trevor-twomey-2.jpg", type: "portrait" }, 
+                          
                            { src: "/†††(Crosses)_022024_nyc_trevor_twomey.jpg", type: "portrait" }, 
                            { src: "/roots-thievery-corporation-2016-trevor-twomey-1 2.JPG", type: "portrait", },
                             { src: "/munky-korn-camden-nj-2022-trevortwomeytest.jpg", type: "portrait" }, ]; 
@@ -127,7 +127,7 @@ const Portfolio = () => {
 
     return () => clearInterval(intervalId);
   }, [attachEventListeners]);
-
+z
   return (
     <>
       
