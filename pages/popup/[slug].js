@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import Head from "next/head";
 import Hero from "@/components/Hero";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import { useShopContext } from "@/contexts/shopContext";
+import Image from "next/image";
 import { fetchCart } from "@/lib/shopify";
 
 export async function getStaticPaths() {
@@ -131,9 +131,13 @@ const ProductPage = ({ product }) => {
   const [addingToCart, setAddingToCart] = useState(false);
   const productRef = useRef(null);
 
-  const mainImageSrc = product.images.edges.length > 0 ? product.images.edges[0].node.src : "/fallback-image.jpg";
+  const mainImageSrc =
+    product.images.edges.length > 0
+      ? `${product.images.edges[0].node.src}?width=1000&height=1000`
+      : "/fallback-image.jpg";
   const [mainImage, setMainImage] = useState(mainImageSrc);
-  const selectedVariant = product.variants.edges.length > 0 ? product.variants.edges[0].node : null;
+  const selectedVariant =
+    product.variants.edges.length > 0 ? product.variants.edges[0].node : null;
 
   useEffect(() => {
     if (productRef.current) {
@@ -149,12 +153,12 @@ const ProductPage = ({ product }) => {
   }, [refreshCart]);
 
   const handleThumbnailClick = (imageSrc) => {
-    setMainImage(imageSrc);
+    setMainImage(`${imageSrc}?width=1000&height=1000`);
   };
 
   const handleAddToCartClick = async () => {
     if (cartLoading || !cart) {
-      console.error('Cart is still loading or not available. Please wait.');
+      console.error("Cart is still loading or not available. Please wait.");
       return;
     }
 
@@ -171,7 +175,7 @@ const ProductPage = ({ product }) => {
 
   const handleBuyNow = async () => {
     if (cartLoading || !cart) {
-      console.error('Cart is still loading or not available. Please wait.');
+      console.error("Cart is still loading or not available. Please wait.");
       return;
     }
 
@@ -180,13 +184,13 @@ const ProductPage = ({ product }) => {
       const variantId = selectedVariant.id;
       await handleAddToCart(variantId, 1);
 
-      const localCartId = window.localStorage.getItem('shopify_cart_id');
+      const localCartId = window.localStorage.getItem("shopify_cart_id");
       if (localCartId) {
         const updatedCart = await fetchCart(localCartId);
         if (updatedCart.checkoutUrl) {
           window.location.href = updatedCart.checkoutUrl;
         } else {
-          console.error('Checkout URL not found in cart:', updatedCart);
+          console.error("Checkout URL not found in cart:", updatedCart);
         }
       }
     } catch (error) {
@@ -207,22 +211,14 @@ const ProductPage = ({ product }) => {
       </Head>
       <Hero />
       <main ref={productRef} className="container mx-auto p-4 md:p-8 pb-20">
-        <div className="bg-white p-4 md:p-8 rounded-lg shadow-md flex flex-col md:flex-row gap-8">
+        <div className="bg-white p-6 md:p-10 rounded-lg shadow-md flex flex-col md:flex-row gap-8">
           <div className="md:w-1/2 flex flex-col items-center space-y-4">
-            <div className="relative w-full h-80 md:h-[600px]">
-              <Image
+            <div className="relative w-full aspect-[4/5]">
+              <img
                 src={mainImage}
                 alt="Main Product Image"
-                layout="fill"
-                objectFit="contain"
-                className="rounded-lg"
-                unoptimized
+                className="w-full h-full object-cover rounded-lg"
               />
-              {!selectedVariant.availableForSale && (
-                <div className="absolute top-0 left-0 bg-red-500 text-white p-2">
-                  Sold Out
-                </div>
-              )}
             </div>
             <div className="flex space-x-2 md:space-x-4 overflow-x-auto">
               {product.images.edges.map((image, index) => (
@@ -231,15 +227,12 @@ const ProductPage = ({ product }) => {
                   className="relative w-16 h-16 md:w-24 md:h-24 cursor-pointer border border-gray-200 rounded-lg overflow-hidden"
                   onClick={() => handleThumbnailClick(image.node.src)}
                 >
-                 <Image
-  src={image.node.src || "/fallback-image.jpg"}
-  alt={image.node.altText || "Product Thumbnail"}
-  layout="fill"
-  objectFit="cover"
-  className="rounded-lg"
-  unoptimized
-/>
-</div>
+                  <img
+                    src={`${image.node.src}?width=1000&height=1000`}
+                    alt={image.node.altText || "Product Thumbnail"}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                </div>
               ))}
             </div>
           </div>
@@ -268,11 +261,9 @@ const ProductPage = ({ product }) => {
               >
                 {product.variants.edges.map((variant) => (
                   <option key={variant.node.id} value={variant.node.id}>
-                    {(variant.node.selectedOptions &&
-                      variant.node.selectedOptions.find(
-                        (option) => option.name === "Size"
-                      )?.value) ||
-                      "Default"}
+                    {variant.node.selectedOptions.find(
+                      (option) => option.name === "Size"
+                    )?.value || "Default"}
                   </option>
                 ))}
               </select>
@@ -290,7 +281,11 @@ const ProductPage = ({ product }) => {
               <button
                 onClick={handleBuyNow}
                 disabled={!selectedVariant.availableForSale}
-                className={`w-full md:w-auto font-bold py-2 px-4 rounded ${selectedVariant.availableForSale ? "bg-black text-white" : "bg-gray-400 text-gray-200"}`}
+                className={`w-full md:w-auto font-bold py-2 px-4 rounded ${
+                  selectedVariant.availableForSale
+                    ? "bg-black text-white"
+                    : "bg-gray-400 text-gray-200"
+                }`}
               >
                 {selectedVariant.availableForSale ? "Buy it Now" : "Sold Out"}
               </button>
