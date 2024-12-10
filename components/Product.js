@@ -1,6 +1,7 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useShopContext } from '@/contexts/shopContext';
 
 const Product = ({ product, isSoldOut, onAddToCart }) => {
@@ -8,7 +9,7 @@ const Product = ({ product, isSoldOut, onAddToCart }) => {
   const [addingToCart, setAddingToCart] = React.useState(false);
 
   React.useEffect(() => {
-    refreshCart(); // Ensure cart is refreshed on component mount
+    refreshCart();
   }, [refreshCart]);
 
   const price = product.price;
@@ -34,34 +35,37 @@ const Product = ({ product, isSoldOut, onAddToCart }) => {
   };
 
   return (
-    <div className="relative w-full h-96">
-      <Link href={`/shop/${product.handle || 'default-slug'}`}>
-        <div className="cursor-pointer">
-          <Image
+    <div className="relative w-full aspect-[4/5] mb-6">
+      <Link href={`/popup/${product.handle || 'default-slug'}`} legacyBehavior>
+        <a className="block relative w-full h-full bg-gray-100 overflow-hidden rounded-lg shadow hover:shadow-lg">
+          <img
             src={product.imageSrc || '/fallback-image.jpg'}
             alt={product.imageAlt || 'Product Image'}
-            width={400}
-            height={400}
-            priority={true} // Adding the priority property
-            unoptimized
+            className="absolute inset-0 w-full h-full object-cover"
           />
           {isSoldOut && (
-            <div className="absolute top-0 left-0 bg-red-500 text-white p-2">
+            <div className="absolute top-0 left-0 bg-red-500 text-white p-2 text-sm">
               Sold out
             </div>
           )}
-        </div>
+        </a>
       </Link>
-      <h2 className="text-xl font-semibold mt-2">{product.title}</h2>
-      <p className="text-sm">{product.description}</p>
-      <p className="font-bold mt-1">{formattedPrice}</p>
-      <button
-        onClick={handleAddToCartClick}
-        className={`product-btn ${isSoldOut ? 'sold-out-btn' : 'add-to-cart-btn'}`}
-        disabled={addingToCart || isSoldOut}
-      >
-        {addingToCart ? 'Adding...' : isSoldOut ? 'Sold Out' : 'Add to Cart'}
-      </button>
+      <div className="mt-2 text-center">
+        <h2 className="text-lg font-bold">{product.title}</h2>
+        <p className="text-sm text-gray-700">{product.description}</p>
+        <p className="text-md font-bold">{formattedPrice}</p>
+        <button
+          onClick={handleAddToCartClick}
+          className={`mt-2 px-4 py-2 text-sm font-bold rounded ${
+            isSoldOut
+              ? 'bg-gray-300 text-gray-700 cursor-not-allowed'
+              : 'bg-blue-600 text-white hover:bg-blue-700'
+          }`}
+          disabled={addingToCart || isSoldOut}
+        >
+          {addingToCart ? 'Adding...' : isSoldOut ? 'Sold Out' : 'Add to Cart'}
+        </button>
+      </div>
     </div>
   );
 };
