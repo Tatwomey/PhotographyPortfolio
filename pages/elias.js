@@ -59,7 +59,7 @@ const Elias = () => {
 
   const handleRightClick = (e) => {
     e.preventDefault();
-    alert('© Trevor Twomey Photography 2023. All Rights Reserved.');
+    alert('© Trevor Twomey Photography 2025. All Rights Reserved.');
   };
 
   useEffect(() => {
