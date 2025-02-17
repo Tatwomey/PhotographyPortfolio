@@ -46,12 +46,12 @@ const Portfolio = () => {
 
   const handleContextMenu = useCallback((e) => {
     e.preventDefault();
-    alert("© Trevor Twomey Photography 2024. All Rights Reserved.");
+    alert("© Trevor Twomey Photography 2025. All Rights Reserved.");
   }, []);
 
   const handleTouchStart = useCallback(() => {
     touchTimer.current = setTimeout(() => {
-      alert("© Trevor Twomey Photography 2024. All Rights Reserved.");
+      alert("© Trevor Twomey Photography 2025. All Rights Reserved.");
     }, 500);
   }, []);
 
