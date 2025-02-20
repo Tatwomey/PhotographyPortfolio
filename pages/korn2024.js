@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react";
-import Masonry from "react-masonry-css";
 import LightGallery from "lightgallery/react";
 import "lightgallery/css/lightgallery.css";
 import "lightgallery/css/lg-zoom.css";
@@ -9,53 +8,20 @@ import lgZoom from "lightgallery/plugins/zoom";
 import Hero from "@/components/Hero";
 
 const photos = [
-    { "src": "/Elias_nonpoint_nyc_trevortwomey.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-2.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-38.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-29.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-3.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-4.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-34.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-35.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-6.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-7.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-30.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-8.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-9.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-10.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-31.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-36.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-41.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-33.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-13.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-14.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-15.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-16.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-17.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-18.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-19.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-39.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-20.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-21.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-40.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-24.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-25.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-26.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-37.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-27.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-28-1.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-43.jpg", "type": "portrait" },
+  { "src": "/Elias_nonpoint_nyc_trevortwomey.jpg", "type": "portrait" },
+  { "src": "/Elias_nonpoint_nyc_trevortwomey-2.jpg", "type": "landscape" },
+  { "src": "/Elias_nonpoint_nyc_trevortwomey-38.jpg", "type": "portrait" },
+  { "src": "/Elias_nonpoint_nyc_trevortwomey-29.jpg", "type": "portrait" },
+  { "src": "/Elias_nonpoint_nyc_trevortwomey-3.jpg", "type": "portrait" },
+  { "src": "/Elias_nonpoint_nyc_trevortwomey-4.jpg", "type": "portrait" },
+  { "src": "/Elias_nonpoint_nyc_trevortwomey-34.jpg", "type": "square" },
+  { "src": "/Elias_nonpoint_nyc_trevortwomey-35.jpg", "type": "portrait" },
+  { "src": "/Elias_nonpoint_nyc_trevortwomey-6.jpg", "type": "landscape" },
+  { "src": "/Elias_nonpoint_nyc_trevortwomey-7.jpg", "type": "portrait" }
 ];
 
-const Elias = () => {
+const Korn2024 = () => {
   const lightboxRef = useRef(null);
-
-  const breakpointCols = {
-    default: 4,
-    1100: 3,
-    700: 2,
-    500: 2
-  };
 
   const handleRightClick = (e) => {
     e.preventDefault();
@@ -64,60 +30,42 @@ const Elias = () => {
 
   useEffect(() => {
     document.addEventListener("contextmenu", function (e) {
-      const clickedElement = e.target;
-      if (clickedElement.closest(".lg-img-wrap")) {
+      if (e.target.closest(".lg-img-wrap")) {
         e.preventDefault();
-        alert("© Trevor Twomey Photography 2023. All Rights Reserved.");
+        alert("© Trevor Twomey Photography 2025. All Rights Reserved.");
       }
     });
   }, []);
 
   return (
-    <div className="max-w-[1240px] mx-auto py-4 sm:py-16">
-      <Hero heading="Elias Photography" message="Explore the captivating visuals of Elias in concert." />
-      <Masonry
-        breakpointCols={breakpointCols}
-        className="my-masonry-grid"
-        columnClassName="my-masonry-grid_column"
-      >
+    <div className="max-w-full mx-auto py-4 sm:py-16 px-2 sm:px-4 bg-black">
+      <Hero heading="Korn 2024 Photography" message="Explore the electrifying visuals of Korn's 2024 tour." />
+      <div className="grid grid-cols-3 gap-4 md:grid-cols-2 sm:grid-cols-1 auto-rows-[250px] md:auto-rows-[350px] lg:auto-rows-[450px]">
         {photos.map((photo, index) => (
-          <div
-            className={`relative mb-4 ${photo.type === 'landscape' ? 'my-masonry-grid_column-span-2' : ''}`}
-            key={photo.src}
-            onContextMenu={handleRightClick}
+          <div key={photo.src} 
+               className={`relative group ${photo.type === 'landscape' ? 'col-span-2 row-span-1' : photo.type === 'square' ? 'col-span-1 row-span-1' : 'col-span-1 row-span-2'}`}
           >
             <img
               src={photo.src}
               alt="Photo"
-              width={photo.type === 'portrait' ? 500 : 1000}
-              height={photo.type === 'landscape' ? 750 : 500}
-              className="relative cursor-pointer"
+              className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-all duration-300"
               onClick={() => lightboxRef.current?.openGallery(index)}
+              onContextMenu={handleRightClick}
             />
           </div>
         ))}
-      </Masonry>
-
+      </div>
       <LightGallery
-        onInit={(ref) => {
-          if (ref) {
-            lightboxRef.current = ref.instance;
-          }
-        }}
-        id="lightGallery"
-        download={true}
+        onInit={(ref) => (lightboxRef.current = ref.instance)}
+        download={false}
         zoom={true}
         speed={500}
         plugins={[lgThumbnail, lgZoom]}
         dynamic
-        dynamicEl={photos.map((photo) => ({
-          src: photo.src,
-          thumb: photo.src,
-          downloadUrl: photo.src // Enables download of the original image with metadata
-        }))}
+        dynamicEl={photos.map((photo) => ({ src: photo.src, thumb: photo.src }))}
       />
     </div>
   );
 };
 
-export default korn2024;
+export default Korn2024;
