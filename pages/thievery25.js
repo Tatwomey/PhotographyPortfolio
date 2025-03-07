@@ -13,7 +13,7 @@ const photos = [
   { "src": "/Thievery25/thievery_corporation_terminal5-41.jpg", "type": "portrait" },
     { "src": "/Thievery25/thievery_corporation_terminal5-14.jpg", "type": "portrait" },
     { "src": "/Thievery25/thievery_corporation_terminal5-3.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-21.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-42.jpg", "type": "portrait" },
     { "src": "/Thievery25/thievery_corporation_terminal5-7.jpg", "type": "portrait" },
     { "src": "/Thievery25/thievery_corporation_terminal5-25.jpg", "type": "portrait" },
     { "src": "/Thievery25/thievery_corporation_terminal5-36.jpg", "type": "portrait" },
