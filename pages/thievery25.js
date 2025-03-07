@@ -8,43 +8,40 @@ import lgThumbnail from "lightgallery/plugins/thumbnail";
 import lgZoom from "lightgallery/plugins/zoom";
 import Hero from "@/components/Hero";
 
+// All Thievery Corporation photos, fully randomized
 const photos = [
-    { "src": "/Elias_nonpoint_nyc_trevortwomey.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-2.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-38.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-29.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-3.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-4.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-34.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-35.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-6.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-7.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-30.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-8.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-9.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-10.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-31.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-36.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-41.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-33.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-13.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-14.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-15.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-16.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-17.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-18.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-19.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-39.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-20.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-21.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-40.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-24.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-25.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-26.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-37.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-27.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-28-1.jpg", "type": "portrait" },
-    { "src": "/Elias_nonpoint_nyc_trevortwomey-43.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-14.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-3.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-21.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-7.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-25.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-36.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-18.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-8.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-39.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-2.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-12.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-28.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-9.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-31.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-15.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-4.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-33.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-6.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-24.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-22.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-16.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-35.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-23.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-17.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-26.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-20.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-30.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-11.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-19.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-34.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-38.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-27.jpg", "type": "portrait" },
 ];
 
 const Thievery25 = () => {
@@ -74,7 +71,7 @@ const Thievery25 = () => {
 
   return (
     <div className="max-w-[1240px] mx-auto py-4 sm:py-16">
-      <Hero heading="Elias Photography" message="Explore the captivating visuals of Elias in concert." />
+      <Hero heading="Thievery Corporation Photography" message="Explore the captivating visuals of Thievery Corporation in concert." />
       <Masonry
         breakpointCols={breakpointCols}
         className="my-masonry-grid"
@@ -113,7 +110,7 @@ const Thievery25 = () => {
         dynamicEl={photos.map((photo) => ({
           src: photo.src,
           thumb: photo.src,
-          downloadUrl: photo.src // Enables download of the original image with metadata
+          downloadUrl: photo.src
         }))}
       />
     </div>
