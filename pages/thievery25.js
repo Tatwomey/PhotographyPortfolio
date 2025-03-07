@@ -10,6 +10,7 @@ import Hero from "@/components/Hero";
 
 // All Thievery Corporation photos, fully randomized
 const photos = [
+  { "src": "/Thievery25/thievery_corporation_terminal5-41.jpg", "type": "portrait" },
     { "src": "/Thievery25/thievery_corporation_terminal5-14.jpg", "type": "portrait" },
     { "src": "/Thievery25/thievery_corporation_terminal5-3.jpg", "type": "portrait" },
     { "src": "/Thievery25/thievery_corporation_terminal5-21.jpg", "type": "portrait" },
@@ -27,14 +28,13 @@ const photos = [
     { "src": "/Thievery25/thievery_corporation_terminal5-15.jpg", "type": "portrait" },
     { "src": "/Thievery25/thievery_corporation_terminal5-4.jpg", "type": "portrait" },
     { "src": "/Thievery25/thievery_corporation_terminal5-33.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-6.jpg", "type": "portrait" },
     { "src": "/Thievery25/thievery_corporation_terminal5-24.jpg", "type": "portrait" },
     { "src": "/Thievery25/thievery_corporation_terminal5-22.jpg", "type": "portrait" },
     { "src": "/Thievery25/thievery_corporation_terminal5-16.jpg", "type": "portrait" },
     { "src": "/Thievery25/thievery_corporation_terminal5-35.jpg", "type": "portrait" },
     { "src": "/Thievery25/thievery_corporation_terminal5-23.jpg", "type": "portrait" },
     { "src": "/Thievery25/thievery_corporation_terminal5-17.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-26.jpg", "type": "portrait" },
+    { "src": "/Thievery25/thievery_corporation_terminal5-40.jpg", "type": "portrait" },
     { "src": "/Thievery25/thievery_corporation_terminal5-20.jpg", "type": "portrait" },
     { "src": "/Thievery25/thievery_corporation_terminal5-30.jpg", "type": "portrait" },
     { "src": "/Thievery25/thievery_corporation_terminal5-11.jpg", "type": "portrait" },
