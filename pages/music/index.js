@@ -1,7 +1,9 @@
-import React, { useEffect, useRef, useCallback } from "react";
-import Masonry from "react-masonry-css";
+import React from "react";
+import Meta from "@/components/Meta";
+import Hero from "@/components/Hero";
+import Portfolio from "@/components/Portfolio";
 
-const photos = [
+const allPhotos = [
     { src: "/JD-korn-jones-beach-2022-trevor-twomey-5-2.jpg", type: "portrait", alt: "Jonathan Davis performing live with Korn at Jones Beach 2022", title: "Jonathan Davis - Korn Live at Jones Beach 2022" },
     { src: "/q-unique-kings-bounty-denial-video-trevor-twomey-1.jpg", type: "portrait", alt: "Q-Unique performing with Kings Bounty during Denial video shoot", title: "Q-Unique - Kings Bounty Denial Video Shoot" },
     { src: "/†††(Crosses)_chino_022024_nyc_trevor_twomey-3.jpg", type: "portrait", alt: "Chino Moreno of ††† (Crosses) performing live in NYC 2024", title: "Chino Moreno - ††† (Crosses) NYC 2024" },
@@ -32,97 +34,27 @@ const photos = [
     { src: "/raquel-jones-capitol-theatre-2018-trevor-twomey.jpg", type: "portrait", alt: "Raquel Jones performing live at Capitol Theatre 2018", title: "Raquel Jones - Capitol Theatre 2018" },
     { src: "/clint-lowery-sevendust-nyc-2022-trevor-twomey.jpg", type: "portrait", alt: "Clint Lowery of Sevendust performing live in NYC 2022", title: "Clint Lowery - Sevendust NYC 2022" },
     { src: "/hash-thievery-corporation-2013-trevor-twomey-1.jpg", type: "portrait", alt: "Hash performing live with Thievery Corporation in 2013", title: "Hash - Thievery Corporation 2013" },
-];
+    ];
 
-const Portfolio = () => {
-  const touchTimer = useRef(null);
-
-  const breakpointCols = {
-    default: 4,
-    1100: 3,
-    700: 2,
-    500: 2,
-  };
-
-  const handleContextMenu = useCallback((e) => {
-    e.preventDefault();
-    alert("© Trevor Twomey Photography 2025. All Rights Reserved.");
-  }, []);
-
-  const handleTouchStart = useCallback(() => {
-    touchTimer.current = setTimeout(() => {
-      alert("© Trevor Twomey Photography 2025. All Rights Reserved.");
-    }, 500);
-  }, []);
-
-  const handleTouchEnd = useCallback(() => {
-    clearTimeout(touchTimer.current);
-  }, []);
-
-  const handleDragStart = useCallback((e) => {
-    e.preventDefault();
-  }, []);
-
-  const attachEventListeners = useCallback(
-    (elements) => {
-      elements.forEach((el) => {
-        el.removeEventListener("contextmenu", handleContextMenu);
-        el.removeEventListener("touchstart", handleTouchStart);
-        el.removeEventListener("touchend", handleTouchEnd);
-        el.removeEventListener("touchmove", handleTouchEnd);
-        el.removeEventListener("dragstart", handleDragStart);
-
-        el.addEventListener("contextmenu", handleContextMenu);
-        el.addEventListener("touchstart", handleTouchStart);
-        el.addEventListener("touchend", handleTouchEnd);
-        el.addEventListener("touchmove", handleTouchEnd);
-        el.addEventListener("dragstart", handleDragStart);
-      });
-    },
-    [handleContextMenu, handleTouchStart, handleTouchEnd, handleDragStart]
-  );
-
-  useEffect(() => {
-    const initialImages = document.querySelectorAll(".my-masonry-grid img");
-    attachEventListeners(initialImages);
-
-    const intervalId = setInterval(() => {
-      attachEventListeners(initialImages);
-    }, 1000);
-
-    return () => clearInterval(intervalId);
-  }, [attachEventListeners]);
-
+function Music() {
   return (
-    <div className="max-w-[1240px] mx-auto py-4 sm:py-16 text-center" id="music-photography">
-      <Masonry
-        breakpointCols={breakpointCols}
-        className="my-masonry-grid"
-        columnClassName="my-masonry-grid_column"
-      >
-        {photos.map((photo, index) => (
-          <div
-            className={`relative mb-4 ${
-              photo.type === "landscape" ? "my-masonry-grid_column-span-2" : ""
-            }`}
-            key={photo.src}
-          >
-            <img
-              src={photo.src}
-              alt={photo.alt}
-              title={photo.title}
-              style={{
-                maxWidth: "100%",
-                height: "auto",
-                cursor: "default",
-              }}
-              draggable="false"
-            />
-          </div>
-        ))}
-      </Masonry>
-    </div>
+    <>
+      <Meta
+        title="Music Photographer - Trevor Twomey"
+        description="Explore the dynamic portfolio of music and concert photography by Trevor Twomey."
+        keywords="music photography, music photographer, New York based music photographer, NYC music photographer, tour photographer, concert photographer, live music photographer"
+      />
+      <Hero />
+      <Portfolio photos={allPhotos} sectionId="music-photography" />
+    </>
   );
-};
+}
 
-export default Portfolio;
+export default Music;
+
+
+
+
+
+
+

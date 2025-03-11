@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import { FaInstagram, FaLinkedin } from 'react-icons/fa';
@@ -11,6 +12,8 @@ const Navbar = () => {
     backgroundColor: 'transparent',
     color: 'white',
   });
+
+  const router = useRouter();
 
   useEffect(() => {
     const changeColor = () => {
@@ -26,10 +29,20 @@ const Navbar = () => {
   }, []);
 
   const handleNav = () => setNav(!nav);
-  const closeNav = () => setNav(false); // Function to explicitly close the navbar
+  const closeNav = () => setNav(false);
 
-  const handleSocialClick = (url) => {
-    window.open(url, '_blank', 'noopener,noreferrer');
+  const handleSmoothScroll = (e, href) => {
+    e.preventDefault();
+    const targetId = href.split('#')[1]; // Get the part after the #
+    const targetElement = document.getElementById(targetId);
+
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth' });
+      router.push(href, undefined, { shallow: true }); // Update URL without full reload
+    } else {
+      router.push(href); // Normal navigation if no anchor found
+    }
+
     closeNav();
   };
 
@@ -50,21 +63,21 @@ const Navbar = () => {
           />
         </Link>
         <div className='hidden md:flex space-x-4 items-center'>
-          <Link href='/#home' onClick={closeNav}>Home</Link>
-          <Link href='/about#about' onClick={closeNav}>About</Link>
-          <Link href='/music#music-photography' onClick={closeNav}>Music</Link>
-          <Link href='/contact#work-with-me' onClick={closeNav}>Let&apos;s talk</Link>
+          <a href="/#home" onClick={(e) => handleSmoothScroll(e, '/#home')}>Home</a>
+          <a href="/about#about" onClick={(e) => handleSmoothScroll(e, '/about#about')}>About</a>
+          <a href="/music#music-photography" onClick={(e) => handleSmoothScroll(e, '/music#music-photography')}>Music</a>
+          <a href="/contact#work-with-me" onClick={(e) => handleSmoothScroll(e, '/contact#work-with-me')}>Let’s talk</a>
           <Link href='/shop#shop' onClick={closeNav}>Shop</Link>
           <div className='flex space-x-2'>
             <FaInstagram
               size={20}
               className='cursor-pointer'
-              onClick={() => handleSocialClick('https://www.instagram.com/trevortwomey/')}
+              onClick={() => window.open('https://www.instagram.com/trevortwomey/', '_blank', 'noopener,noreferrer')}
             />
             <FaLinkedin
               size={20}
               className='cursor-pointer'
-              onClick={() => handleSocialClick('https://www.linkedin.com/in/trevor-twomey')}
+              onClick={() => window.open('https://www.linkedin.com/in/trevor-twomey', '_blank', 'noopener,noreferrer')}
             />
           </div>
         </div>
@@ -77,29 +90,6 @@ const Navbar = () => {
         </div>
         <CartIcon />
       </div>
-      {nav && (
-        <div className='md:hidden'>
-          <ul style={{ color: navbarStyle.color }} className='flex flex-col space-y-4'>
-            <li onClick={closeNav}><Link href='/#home'>Home</Link></li>
-            <li onClick={closeNav}><Link href='/about#about'>About</Link></li>
-            <li onClick={closeNav}><Link href='/music#music-photography'>Music</Link></li>
-            <li onClick={closeNav}><Link href='/contact#work-with-me'>Let&apos;s talk</Link></li>
-            <li onClick={closeNav}><Link href='/shop#shop'>Shop</Link></li>
-            <li className='flex space-x-2'>
-              <FaInstagram
-                size={20}
-                className='cursor-pointer'
-                onClick={() => handleSocialClick('https://www.instagram.com/trevortwomey/')}
-              />
-              <FaLinkedin
-                size={20}
-                className='cursor-pointer'
-                onClick={() => handleSocialClick('https://www.linkedin.com/in/trevor-twomey')}
-              />
-            </li>
-          </ul>
-        </div>
-      )}
     </div>
   );
 };

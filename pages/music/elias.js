@@ -1,12 +1,7 @@
-import React, { useEffect, useRef } from "react";
-import Masonry from "react-masonry-css";
-import LightGallery from "lightgallery/react";
-import "lightgallery/css/lightgallery.css";
-import "lightgallery/css/lg-zoom.css";
-import "lightgallery/css/lg-thumbnail.css";
-import lgThumbnail from "lightgallery/plugins/thumbnail";
-import lgZoom from "lightgallery/plugins/zoom";
+import React, { useEffect } from "react";
+import { useRouter } from "next/router";
 import Hero from "@/components/Hero";
+import Portfolio from "@/components/Portfolio";
 
 const photos = [
     { "src": "/Elias_nonpoint_nyc_trevortwomey.jpg", "type": "portrait" },
@@ -48,76 +43,23 @@ const photos = [
 ];
 
 const Elias = () => {
-  const lightboxRef = useRef(null);
-
-  const breakpointCols = {
-    default: 4,
-    1100: 3,
-    700: 2,
-    500: 2
-  };
-
-  const handleRightClick = (e) => {
-    e.preventDefault();
-    alert('© Trevor Twomey Photography 2025. All Rights Reserved.');
-  };
-
-  useEffect(() => {
-    document.addEventListener("contextmenu", function (e) {
-      const clickedElement = e.target;
-      if (clickedElement.closest(".lg-img-wrap")) {
-        e.preventDefault();
-        alert("© Trevor Twomey Photography 2023. All Rights Reserved.");
+  
+    const router = useRouter();
+  
+    useEffect(() => {
+      if (typeof window !== "undefined" && !window.location.hash) {
+        setTimeout(() => {
+          window.location.replace("#elias-photos");
+        }, 0);
       }
-    });
-  }, []);
-
-  return (
-    <div className="max-w-[1240px] mx-auto py-4 sm:py-16">
-      <Hero heading="Elias Photography" message="Explore the captivating visuals of Elias in concert." />
-      <Masonry
-        breakpointCols={breakpointCols}
-        className="my-masonry-grid"
-        columnClassName="my-masonry-grid_column"
-      >
-        {photos.map((photo, index) => (
-          <div
-            className={`relative mb-4 ${photo.type === 'landscape' ? 'my-masonry-grid_column-span-2' : ''}`}
-            key={photo.src}
-            onContextMenu={handleRightClick}
-          >
-            <img
-              src={photo.src}
-              alt="Photo"
-              width={photo.type === 'portrait' ? 500 : 1000}
-              height={photo.type === 'landscape' ? 750 : 500}
-              className="relative cursor-pointer"
-              onClick={() => lightboxRef.current?.openGallery(index)}
-            />
-          </div>
-        ))}
-      </Masonry>
-
-      <LightGallery
-        onInit={(ref) => {
-          if (ref) {
-            lightboxRef.current = ref.instance;
-          }
-        }}
-        id="lightGallery"
-        download={true}
-        zoom={true}
-        speed={500}
-        plugins={[lgThumbnail, lgZoom]}
-        dynamic
-        dynamicEl={photos.map((photo) => ({
-          src: photo.src,
-          thumb: photo.src,
-          downloadUrl: photo.src // Enables download of the original image with metadata
-        }))}
-      />
-    </div>
-  );
-};
-
-export default Elias;
+    }, []);
+  
+    return (
+      <>
+        <Hero heading="Nonpoint Photography" message="Explore the captivating visuals of Nonpoint in concert." />
+        <Portfolio photos={photos} sectionId="elias-photos" />
+      </>
+    );
+  };
+  
+  export default Elias;
