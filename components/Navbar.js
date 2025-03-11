@@ -16,16 +16,18 @@ const Navbar = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const changeColor = () => {
-      if (window.scrollY >= 90) {
-        setNavbarStyle({ backgroundColor: 'black', color: 'white' });
-      } else {
-        setNavbarStyle({ backgroundColor: 'transparent', color: 'white' });
-      }
-    };
+    if (typeof window !== 'undefined') {
+      const changeColor = () => {
+        if (window.scrollY >= 90) {
+          setNavbarStyle({ backgroundColor: 'black', color: 'white' });
+        } else {
+          setNavbarStyle({ backgroundColor: 'transparent', color: 'white' });
+        }
+      };
 
-    window.addEventListener('scroll', changeColor);
-    return () => window.removeEventListener('scroll', changeColor);
+      window.addEventListener('scroll', changeColor);
+      return () => window.removeEventListener('scroll', changeColor);
+    }
   }, []);
 
   const handleNav = () => setNav(!nav);
@@ -33,16 +35,17 @@ const Navbar = () => {
 
   const handleSmoothScroll = (e, href) => {
     e.preventDefault();
-    const targetId = href.split('#')[1]; // Get the part after the #
+    const targetId = href.split('#')[1]; // Extract section ID
     const targetElement = document.getElementById(targetId);
 
     if (targetElement) {
       targetElement.scrollIntoView({ behavior: 'smooth' });
-      router.push(href, undefined, { shallow: true }); // Update URL without full reload
+      if (router.pathname !== href.split('#')[0]) {
+        router.push(href);
+      }
     } else {
-      router.push(href); // Normal navigation if no anchor found
+      router.push(href);
     }
-
     closeNav();
   };
 
@@ -52,22 +55,32 @@ const Navbar = () => {
       className='fixed left-0 top-0 w-full z-30 ease-in duration-300'
     >
       <div className='max-w-[1280px] m-auto flex justify-between items-center py-4 px-4'>
-        <Link href='/#home' onClick={closeNav}>
+        <Link href='/#home'>
           <Image
             src='/waterlogo.PNG'
             alt='Logo'
             width={374}
             height={374}
-            className='navbar-logo'
-            style={{ cursor: 'pointer' }}
+            className='navbar-logo cursor-pointer'
+            onClick={closeNav}
           />
         </Link>
         <div className='hidden md:flex space-x-4 items-center'>
-          <a href="/#home" onClick={(e) => handleSmoothScroll(e, '/#home')}>Home</a>
-          <a href="/about#about" onClick={(e) => handleSmoothScroll(e, '/about#about')}>About</a>
-          <a href="/music#music-photography" onClick={(e) => handleSmoothScroll(e, '/music#music-photography')}>Music</a>
-          <a href="/contact#work-with-me" onClick={(e) => handleSmoothScroll(e, '/contact#work-with-me')}>Let’s talk</a>
-          <Link href='/shop#shop' onClick={closeNav}>Shop</Link>
+          <Link href='/#home'>
+            <span onClick={(e) => handleSmoothScroll(e, '/#home')}>Home</span>
+          </Link>
+          <Link href='/about#about'>
+            <span onClick={(e) => handleSmoothScroll(e, '/about#about')}>About</span>
+          </Link>
+          <Link href='/music#music-photography'>
+            <span onClick={(e) => handleSmoothScroll(e, '/music#music-photography')}>Music</span>
+          </Link>
+          <Link href='/contact#work-with-me'>
+            <span onClick={(e) => handleSmoothScroll(e, '/contact#work-with-me')}>Let’s talk</span>
+          </Link>
+          <Link href='/shop#shop'>
+            <span onClick={closeNav}>Shop</span>
+          </Link>
           <div className='flex space-x-2'>
             <FaInstagram
               size={20}
