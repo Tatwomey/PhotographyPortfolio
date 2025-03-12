@@ -6,12 +6,11 @@ import Footer from "@/components/Footer";
 import "@/styles/globals.css";
 import { NavigationProvider } from "@/contexts/NavigationContext";
 import { ShopProvider } from "@/contexts/shopContext";
-import GoogleAnalytics from "@/components/GoogleAnalytics";
 import Script from "next/script";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
+const GA_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID;
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
-
 const initialCartData = [];
 
 function MyApp({ Component, pageProps }) {
@@ -20,9 +19,7 @@ function MyApp({ Component, pageProps }) {
   useEffect(() => {
     const handleRouteChange = (url) => {
       if (window.gtag) {
-        window.gtag("config", process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID, {
-          page_path: url,
-        });
+        window.gtag("config", GA_ID, { page_path: url });
       }
     };
 
@@ -36,30 +33,22 @@ function MyApp({ Component, pageProps }) {
     <ShopProvider initialCart={initialCartData}>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-        {/* Google Tag Manager */}
-        {GTM_ID && (
-          <script
+        {GA_ID && (
+          <Script
+            id="gtag-init"
+            strategy="afterInteractive"
             dangerouslySetInnerHTML={{
               __html: `
-                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                'https://www.googletagmanager.com/gtm.js?id=${GTM_ID}';f.parentNode.insertBefore(j,f);
-                })(window,document,'script','dataLayer','${GTM_ID}');
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', '${GA_ID}', { page_path: window.location.pathname });
+                console.log("✅ GA4 Configured!");
               `,
             }}
           />
         )}
       </Head>
-
-      {/* Lucky Orange Tracking */}
-      <Script 
-        src="https://tools.luckyorange.com/core/lo.js?site-id=800b9eb3" 
-        strategy="afterInteractive" 
-        async 
-        defer
-      />
 
       <NavigationProvider>
         <Navbar />
@@ -69,16 +58,17 @@ function MyApp({ Component, pageProps }) {
 
       <SpeedInsights />
 
-      <noscript>
-        {GTM_ID && (
+      {/* Google Tag Manager (NoScript Fallback) */}
+      {GTM_ID && (
+        <noscript>
           <iframe
             src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
             height="0"
             width="0"
             style={{ display: "none", visibility: "hidden" }}
-          ></iframe>
-        )}
-      </noscript>
+          />
+        </noscript>
+      )}
     </ShopProvider>
   );
 }
