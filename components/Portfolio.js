@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Masonry from "react-masonry-css";
 import LightGallery from "lightgallery/react";
 import "lightgallery/css/lightgallery.css";
@@ -9,6 +9,8 @@ import lgZoom from "lightgallery/plugins/zoom";
 
 const Portfolio = ({ photos, sectionId }) => {
   const lightboxRef = useRef(null);
+  const [startTime, setStartTime] = useState(null);
+  const [currentPhoto, setCurrentPhoto] = useState(null);
 
   const breakpointCols = {
     default: 4,
@@ -16,6 +18,63 @@ const Portfolio = ({ photos, sectionId }) => {
     700: 2,
     500: 2,
   };
+
+  // Function to track photo click
+  const handlePhotoClick = (photo, index) => {
+    if (window.trackGAEvent) {
+      window.trackGAEvent("photo_click", {
+        photo_name: photo.src,
+        index: index,
+      });
+    }
+
+    // Set start time for photo viewing duration
+    setStartTime(Date.now());
+    setCurrentPhoto(photo.src);
+
+    // Open lightbox
+    lightboxRef.current?.openGallery(index);
+  };
+
+  // Function to track photo close and time spent
+  const handlePhotoClose = () => {
+    if (startTime && currentPhoto) {
+      const timeSpent = (Date.now() - startTime) / 1000; // Convert ms to seconds
+      if (window.trackGAEvent) {
+        window.trackGAEvent("photo_engagement", {
+          photo_name: currentPhoto,
+          time_spent: timeSpent,
+        });
+      }
+    }
+
+    // Reset tracking
+    setStartTime(null);
+    setCurrentPhoto(null);
+  };
+
+  // Detect when lightbox is closed
+  useEffect(() => {
+    const handleKeydown = (event) => {
+      if (event.key === "Escape") {
+        handlePhotoClose();
+      }
+    };
+
+    const handleClickOutside = (event) => {
+      if (!document.getElementById("lightGallery")?.contains(event.target)) {
+        handlePhotoClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeydown);
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeydown);
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [currentPhoto, startTime]);
 
   return (
     <div id={sectionId} className="max-w-[1240px] mx-auto py-4 sm:py-16">
@@ -35,10 +94,10 @@ const Portfolio = ({ photos, sectionId }) => {
               style={{
                 maxWidth: "100%",
                 height: "auto",
-                cursor: "default",
+                cursor: "pointer",
               }}
               draggable="false"
-              onClick={() => lightboxRef.current?.openGallery(index)}
+              onClick={() => handlePhotoClick(photo, index)}
             />
           </div>
         ))}
