@@ -1,58 +1,61 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/router";
+import { motion } from "framer-motion";
 import Hero from "@/components/Hero";
 import Portfolio from "@/components/Portfolio";
+import Lenis from "@studio-freight/lenis";
 
-// All Thievery Corporation photos, fully randomized
+// All Korn 2024 photos, fully randomized
 const photos = [
-  { "src": "/Thievery25/thievery_corporation_terminal5-41.jpg", "type": "portrait" },
-  { "src": "/Thievery25/thievery_corporation_terminal5-49.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-14.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-3.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-42.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-25.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-36.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-18.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-8.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-39.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-2.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-12.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-28.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-9.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-31.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-15.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-4.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-24.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-22.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-35.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-23.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-17.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-40.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-20.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-30.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-11.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-19.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-34.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-38.jpg", "type": "portrait" },
-    { "src": "/Thievery25/thievery_corporation_terminal5-27.jpg", "type": "portrait" },
+  { src: "/korn24/korn_2024-7.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024-3.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024-12.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024-8.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024-5.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024-14.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024-9.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024-6.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024-15.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024-10.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024-2.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024-4.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024-13.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024-11.jpg", type: "portrait" }
 ];
 
 const Korn24 = () => {
   const router = useRouter();
 
+  // Auto-scroll to #korn-photos if no hash is present
   useEffect(() => {
-    if (typeof window !== "undefined" && !window.location.hash) {
-      setTimeout(() => {
-        window.location.replace("#korn-photos");
-      }, 0);
+    if (typeof window !== "undefined") {
+      if (!window.location.hash) {
+        setTimeout(() => {
+          router.replace("/music/korn24#korn-photos", undefined, { shallow: true });
+        }, 300);
+      }
+
+      // Smooth scrolling with Lenis.js
+      const lenis = new Lenis();
+      function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
     }
-  }, []);
+  }, [router]);
 
   return (
-    <>
-      <Hero heading="Korn Photography" message="Explore the captivating visuals of Thievery Corporation in concert." />
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.5 }}
+    >
+      <Hero heading="Korn 2024 Photography" message="Explore the captivating visuals of Korn in concert." />
       <Portfolio photos={photos} sectionId="korn-photos" />
-    </>
+    </motion.div>
   );
 };
 
