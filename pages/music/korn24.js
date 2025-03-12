@@ -8,6 +8,7 @@ import Lenis from "@studio-freight/lenis";
 // All Korn 2024 photos, fully randomized
 const photos = [
   { src: "/korn24/korn_2024-7.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024-43.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-3.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-12.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-8.jpg", type: "portrait" },
