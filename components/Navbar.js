@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import { FaInstagram, FaLinkedin } from 'react-icons/fa';
@@ -13,39 +12,24 @@ const Navbar = () => {
     color: 'white',
   });
 
-  const router = useRouter();
-
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const changeColor = () => {
-        if (window.scrollY >= 90) {
-          setNavbarStyle({ backgroundColor: 'black', color: 'white' });
-        } else {
-          setNavbarStyle({ backgroundColor: 'transparent', color: 'white' });
-        }
-      };
+    const changeColor = () => {
+      if (window.scrollY >= 90) {
+        setNavbarStyle({ backgroundColor: 'black', color: 'white' });
+      } else {
+        setNavbarStyle({ backgroundColor: 'transparent', color: 'white' });
+      }
+    };
 
-      window.addEventListener('scroll', changeColor);
-      return () => window.removeEventListener('scroll', changeColor);
-    }
+    window.addEventListener('scroll', changeColor);
+    return () => window.removeEventListener('scroll', changeColor);
   }, []);
 
   const handleNav = () => setNav(!nav);
-  const closeNav = () => setNav(false);
+  const closeNav = () => setNav(false); // Function to explicitly close the navbar
 
-  const handleSmoothScroll = (e, href) => {
-    e.preventDefault();
-    const targetId = href.split('#')[1]; // Extract section ID
-    const targetElement = document.getElementById(targetId);
-
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: 'smooth' });
-      if (router.pathname !== href.split('#')[0]) {
-        router.push(href);
-      }
-    } else {
-      router.push(href);
-    }
+  const handleSocialClick = (url) => {
+    window.open(url, '_blank', 'noopener,noreferrer');
     closeNav();
   };
 
@@ -55,42 +39,32 @@ const Navbar = () => {
       className='fixed left-0 top-0 w-full z-30 ease-in duration-300'
     >
       <div className='max-w-[1280px] m-auto flex justify-between items-center py-4 px-4'>
-        <Link href='/#home'>
+        <Link href='/#home' onClick={closeNav}>
           <Image
             src='/waterlogo.PNG'
             alt='Logo'
             width={374}
             height={374}
-            className='navbar-logo cursor-pointer'
-            onClick={closeNav}
+            className='navbar-logo'
+            style={{ cursor: 'pointer' }}
           />
         </Link>
         <div className='hidden md:flex space-x-4 items-center'>
-          <Link href='/#home'>
-            <span onClick={(e) => handleSmoothScroll(e, '/#home')}>Home</span>
-          </Link>
-          <Link href='/about#about'>
-            <span onClick={(e) => handleSmoothScroll(e, '/about#about')}>About</span>
-          </Link>
-          <Link href='/music#music-photography'>
-            <span onClick={(e) => handleSmoothScroll(e, '/music#music-photography')}>Music</span>
-          </Link>
-          <Link href='/contact#work-with-me'>
-            <span onClick={(e) => handleSmoothScroll(e, '/contact#work-with-me')}>Let’s talk</span>
-          </Link>
-          <Link href='/shop#shop'>
-            <span onClick={closeNav}>Shop</span>
-          </Link>
+          <Link href='/#home' onClick={closeNav}>Home</Link>
+          <Link href='/about#about' onClick={closeNav}>About</Link>
+          <Link href='/music#music-photography' onClick={closeNav}>Music</Link>
+          <Link href='/contact#work-with-me' onClick={closeNav}>Let&apos;s talk</Link>
+          <Link href='/shop#shop' onClick={closeNav}>Shop</Link>
           <div className='flex space-x-2'>
             <FaInstagram
               size={20}
               className='cursor-pointer'
-              onClick={() => window.open('https://www.instagram.com/trevortwomey/', '_blank', 'noopener,noreferrer')}
+              onClick={() => handleSocialClick('https://www.instagram.com/trevortwomey/')}
             />
             <FaLinkedin
               size={20}
               className='cursor-pointer'
-              onClick={() => window.open('https://www.linkedin.com/in/trevor-twomey', '_blank', 'noopener,noreferrer')}
+              onClick={() => handleSocialClick('https://www.linkedin.com/in/trevor-twomey')}
             />
           </div>
         </div>
@@ -103,6 +77,29 @@ const Navbar = () => {
         </div>
         <CartIcon />
       </div>
+      {nav && (
+        <div className='md:hidden'>
+          <ul style={{ color: navbarStyle.color }} className='flex flex-col space-y-4'>
+            <li onClick={closeNav}><Link href='/#home'>Home</Link></li>
+            <li onClick={closeNav}><Link href='/about#about'>About</Link></li>
+            <li onClick={closeNav}><Link href='/music#music-photography'>Music</Link></li>
+            <li onClick={closeNav}><Link href='/contact#work-with-me'>Let&apos;s talk</Link></li>
+            <li onClick={closeNav}><Link href='/shop#shop'>Shop</Link></li>
+            <li className='flex space-x-2'>
+              <FaInstagram
+                size={20}
+                className='cursor-pointer'
+                onClick={() => handleSocialClick('https://www.instagram.com/trevortwomey/')}
+              />
+              <FaLinkedin
+                size={20}
+                className='cursor-pointer'
+                onClick={() => handleSocialClick('https://www.linkedin.com/in/trevor-twomey')}
+              />
+            </li>
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
