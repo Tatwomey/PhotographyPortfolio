@@ -40,7 +40,6 @@ const photos = [
   { src: "/korn24/korn_2024-37.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-18.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-25.jpg", type: "portrait" },
-  { src: "/korn24/korn_2024-24.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-19.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-20.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-23.jpg", type: "portrait" },
