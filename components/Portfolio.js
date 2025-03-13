@@ -9,94 +9,63 @@ import lgZoom from "lightgallery/plugins/zoom";
 
 const Portfolio = ({ photos, sectionId }) => {
   const lightboxRef = useRef(null);
-  const [startTime, setStartTime] = useState(null);
-  const [currentPhoto, setCurrentPhoto] = useState(null);
-  const [isPending, startTransition] = useTransition();
-
-  const breakpointCols = {
-    default: 4,
-    1100: 3,
-    700: 2,
-    500: 2,
-  };
+  const [loadedPhotos, setLoadedPhotos] = useState([]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const images = document.querySelectorAll(".portfolio-image");
+    const updatedPhotos = photos.map((photo) => {
+      const img = new Image();
+      img.src = photo.src;
 
-      images.forEach((img, index) => {
-        img.removeEventListener("click", handlePhotoClick);
-        img.addEventListener("click", () => handlePhotoClick(index));
+      return new Promise((resolve) => {
+        img.onload = () => {
+          resolve({
+            ...photo,
+            width: img.naturalWidth,
+            height: img.naturalHeight,
+            isLandscape: img.naturalWidth > img.naturalHeight, // Correct detection
+          });
+        };
       });
-
-      return () => {
-        images.forEach((img) => img.removeEventListener("click", handlePhotoClick));
-      };
-    }
-  }, [photos]);
-
-  const handlePhotoClick = (index) => {
-    console.log("📸 Photo Clicked:", photos[index]?.src); // Debugging log
-
-    startTransition(() => {
-      if (window.gtag) {
-        console.log("✅ Sending gtag event for:", photos[index]?.src);
-        window.gtag("event", "photo_click", { photo_name: photos[index]?.src, index });
-      } else {
-        console.warn("⚠️ window.gtag is undefined, event not sent.");
-      }
-
-      setStartTime(Date.now());
-      setCurrentPhoto(photos[index]?.src);
     });
 
-    if (lightboxRef.current) {
-      console.log("🖼️ Opening Lightbox at index:", index);
-      lightboxRef.current.openGallery(index);
-    } else {
-      console.warn("⚠️ lightboxRef is undefined, Lightbox may not open.");
-    }
+    Promise.all(updatedPhotos).then(setLoadedPhotos);
+  }, [photos]);
+
+  const breakpointCols = {
+    default: 4, // Desktop: 4 columns
+    1100: 3, // Medium screen: 3 columns
+    700: 2, // Small screens: 2 columns
+    500: 2, // Mobile: 2 columns (allowing portrait images to stack properly)
   };
 
   return (
     <div id={sectionId} className="max-w-[1240px] mx-auto py-4 sm:py-16">
       <Masonry
         breakpointCols={breakpointCols}
-        className="my-masonry-grid"
-        columnClassName="my-masonry-grid_column"
+        className="masonry-grid"
+        columnClassName="masonry-grid_column"
       >
-        {photos.map((photo, index) => (
-          <div key={photo.src} className="relative mb-4">
-            <img
-              src={photo.src}
-              alt={photo.alt || "Photo"}
-              className="portfolio-image cursor-pointer"
-              draggable="false"
-              onClick={() => handlePhotoClick(index)} // Directly trigger the handler
-            />
-          </div>
-        ))}
+        {loadedPhotos.map((photo, index) => {
+          return (
+            <div
+              key={photo.src}
+              className={`image-container ${
+                photo.isLandscape ? "landscape" : "portrait"
+              }`}
+              style={{
+                gridColumn: photo.isLandscape ? "span 2" : "span 1", // ✅ Ensures correct layout
+              }}
+            >
+              <img
+                src={photo.src}
+                alt={photo.alt || "Photo"}
+                className="portfolio-image cursor-pointer"
+                draggable="false"
+              />
+            </div>
+          );
+        })}
       </Masonry>
-
-      <LightGallery
-        onInit={(ref) => {
-          if (ref) {
-            console.log("✅ LightGallery initialized successfully"); // Debugging log
-            lightboxRef.current = ref.instance;
-          }
-        }}
-        id="lightGallery"
-        download={true}
-        zoom={true}
-        speed={500}
-        plugins={[lgThumbnail, lgZoom]}
-        dynamic
-        dynamicEl={photos.map((photo) => ({
-          src: photo.src,
-          thumb: photo.src,
-          downloadUrl: photo.src,
-        }))}
-      />
     </div>
   );
 };

@@ -7,13 +7,18 @@ import Lenis from "@studio-freight/lenis";
 
 // All Korn 2024 photos, fully randomized
 const photos = [
-  { src: "/korn24/korn_2024-7.jpg", type: "portrait" },
-  { src: "/korn24/korn_2024-43.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024-51.jpg", type: "landscape" },
+  { src: "/korn24/korn_2024-47.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024-46.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024-45.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024-48.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-3.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-12.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024-49.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-8.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-5.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-14.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024-9.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-9.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-6.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-36.jpg", type: "portrait" },
