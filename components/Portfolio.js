@@ -9,61 +9,40 @@ import lgZoom from "lightgallery/plugins/zoom";
 
 const Portfolio = ({ photos, sectionId }) => {
   const lightboxRef = useRef(null);
-  const [startTime, setStartTime] = useState(null);
-  const [currentPhoto, setCurrentPhoto] = useState(null);
-  const [isPending, startTransition] = useTransition();
-
-  const breakpointCols = {
-    default: 4,
-    1100: 3,
-    700: 2,
-    500: 2,
-  };
+  const [galleryItems, setGalleryItems] = useState([]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (!window.trackGAEvent) {
-        window.trackGAEvent = (event, data) => {
-          if (window.gtag) {
-            window.gtag("event", event, data);
-          }
-        };
-      }
-
-      const images = document.querySelectorAll(".portfolio-image");
-      const handleClick = (index) => () => handlePhotoClick(photos[index], index);
-
-      images.forEach((img, index) => {
-        img.addEventListener("click", handleClick(index));
-      });
-
-      return () => {
-        images.forEach((img, index) => {
-          img.removeEventListener("click", handleClick(index));
-        });
-      };
+    if (photos.length > 0) {
+      setGalleryItems(
+        photos.map((photo) => ({
+          src: photo.src,
+          thumb: photo.src,
+          downloadUrl: photo.src,
+        }))
+      );
     }
   }, [photos]);
 
-  const handlePhotoClick = (photo, index) => {
-    startTransition(() => {
-      if (window.trackGAEvent) {
-        window.trackGAEvent("photo_click", { photo_name: photo.src, index });
-      }
+  useEffect(() => {
+    console.log("🔍 LightboxRef on Mount:", lightboxRef.current);
+  }, [lightboxRef]);
 
-      setStartTime(Date.now());
-      setCurrentPhoto(photo.src);
-    });
+  const handlePhotoClick = (event, index) => {
+    event.preventDefault();
 
-    if (lightboxRef.current) {
-      lightboxRef.current.openGallery(index);
+    if (!lightboxRef.current) {
+      console.error("❌ LightGallery has not initialized yet!");
+      return;
     }
+
+    console.log(`✅ Opening LightGallery at index ${index}`);
+    lightboxRef.current.openGallery(index);
   };
 
   return (
     <div id={sectionId} className="max-w-[1240px] mx-auto py-4 sm:py-16">
       <Masonry
-        breakpointCols={breakpointCols}
+        breakpointCols={{ default: 4, 1100: 3, 700: 2, 500: 2 }}
         className="my-masonry-grid"
         columnClassName="my-masonry-grid_column"
       >
@@ -74,27 +53,27 @@ const Portfolio = ({ photos, sectionId }) => {
               alt={photo.alt || "Photo"}
               className="portfolio-image cursor-pointer"
               draggable="false"
+              onClick={(event) => handlePhotoClick(event, index)}
             />
           </div>
         ))}
       </Masonry>
 
-      <LightGallery
-        onInit={(ref) => {
-          if (ref) lightboxRef.current = ref.instance;
-        }}
-        id="lightGallery"
-        download={true}
-        zoom={true}
-        speed={500}
-        plugins={[lgThumbnail, lgZoom]}
-        dynamic
-        dynamicEl={photos.map((photo) => ({
-          src: photo.src,
-          thumb: photo.src,
-          downloadUrl: photo.src,
-        }))}
-      />
+      {galleryItems.length > 0 && (
+        <LightGallery
+          onInit={(ref) => {
+            console.log("✅ LightGallery initialized:", ref.instance);
+            lightboxRef.current = ref.instance;
+          }}
+          id="lightGallery"
+          download={true}
+          zoom={true}
+          speed={500}
+          plugins={[lgThumbnail, lgZoom]}
+          dynamic
+          dynamicEl={galleryItems}
+        />
+      )}
     </div>
   );
 };
