@@ -5,9 +5,10 @@ import Hero from "@/components/Hero";
 import Portfolio from "@/components/Portfolio";
 import Lenis from "@studio-freight/lenis";
 
+
 // All Thievery Corporation photos, fully randomized
 const photos = [
-  { "src": "/Thievery25/thievery_corporation_terminal5-49.jpg", "type": "portrait" },
+  { src: "/Thievery25/thievery_corporation_terminal5-49.jpg", "type": "portrait" },
   { src: "/Thievery25/thievery_corporation_terminal5-48.jpg", type: "portrait" },
   { src: "/Thievery25/thievery_corporation_terminal5-41.jpg", type: "portrait" },
   { src: "/Thievery25/thievery_corporation_terminal5-14.jpg", type: "portrait" },
@@ -47,16 +48,15 @@ const photos = [
 const Thievery25 = () => {
   const router = useRouter();
 
-  // Auto-scroll to #thievery-photos if no hash is present
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (router.isReady && typeof window !== "undefined") {
       if (!window.location.hash) {
         setTimeout(() => {
           router.replace("/music/thievery25#thievery-photos", undefined, { shallow: true });
         }, 300);
       }
 
-      // Smooth scrolling with Lenis.js
+      // Initialize smooth scrolling
       const lenis = new Lenis();
       function raf(time) {
         lenis.raf(time);
@@ -64,7 +64,7 @@ const Thievery25 = () => {
       }
       requestAnimationFrame(raf);
     }
-  }, [router]);
+  }, [router.isReady]);
 
   return (
     <motion.div

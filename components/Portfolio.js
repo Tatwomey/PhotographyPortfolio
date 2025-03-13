@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useTransition } from "react";
 import Masonry from "react-masonry-css";
 import LightGallery from "lightgallery/react";
 import "lightgallery/css/lightgallery.css";
@@ -11,6 +11,7 @@ const Portfolio = ({ photos, sectionId }) => {
   const lightboxRef = useRef(null);
   const [startTime, setStartTime] = useState(null);
   const [currentPhoto, setCurrentPhoto] = useState(null);
+  const [isPending, startTransition] = useTransition();
 
   const breakpointCols = {
     default: 4,
@@ -19,58 +20,45 @@ const Portfolio = ({ photos, sectionId }) => {
     500: 2,
   };
 
-  // ✅ Function to handle clicks
-  const handlePhotoClick = (photo, index, event) => {
-    event.stopPropagation(); // Prevent LightGallery from interfering
-    console.log("📸 Photo Clicked:", photo.src, "Index:", index); // Debugging
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (!window.trackGAEvent) {
+        window.trackGAEvent = (event, data) => {
+          if (window.gtag) {
+            window.gtag("event", event, data);
+          }
+        };
+      }
 
-    if (window.trackGAEvent) {
-      console.log("✅ GA Event Fired");
-      window.trackGAEvent("photo_click", {
-        photo_name: photo.src,
-        index: index,
+      const images = document.querySelectorAll(".portfolio-image");
+      const handleClick = (index) => () => handlePhotoClick(photos[index], index);
+
+      images.forEach((img, index) => {
+        img.addEventListener("click", handleClick(index));
       });
-    } else {
-      console.warn("⚠️ GA Event Function Not Found");
-    }
 
-    setStartTime(Date.now());
-    setCurrentPhoto(photo.src);
+      return () => {
+        images.forEach((img, index) => {
+          img.removeEventListener("click", handleClick(index));
+        });
+      };
+    }
+  }, [photos]);
+
+  const handlePhotoClick = (photo, index) => {
+    startTransition(() => {
+      if (window.trackGAEvent) {
+        window.trackGAEvent("photo_click", { photo_name: photo.src, index });
+      }
+
+      setStartTime(Date.now());
+      setCurrentPhoto(photo.src);
+    });
 
     if (lightboxRef.current) {
       lightboxRef.current.openGallery(index);
     }
   };
-
-  // ✅ Function to track photo close and time spent
-  const handlePhotoClose = () => {
-    if (startTime && currentPhoto) {
-      const timeSpent = (Date.now() - startTime) / 1000;
-      console.log(`🕒 Time spent on ${currentPhoto}: ${timeSpent}s`);
-
-      if (window.trackGAEvent) {
-        window.trackGAEvent("photo_engagement", {
-          photo_name: currentPhoto,
-          time_spent: timeSpent,
-        });
-      }
-    }
-
-    setStartTime(null);
-    setCurrentPhoto(null);
-  };
-
-  // ✅ Ensure LightGallery does not block clicks
-  useEffect(() => {
-    const handleKeydown = (event) => {
-      if (event.key === "Escape") {
-        handlePhotoClose();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeydown);
-    return () => document.removeEventListener("keydown", handleKeydown);
-  }, [currentPhoto, startTime]);
 
   return (
     <div id={sectionId} className="max-w-[1240px] mx-auto py-4 sm:py-16">
@@ -80,26 +68,11 @@ const Portfolio = ({ photos, sectionId }) => {
         columnClassName="my-masonry-grid_column"
       >
         {photos.map((photo, index) => (
-          <div
-            className={`relative mb-4 ${photo.type === "landscape" ? "my-masonry-grid_column-span-2" : ""}`}
-            key={photo.src}
-            onClick={(e) => handlePhotoClick(photo, index, e)} // ✅ Attach click here
-            style={{
-              cursor: "pointer",
-              position: "relative",
-            }}
-          >
+          <div key={photo.src} className="relative mb-4">
             <img
               src={photo.src}
-              alt={photo.alt}
-              style={{
-                maxWidth: "100%",
-                height: "auto",
-                pointerEvents: "auto", // ✅ Ensure clicks register
-                userSelect: "none", // Prevents text selection
-                WebkitUserDrag: "none", // Disables dragging in Safari
-                MozUserSelect: "none",
-              }}
+              alt={photo.alt || "Photo"}
+              className="portfolio-image cursor-pointer"
               draggable="false"
             />
           </div>
@@ -108,12 +81,8 @@ const Portfolio = ({ photos, sectionId }) => {
 
       <LightGallery
         onInit={(ref) => {
-          if (ref) {
-            lightboxRef.current = ref.instance;
-          }
+          if (ref) lightboxRef.current = ref.instance;
         }}
-        onBeforeOpen={() => console.log("🔍 Lightbox Opened")}
-        onBeforeClose={handlePhotoClose}
         id="lightGallery"
         download={true}
         zoom={true}

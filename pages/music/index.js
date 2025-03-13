@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Meta from "@/components/Meta";
 import Hero from "@/components/Hero";
 import Portfolio from "@/components/Portfolio";
+import { useRouter } from "next/router";
+import Lenis from "@studio-freight/lenis";
 
 const allPhotos = [
     { src: "/JD-korn-jones-beach-2022-trevor-twomey-5-2.jpg", type: "portrait", alt: "Jonathan Davis performing live with Korn at Jones Beach 2022", title: "Jonathan Davis - Korn Live at Jones Beach 2022" },
@@ -36,25 +38,37 @@ const allPhotos = [
     { src: "/hash-thievery-corporation-2013-trevor-twomey-1.jpg", type: "portrait", alt: "Hash performing live with Thievery Corporation in 2013", title: "Hash - Thievery Corporation 2013" },
     ];
 
-function Music() {
-  return (
-    <>
-      <Meta
-        title="Music Photographer - Trevor Twomey"
-        description="Explore the dynamic portfolio of music and concert photography by Trevor Twomey."
-        keywords="music photography, music photographer, New York based music photographer, NYC music photographer, tour photographer, concert photographer, live music photographer"
-      />
-      <Hero />
-      <Portfolio photos={allPhotos} sectionId="music-photography" />
-    </>
-  );
-}
-
-export default Music;
-
-
-
-
-
-
-
+    const Music = () => {
+      const router = useRouter();
+    
+      useEffect(() => {
+        if (typeof window !== "undefined") {
+          if (!window.location.hash) {
+            setTimeout(() => {
+              router.replace("/music#index", undefined, { shallow: true });
+            }, 300);
+          }
+    
+          const lenis = new Lenis();
+          function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+          }
+          requestAnimationFrame(raf);
+        }
+      }, [router]);
+    
+      return (
+        <>
+          <Meta
+            title="Music Photographer - Trevor Twomey"
+            description="Explore the dynamic portfolio of music and concert photography by Trevor Twomey."
+            keywords="music photography, music photographer, New York based music photographer, NYC music photographer, tour photographer, concert photographer, live music photographer"
+          />
+          <Hero heading="Music Photography" message="Explore my collection of live music photography." />
+          <Portfolio photos={allPhotos} sectionId="music-photography" />
+        </>
+      );
+    };
+    
+    export default Music;

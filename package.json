@@ -19,7 +19,7 @@
     "dotenv": "^16.3.1",
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.12",
-    "framer-motion": "^12.4.10",
+    "framer-motion": "^12.5.0",
     "graceful-fs": "^4.2.11",
     "js-cookie": "^3.0.5",
     "klaviyo-api": "^8.0.0",

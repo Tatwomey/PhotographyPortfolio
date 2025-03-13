@@ -26,12 +26,7 @@ const Navbar = () => {
   }, []);
 
   const handleNav = () => setNav(!nav);
-  const closeNav = () => setNav(false); // Function to explicitly close the navbar
-
-  const handleSocialClick = (url) => {
-    window.open(url, '_blank', 'noopener,noreferrer');
-    closeNav();
-  };
+  const closeNav = () => setNav(false);
 
   return (
     <div
@@ -49,6 +44,7 @@ const Navbar = () => {
             style={{ cursor: 'pointer' }}
           />
         </Link>
+
         <div className='hidden md:flex space-x-4 items-center'>
           <Link href='/#home' onClick={closeNav}>Home</Link>
           <Link href='/about#about' onClick={closeNav}>About</Link>
@@ -56,18 +52,15 @@ const Navbar = () => {
           <Link href='/contact#work-with-me' onClick={closeNav}>Let&apos;s talk</Link>
           <Link href='/shop#shop' onClick={closeNav}>Shop</Link>
           <div className='flex space-x-2'>
-            <FaInstagram
-              size={20}
-              className='cursor-pointer'
-              onClick={() => handleSocialClick('https://www.instagram.com/trevortwomey/')}
-            />
-            <FaLinkedin
-              size={20}
-              className='cursor-pointer'
-              onClick={() => handleSocialClick('https://www.linkedin.com/in/trevor-twomey')}
-            />
+            <a href='https://www.instagram.com/trevortwomey/' target='_blank' rel='noopener noreferrer'>
+              <FaInstagram size={20} className='cursor-pointer' />
+            </a>
+            <a href='https://www.linkedin.com/in/trevor-twomey' target='_blank' rel='noopener noreferrer'>
+              <FaLinkedin size={20} className='cursor-pointer' />
+            </a>
           </div>
         </div>
+
         <div onClick={handleNav} className='block md:hidden z-10 cursor-pointer'>
           {nav ? (
             <AiOutlineClose size={30} className='text-white' />
@@ -75,8 +68,11 @@ const Navbar = () => {
             <AiOutlineMenu size={30} className='text-white' />
           )}
         </div>
-        <CartIcon />
+
+        {/* Load CartIcon only on the client side */}
+        {typeof window !== "undefined" && <CartIcon />}
       </div>
+
       {nav && (
         <div className='md:hidden'>
           <ul style={{ color: navbarStyle.color }} className='flex flex-col space-y-4'>
@@ -85,18 +81,6 @@ const Navbar = () => {
             <li onClick={closeNav}><Link href='/music#music-photography'>Music</Link></li>
             <li onClick={closeNav}><Link href='/contact#work-with-me'>Let&apos;s talk</Link></li>
             <li onClick={closeNav}><Link href='/shop#shop'>Shop</Link></li>
-            <li className='flex space-x-2'>
-              <FaInstagram
-                size={20}
-                className='cursor-pointer'
-                onClick={() => handleSocialClick('https://www.instagram.com/trevortwomey/')}
-              />
-              <FaLinkedin
-                size={20}
-                className='cursor-pointer'
-                onClick={() => handleSocialClick('https://www.linkedin.com/in/trevor-twomey')}
-              />
-            </li>
           </ul>
         </div>
       )}

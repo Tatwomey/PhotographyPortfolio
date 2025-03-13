@@ -54,22 +54,24 @@ const photos = [
 const Korn24 = () => {
   const router = useRouter();
 
-  // Auto-scroll to #korn-photos if no hash is present
   useEffect(() => {
     if (typeof window !== "undefined") {
-      if (!window.location.hash) {
-        setTimeout(() => {
+      // Ensure this only runs on the client side after mounting
+      const timer = setTimeout(() => {
+        if (!window.location.hash) {
           router.replace("/music/korn24#korn-photos", undefined, { shallow: true });
-        }, 300);
-      }
+        }
+      }, 300);
 
-      // Smooth scrolling with Lenis.js
+      // Initialize smooth scrolling with Lenis.js
       const lenis = new Lenis();
       function raf(time) {
         lenis.raf(time);
         requestAnimationFrame(raf);
       }
       requestAnimationFrame(raf);
+
+      return () => clearTimeout(timer);
     }
   }, [router]);
 
@@ -80,7 +82,7 @@ const Korn24 = () => {
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.5 }}
     >
-      <Hero heading="Korn 2024 Photography" message="Explore the captivating visuals of Korn in concert." />
+      <Hero heading="Korn Photography" message="Explore the best live shots of Korn." />
       <Portfolio photos={photos} sectionId="korn-photos" />
     </motion.div>
   );
