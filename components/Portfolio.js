@@ -25,8 +25,8 @@ const Portfolio = ({ photos, sectionId }) => {
       const images = document.querySelectorAll(".portfolio-image");
 
       images.forEach((img, index) => {
-        img.removeEventListener("click", handlePhotoClick); // Ensure no duplicate listeners
-        img.addEventListener("click", () => handlePhotoClick(photos[index], index));
+        img.removeEventListener("click", handlePhotoClick);
+        img.addEventListener("click", () => handlePhotoClick(index));
       });
 
       return () => {
@@ -35,23 +35,23 @@ const Portfolio = ({ photos, sectionId }) => {
     }
   }, [photos]);
 
-  const handlePhotoClick = (photo, index) => {
-    console.log("📸 Tracking Photo Click:", photo.src, index); // Debug Log
+  const handlePhotoClick = (index) => {
+    console.log("📸 Photo Clicked:", photos[index]?.src); // Debugging log
 
     startTransition(() => {
       if (window.gtag) {
-        console.log("✅ Sending gtag event for:", photo.src, index); // Debug Log
-        window.gtag("event", "photo_click", { photo_name: photo.src, index });
+        console.log("✅ Sending gtag event for:", photos[index]?.src);
+        window.gtag("event", "photo_click", { photo_name: photos[index]?.src, index });
       } else {
         console.warn("⚠️ window.gtag is undefined, event not sent.");
       }
 
       setStartTime(Date.now());
-      setCurrentPhoto(photo.src);
+      setCurrentPhoto(photos[index]?.src);
     });
 
     if (lightboxRef.current) {
-      console.log("🖼️ Opening Lightbox for:", photo.src, index); // Debug Log
+      console.log("🖼️ Opening Lightbox at index:", index);
       lightboxRef.current.openGallery(index);
     } else {
       console.warn("⚠️ lightboxRef is undefined, Lightbox may not open.");
@@ -72,6 +72,7 @@ const Portfolio = ({ photos, sectionId }) => {
               alt={photo.alt || "Photo"}
               className="portfolio-image cursor-pointer"
               draggable="false"
+              onClick={() => handlePhotoClick(index)} // Directly trigger the handler
             />
           </div>
         ))}
@@ -80,7 +81,7 @@ const Portfolio = ({ photos, sectionId }) => {
       <LightGallery
         onInit={(ref) => {
           if (ref) {
-            console.log("✅ LightGallery initialized"); // Debug Log
+            console.log("✅ LightGallery initialized successfully"); // Debugging log
             lightboxRef.current = ref.instance;
           }
         }}
