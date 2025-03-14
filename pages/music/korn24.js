@@ -18,11 +18,12 @@ const photos = [
   { src: "/korn24/korn_2024-7.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-21.jpg", type: "landscape" },
   { src: "/korn24/korn_2024-54.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024_trevortwomey-3.jpg", type: "portrait"},
   { src: "/korn24/korn_2024-15.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-25.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-14.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-8.jpg", type: "portrait" },
-
+  { src: "/korn24/korn_2024_trevortwomey-15.jpg", type: "portrait"},
   { src: "/korn24/korn_2024-53.jpg", type: "portrait" },
   { src: "/korn24/korn_2024_trevortwomey-8.jpg", type: "landscape "},
   { src: "/korn24/korn_2024-56.jpg", type: "landscape" },
