@@ -12,12 +12,9 @@ const photos = [
   { src: "/korn24/korn_2024-4.jpg", type: "portrait" }, // Munky
   { src: "/korn24/korn_2024-34.jpg", type: "portrait" }, // Ra
   { src: "/korn24/korn_2024-57.jpg", type: "landscape" }, // Ray
-
-  { src: "/korn24/korn_2024-6.jpg", type: "portrait" }, // JD
   { src: "/korn24/korn_2024-52.jpg", type: "landscape" }, // Band
   { src: "/korn24/korn_2024-20.jpg", type: "portrait" }, // Head
   { src: "/korn24/korn_2024-5.jpg", type: "portrait" }, // Munky
-  { src: "/korn24/korn_2024-58.jpg", type: "landscape" }, // Ray
   { src: "/korn24/korn_2024-51.jpg", type: "landscape" }, // Band
   { src: "/korn24/korn_2024-23.jpg", type: "portrait" }, // Head
   { src: "/korn24/korn_2024-10.jpg", type: "portrait" }, // Munky
@@ -55,18 +52,26 @@ const photos = [
   { src: "/korn24/korn_2024-63.jpg", type: "landscape" }, // Ray
   { src: "/korn24/korn_2024-14.jpg", type: "portrait" }, // Munky
   { src: "/korn24/korn_2024-7.jpg", type: "portrait" }, // JD
+  { src: "/korn24/korn_2024-6.jpg", type: "portrait" }, // JD
 ];
 
 const Korn24 = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (router.isReady && typeof window !== "undefined") {
+    if (typeof window !== "undefined" && router.isReady) {
+      // ✅ Ensures it updates only if the hash is missing
       if (!window.location.hash) {
-        setTimeout(() => {
-          router.replace("/music/korn24#korn-photos", undefined, { shallow: true });
-        }, 300);
+        router.replace("/music/korn24#korn-photos", undefined, { shallow: true });
       }
+
+      // ✅ Ensures smooth scrolling to the #korn-photos section
+      setTimeout(() => {
+        const section = document.getElementById("korn-photos");
+        if (section) {
+          section.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 500);
 
       // ✅ Smooth scrolling setup
       const lenis = new Lenis();
@@ -76,9 +81,7 @@ const Korn24 = () => {
       };
       requestAnimationFrame(raf);
 
-      return () => {
-        lenis.destroy(); // ✅ Cleanup when unmounting
-      };
+      return () => lenis.destroy();
     }
   }, [router.isReady]);
 
