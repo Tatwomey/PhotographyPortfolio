@@ -8,30 +8,27 @@ import Lenis from "@studio-freight/lenis";
 // ✅ Evenly Distributed Photos Based on Provided Categories
 const photos = [
   { src: "/korn24/korn_2024-3.jpg", type: "portrait" }, // JD
-  { src: "/korn24/korn_2024-50.jpg", type: "portrait" }, // Band
   { src: "/korn24/korn_2024-2.jpg", type: "portrait" }, // Head
   { src: "/korn24/korn_2024-4.jpg", type: "portrait" }, // Munky
   { src: "/korn24/korn_2024-34.jpg", type: "portrait" }, // Ra
   { src: "/korn24/korn_2024-57.jpg", type: "landscape" }, // Ray
 
   { src: "/korn24/korn_2024-6.jpg", type: "portrait" }, // JD
-  { src: "/korn24/korn_2024-52.jpg", type: "portrait" }, // Band
+  { src: "/korn24/korn_2024-52.jpg", type: "landscape" }, // Band
   { src: "/korn24/korn_2024-20.jpg", type: "portrait" }, // Head
   { src: "/korn24/korn_2024-5.jpg", type: "portrait" }, // Munky
-  { src: "/korn24/korn_2024-40.jpg", type: "portrait" }, // Ra
   { src: "/korn24/korn_2024-58.jpg", type: "landscape" }, // Ray
-
-  { src: "/korn24/korn_2024-7.jpg", type: "portrait" }, // JD
-  { src: "/korn24/korn_2024-51.jpg", type: "portrait" }, // Band
+  { src: "/korn24/korn_2024-51.jpg", type: "landscape" }, // Band
   { src: "/korn24/korn_2024-23.jpg", type: "portrait" }, // Head
   { src: "/korn24/korn_2024-10.jpg", type: "portrait" }, // Munky
   { src: "/korn24/korn_2024-41.jpg", type: "portrait" }, // Ra
+  { src: "/korn24/korn_2024-45.jpg", type: "portrait" }, // Head
   { src: "/korn24/korn_2024-59.jpg", type: "landscape" }, // Ray
 
   { src: "/korn24/korn_2024-8.jpg", type: "portrait" }, // JD
   { src: "/korn24/korn_2024-25.jpg", type: "portrait" }, // Head
-  { src: "/korn24/korn_2024-14.jpg", type: "portrait" }, // Munky
-  { src: "/korn24/korn_2024-45.jpg", type: "portrait" }, // Head
+
+
   { src: "/korn24/korn_2024-56.jpg", type: "landscape" }, // Ray
 
   { src: "/korn24/korn_2024-9.jpg", type: "portrait" }, // JD
@@ -51,12 +48,13 @@ const photos = [
   { src: "/korn24/korn_2024-18.jpg", type: "portrait" }, // Munky
   { src: "/korn24/korn_2024-22.jpg", type: "portrait" }, // Munky
   { src: "/korn24/korn_2024-62.jpg", type: "landscape" }, // Ray
-
   { src: "/korn24/korn_2024-13.jpg", type: "portrait" }, // JD
   { src: "/korn24/korn_2024-26.jpg", type: "portrait" }, // Munky
   { src: "/korn24/korn_2024-24.jpg", type: "portrait" }, // JD
   { src: "/korn24/korn_2024-29.jpg", type: "portrait" }, // Munky
   { src: "/korn24/korn_2024-63.jpg", type: "landscape" }, // Ray
+  { src: "/korn24/korn_2024-14.jpg", type: "portrait" }, // Munky
+  { src: "/korn24/korn_2024-7.jpg", type: "portrait" }, // JD
 ];
 
 const Korn24 = () => {
