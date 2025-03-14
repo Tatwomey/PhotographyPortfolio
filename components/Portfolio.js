@@ -1,6 +1,7 @@
-import React, { useRef, useState, useEffect, useTransition } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import Masonry from "react-masonry-css";
 import LightGallery from "lightgallery/react";
+import Image from "next/image";
 import "lightgallery/css/lightgallery.css";
 import "lightgallery/css/lg-zoom.css";
 import "lightgallery/css/lg-thumbnail.css";
@@ -9,63 +10,86 @@ import lgZoom from "lightgallery/plugins/zoom";
 
 const Portfolio = ({ photos, sectionId }) => {
   const lightboxRef = useRef(null);
-  const [loadedPhotos, setLoadedPhotos] = useState([]);
+  const [windowWidth, setWindowWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 0
+  );
 
   useEffect(() => {
-    const updatedPhotos = photos.map((photo) => {
-      const img = new Image();
-      img.src = photo.src;
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth); // ✅ Force re-render on resize
+    };
 
-      return new Promise((resolve) => {
-        img.onload = () => {
-          resolve({
-            ...photo,
-            width: img.naturalWidth,
-            height: img.naturalHeight,
-            isLandscape: img.naturalWidth > img.naturalHeight, // Correct detection
-          });
-        };
-      });
-    });
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-    Promise.all(updatedPhotos).then(setLoadedPhotos);
+  // ✅ Fixed Breakpoint Columns to Ensure 2-Column Mobile Layout
+  const breakpointCols = {
+    default: 4, // 4 columns on desktop
+    1100: 3,    // 3 columns on medium screens
+    700: 2,     // 2 columns on small screens
+    500: 2      // ✅ Force 2 columns on mobile
+  };
+
+  // ✅ Debugging: Log received photos
+  useEffect(() => {
+    console.log("📸 Photos received in Portfolio:", photos);
   }, [photos]);
 
-  const breakpointCols = {
-    default: 4, // Desktop: 4 columns
-    1100: 3, // Medium screen: 3 columns
-    700: 2, // Small screens: 2 columns
-    500: 2, // Mobile: 2 columns (allowing portrait images to stack properly)
+  const handlePhotoClick = (index) => {
+    console.log("📸 Photo Clicked:", photos[index]?.src);
+
+    if (lightboxRef.current) {
+      console.log("🖼️ Opening Lightbox at index:", index);
+      lightboxRef.current.openGallery(index);
+    }
   };
 
   return (
     <div id={sectionId} className="max-w-[1240px] mx-auto py-4 sm:py-16">
-      <Masonry
-        breakpointCols={breakpointCols}
-        className="masonry-grid"
-        columnClassName="masonry-grid_column"
-      >
-        {loadedPhotos.map((photo, index) => {
-          return (
-            <div
-              key={photo.src}
-              className={`image-container ${
-                photo.isLandscape ? "landscape" : "portrait"
-              }`}
-              style={{
-                gridColumn: photo.isLandscape ? "span 2" : "span 1", // ✅ Ensures correct layout
-              }}
-            >
-              <img
-                src={photo.src}
-                alt={photo.alt || "Photo"}
-                className="portfolio-image cursor-pointer"
-                draggable="false"
-              />
-            </div>
-          );
-        })}
-      </Masonry>
+    <Masonry
+  key={windowWidth} // ✅ Forces re-render on resize
+  breakpointCols={breakpointCols}
+  className="masonry-grid"
+  columnClassName="masonry-grid_column"
+>
+  {photos.map((photo, index) => (
+    <div key={photo.src} className={`image-container ${photo.type}`}>
+      <Image
+        src={photo.src}
+        alt="Photo"
+        className="portfolio-image cursor-pointer"
+        width={photo.type === "landscape" ? 1200 : 800}
+        height={photo.type === "landscape" ? 800 : 1200}
+        unoptimized
+        priority
+        onClick={() => handlePhotoClick(index)}
+        onError={() => console.error("❌ Image failed to load:", photo.src)}
+        onLoad={() => console.log("✅ Image loaded:", photo.src)}
+      />
+    </div>
+  ))}
+</Masonry>
+
+      <LightGallery
+        onInit={(ref) => {
+          if (ref) {
+            console.log("✅ LightGallery initialized successfully");
+            lightboxRef.current = ref.instance;
+          }
+        }}
+        id="lightGallery"
+        download={true}
+        zoom={true}
+        speed={500}
+        plugins={[lgThumbnail, lgZoom]}
+        dynamic
+        dynamicEl={photos.map((photo) => ({
+          src: photo.src,
+          thumb: photo.src,
+          downloadUrl: photo.src,
+        }))}
+      />
     </div>
   );
 };
