@@ -56,17 +56,19 @@ const Portfolio = ({ photos, sectionId }) => {
   {photos.map((photo, index) => (
     <div key={photo.src} className={`image-container ${photo.type}`}>
       <Image
-        src={photo.src}
-        alt="Photo"
-        className="portfolio-image cursor-pointer"
-        width={photo.type === "landscape" ? 1200 : 800}
-        height={photo.type === "landscape" ? 800 : 1200}
-        unoptimized
-        priority
-        onClick={() => handlePhotoClick(index)}
-        onError={() => console.error("❌ Image failed to load:", photo.src)}
-        onLoad={() => console.log("✅ Image loaded:", photo.src)}
-      />
+  src={photo.src}
+  alt="Photo"
+  className="portfolio-image cursor-pointer"
+  width={photo.type === "landscape" ? 1200 : 800}
+  height={photo.type === "landscape" ? 800 : 1200}
+  unoptimized
+  priority={index < 4} /* ✅ Forces the first 4 images to load immediately */
+  loading={index < 4 ? "eager" : "lazy"} /* ✅ Ensures first images load ASAP */
+  onClick={() => handlePhotoClick(index)}
+  onError={() => console.error("❌ Image failed to load:", photo.src)}
+  onLoad={() => console.log("✅ Image loaded:", photo.src)}
+/>
+
     </div>
   ))}
 </Masonry>
