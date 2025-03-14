@@ -33,6 +33,7 @@ const photos = [
   { src: "/korn24/korn_2024_trevortwomey-9.jpg", type: "portrait "},
   { src: "/korn24/korn_2024-58.jpg", type: "landscape" },
   { src: "/korn24/korn_2024_trevortwomey-7.jpg", type: "landscape "},
+  { src: "/korn24/korn_2024_trevortwomey-20.jpg", type: "landscape "},
   { src: "/korn24/korn_2024-11.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-45.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-17.jpg", type: "portrait" },
@@ -44,6 +45,7 @@ const photos = [
   { src: "/korn24/korn_2024-18.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-13.jpg", type: "portrait" },
   { src: "/korn24/korn_2024_trevortwomey-10.jpg", type: "portrait"},
+  { src: "/korn24/korn_2024_trevortwomey-22.jpg", type: "portrait"},
   { src: "/korn24/korn_2024-22.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-60.jpg", type: "landscape" },
   { src: "/korn24/korn_2024-19.jpg", type: "portrait" },
@@ -59,6 +61,7 @@ const photos = [
   { src: "/korn24/korn_2024-31.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-46.jpg", type: "portrait" },
   { src: "/korn24/korn_2024_trevortwomey-11.jpg", type: "portrait"},
+  { src: "/korn24/korn_2024_trevortwomey-19.jpg", type: "portrait"},
   { src: "/korn24/korn_2024-35.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-36.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-47.jpg", type: "portrait" },
@@ -66,12 +69,13 @@ const photos = [
   { src: "/korn24/korn_2024-2.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-4.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-34.jpg", type: "portrait" },
- 
+  { src: "/korn24/korn_2024_trevortwomey-13.jpg", type: "landscape"},
   { src: "/korn24/korn_2024-57.jpg", type: "landscape" },
   { src: "/korn24/korn_2024-52.jpg", type: "landscape" },
   { src: "/korn24/korn_2024-20.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-51.jpg", type: "landscape" },
   { src: "/korn24/korn_2024-41.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024_trevortwomey-18.jpg", type: "portrait"},
   { src: "/korn24/korn_2024-63.jpg", type: "landscape" }
 ];
 
