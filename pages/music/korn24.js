@@ -24,21 +24,21 @@ const photos = [
   { src: "/korn24/korn_2024_trevortwomey-15.jpg", type: "portrait"},
   { src: "/korn24/korn_2024-53.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-3.jpg", type: "portrait" },
-  { src: "/korn24/korn_2024_trevortwomey-8.jpg", type: "landscape "},
+  { src: "/korn24/korn_2024_trevortwomey-8.jpg", type: "landscape"},
   { src: "/korn24/korn_2024-9.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-49.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-16.jpg", type: "portrait" },
-  { src: "/korn24/korn_2024_trevortwomey-9.jpg", type: "portrait "},
+  { src: "/korn24/korn_2024_trevortwomey-9.jpg", type: "portrait"},
   { src: "/korn24/korn_2024-58.jpg", type: "landscape" },
-  { src: "/korn24/korn_2024_trevortwomey-7.jpg", type: "landscape "},
-  { src: "/korn24/korn_2024_trevortwomey-20.jpg", type: "landscape "},
+  { src: "/korn24/korn_2024_trevortwomey-7.jpg", type: "landscape"},
+  { src: "/korn24/korn_2024_trevortwomey-20.jpg", type: "landscape"},
   { src: "/korn24/korn_2024-11.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-45.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-17.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-12.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-48.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-59.jpg", type: "landscape" },
-  { src: "/korn24/korn_2024_trevortwomey-14.jpg", type: "landscape "},
+  { src: "/korn24/korn_2024_trevortwomey-14.jpg", type: "landscape"},
   { src: "/korn24/korn_2024-42.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-18.jpg", type: "portrait" },
   { src: "/korn24/korn_2024-13.jpg", type: "portrait" },
@@ -85,20 +85,12 @@ const Korn24 = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined" && router.isReady) {
-      // ✅ Ensures it updates only if the hash is missing
-      if (!window.location.hash) {
-        router.replace("/music/korn24#korn-photos", undefined, { shallow: true });
+      // ✅ Fix unnecessary hash updates
+      if (!window.location.hash && !router.asPath.includes("#korn-photos")) {
+        router.replace("#korn-photos", undefined, { shallow: true });
       }
 
-      // ✅ Ensures smooth scrolling to the #korn-photos section
-      setTimeout(() => {
-        const section = document.getElementById("korn-photos");
-        if (section) {
-          section.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 500);
-
-      // ✅ Smooth scrolling setup
+      // ✅ Fix: Remove manual scrollIntoView() call
       const lenis = new Lenis();
       const raf = (time) => {
         lenis.raf(time);
@@ -111,15 +103,10 @@ const Korn24 = () => {
   }, [router.isReady]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.5 }}
-    >
+    <div>
       <Hero heading="Korn Photography" message="Explore the best live shots of Korn." />
       <Portfolio photos={photos} sectionId="korn-photos" />
-    </motion.div>
+    </div>
   );
 };
 

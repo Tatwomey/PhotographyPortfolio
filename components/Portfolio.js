@@ -68,29 +68,31 @@ const Portfolio = ({ photos, sectionId }) => {
     <div id={sectionId} className="max-w-[1240px] mx-auto py-4 sm:py-16">
       {imagesLoaded && orderedPhotos.length > 0 ? (
         <>
-          <Masonry
-            breakpointCols={breakpointCols}
-            className="masonry-grid"
-            columnClassName="masonry-grid_column"
-          >
-            {orderedPhotos.map((photo, index) => (
-              <div key={photo.src} className={`image-container ${photo.type || ""}`}>
-                <Image
-                  src={photo.src}
-                  alt={`Photo ${index + 1}`}
-                  className="portfolio-image cursor-pointer"
-                  width={photo.type === "landscape" ? 1200 : 800}
-                  height={photo.type === "landscape" ? 800 : 1200}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  priority={index < 4} // ✅ Ensures first 4 images load immediately
-                  loading={index < 4 ? "eager" : "lazy"} // ✅ Prevents blank placeholders
-                  onClick={() => handlePhotoClick(index)}
-                  onError={() => console.error("❌ Image failed to load:", photo.src)}
-                  onLoad={() => console.log("✅ Image loaded:", photo.src)}
-                />
-              </div>
-            ))}
-          </Masonry>
+ <Masonry
+  breakpointCols={{ default: 4, 1200: 2, 768: 2 }} // ✅ Correct columns
+  className="masonry-grid"
+  columnClassName="masonry-grid_column"
+>
+  {orderedPhotos.map((photo, index) => (
+    <div key={photo.src} className={`image-container ${photo.type || ""}`}>
+      <Image
+        src={photo.src}
+        alt={`Photo ${index + 1}`}
+        className="portfolio-image cursor-pointer"
+        width={photo.type === "landscape" ? 1200 : 800}
+        height={photo.type === "landscape" ? 800 : 1200}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        priority={index < 4}
+        loading={index < 4 ? "eager" : "lazy"}
+        onClick={() => handlePhotoClick(index)}
+        onError={() => console.error("❌ Image failed to load:", photo.src)}
+        onLoad={() => console.log("✅ Image loaded:", photo.src)}
+      />
+    </div>
+  ))}
+</Masonry>
+
+
 
           <LightGallery
             key={orderedPhotos.length} // ✅ Ensures re-initialization

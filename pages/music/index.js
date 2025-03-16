@@ -42,21 +42,31 @@ const allPhotos = [
       const router = useRouter();
     
       useEffect(() => {
-        if (typeof window !== "undefined") {
+        if (typeof window !== "undefined" && router.isReady) {
+          // ✅ Redirect only if the hash is missing
           if (!window.location.hash) {
-            setTimeout(() => {
-              router.replace("/music#index", undefined, { shallow: true });
-            }, 300);
+            router.replace("/music#index", undefined, { shallow: true });
           }
     
+          // ✅ Ensure smooth scrolling behavior
+          setTimeout(() => {
+            const section = document.getElementById("music-photography");
+            if (section) {
+              section.scrollIntoView({ behavior: "smooth" });
+            }
+          }, 200);
+    
+          // ✅ Smooth scrolling setup
           const lenis = new Lenis();
-          function raf(time) {
+          const raf = (time) => {
             lenis.raf(time);
             requestAnimationFrame(raf);
-          }
+          };
           requestAnimationFrame(raf);
+    
+          return () => lenis.destroy();
         }
-      }, [router]);
+      }, [router.isReady]);
     
       return (
         <>
