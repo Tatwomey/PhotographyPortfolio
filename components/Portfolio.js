@@ -16,15 +16,8 @@ const Portfolio = ({ photos, sectionId }) => {
 
   /** ✅ Strictly preserve the original order of photos */
   useEffect(() => {
-    setOrderedPhotos([...photos]);
+    setOrderedPhotos([...photos]); // Keeps strict order
   }, [photos]);
-
-  /** ✅ Listen for window resize */
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   /** ✅ Ensure all images are fully loaded before rendering Masonry */
   useEffect(() => {
@@ -44,7 +37,17 @@ const Portfolio = ({ photos, sectionId }) => {
     }
   }, [photos]);
 
-  /** ✅ Masonry Layout: Always 2 columns on mobile/tablet */
+  /** ✅ Adjust Layout Dynamically on Resize */
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+      setOrderedPhotos([...photos]); // Force Masonry to keep order
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  /** ✅ Masonry Layout: Always 2 columns on mobile/tablet, 4 on desktop */
   const breakpointCols = {
     default: 4, // ✅ 4 columns on desktop
     1200: 2, // ✅ 2 columns on medium screens
@@ -66,11 +69,9 @@ const Portfolio = ({ photos, sectionId }) => {
       {imagesLoaded && orderedPhotos.length > 0 ? (
         <>
           <Masonry
-            key={windowWidth} // ✅ Prevents order shift while keeping responsiveness
             breakpointCols={breakpointCols}
             className="masonry-grid"
             columnClassName="masonry-grid_column"
-            horizontalOrder={true} // ✅ Ensures top-right alignment
           >
             {orderedPhotos.map((photo, index) => (
               <div key={photo.src} className={`image-container ${photo.type || ""}`}>
@@ -78,7 +79,11 @@ const Portfolio = ({ photos, sectionId }) => {
                   src={photo.src}
                   alt={`Photo ${index + 1}`}
                   className="portfolio-image cursor-pointer"
-                  fill // ✅ This allows Next.js Image to scale correctly
+                  width={photo.type === "landscape" ? 1200 : 800}
+                  height={photo.type === "landscape" ? 800 : 1200}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  priority={index < 4} // ✅ Ensures first 4 images load immediately
+                  loading={index < 4 ? "eager" : "lazy"} // ✅ Prevents blank placeholders
                   onClick={() => handlePhotoClick(index)}
                   onError={() => console.error("❌ Image failed to load:", photo.src)}
                   onLoad={() => console.log("✅ Image loaded:", photo.src)}

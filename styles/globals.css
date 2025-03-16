@@ -102,16 +102,17 @@ body {
 
 /* ✅ FIX FOR PORTRAIT IMAGES */
 .image-container.portrait {
+  grid-column: span 1 !important;
   width: 100% !important;
   height: 100% !important;
-  aspect-ratio: 2 / 3
+  aspect-ratio: 2 / 3 !important;
 }
 
 /* ✅ FIX FOR LANDSCAPE IMAGES */
 .image-container.landscape {
   width: 100% !important;
   height: 100% !important;
-  aspect-ratio: 3 / 2
+  aspect-ratio: 3 / 2 !important;
 
 }
 
