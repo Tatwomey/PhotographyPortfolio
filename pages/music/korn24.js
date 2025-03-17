@@ -59,6 +59,15 @@ import Lenis from "@studio-freight/lenis";
     { src: "/korn24/korn_2024_trevortwomey_50.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_51.jpg", type: "landscape" },
     { src: "/korn24/korn_2024_trevortwomey_52.jpg", type: "landscape" },
+    { src: "/korn24/korn_2024_trevortwomey_53.jpg", type: "portrait" },
+    { src: "/korn24/korn_2024_trevortwomey_54.jpg", type: "portrait" },
+    { src: "/korn24/korn_2024_trevortwomey_55.jpg", type: "portrait" },
+    { src: "/korn24/korn_2024_trevortwomey_56.jpg", type: "portrait" },
+    { src: "/korn24/korn_2024_trevortwomey_57.jpg", type: "portrait" },
+    { src: "/korn24/korn_2024_trevortwomey_58.jpg", type: "portrait" },
+    { src: "/korn24/korn_2024_trevortwomey_59.jpg", type: "portrait" },
+
+   
   ];
   
 
