@@ -48,6 +48,7 @@ import Lenis from "@studio-freight/lenis";
     { src: "/korn24/korn_2024_trevortwomey_39.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_40.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_41.jpg", type: "portrait" },
+    
     { src: "/korn24/korn_2024_trevortwomey_42.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_43.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_44.jpg", type: "portrait" },
@@ -66,6 +67,8 @@ import Lenis from "@studio-freight/lenis";
     { src: "/korn24/korn_2024_trevortwomey_57.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_58.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_59.jpg", type: "portrait" },
+    { src: "/korn24/korn_2024_trevortwomey_60.jpg", type: "portrait" },
+    { src: "/korn24/korn_2024_trevortwomey_61.jpg", type: "landscape" },
 
    
   ];
