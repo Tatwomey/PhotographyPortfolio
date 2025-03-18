@@ -34,9 +34,11 @@ export default function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-900">
-      <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-96">
-        <h2 className="text-xl font-bold text-white text-center mb-4">Client Login</h2>
+    <div className="flex justify-center items-center h-screen bg-black"> {/* ✅ Full Black Background */}
+      <div className="bg-black p-6 rounded-lg shadow-lg w-96"> {/* ✅ Black Container */}
+        <h2 className="text-xl font-bold text-white text-center mb-4 bg-black p-2 rounded">
+          Client Login {/* ✅ Black Background Behind Text */}
+        </h2>
         {error && <p className="text-red-500 text-center">{error}</p>}
         <form onSubmit={handleLogin}>
           <input
@@ -44,17 +46,17 @@ export default function Login() {
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full p-2 mb-2 border border-gray-700 bg-gray-700 text-white rounded"
+            className="w-full p-2 mb-2 border border-gray-700 bg-white text-black rounded"
           />
           <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 mb-4 border border-gray-700 bg-gray-700 text-white rounded"
+            className="w-full p-2 mb-4 border border-gray-700 bg-white text-black rounded"
           />
-          <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded">
-            Login
+          <button type="submit" className="w-full bg-black text-white p-2 rounded border border-gray-600 hover:bg-gray-900 transition">
+            Login {/* ✅ Button is Black */}
           </button>
         </form>
       </div>
