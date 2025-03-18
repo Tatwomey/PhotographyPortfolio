@@ -1,6 +1,6 @@
 import React from "react";
 import withAuth from "@/utils/withAuth";
-import Hero from "@/components/Hero";
+
 import Portfolio from "@/components/Portfolio";
 const Thievery25 = () => {
 
@@ -45,7 +45,7 @@ const Thievery25 = () => {
   
   return (
     <div>
-      <Hero heading="Thievery Photography" message="Explore the best live shots of Thievery Corporation." />
+    
       <Portfolio photos={photos} sectionId="thievery-photos" />
     </div>
   );
