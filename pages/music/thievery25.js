@@ -14,7 +14,6 @@ const Thievery25 = () => {
     { src: "/Thievery25/thievery_corporation_terminal5-25.jpg", type: "portrait" },
     { src: "/Thievery25/thievery_corporation_terminal5-36.jpg", type: "portrait" },
     { src: "/Thievery25/thievery_corporation_terminal5-57.jpg", type: "portrait" },
-    { src: "/Thievery25/thievery_corporation_terminal5-18.jpg", type: "portrait" },
     { src: "/Thievery25/thievery_corporation_terminal5-53.jpg", type: "portrait" },
     { src: "/Thievery25/thievery_corporation_terminal5-50.jpg", type: "portrait" },
     { src: "/Thievery25/thievery_corporation_terminal5-39.jpg", type: "portrait" },
@@ -27,9 +26,6 @@ const Thievery25 = () => {
     { src: "/Thievery25/thievery_corporation_terminal5-45.jpg", type: "portrait" },
     { src: "/Thievery25/thievery_corporation_terminal5-4.jpg", type: "portrait" },
     { src: "/Thievery25/thievery_corporation_terminal5-54.jpg", type: "portrait" },
-    { src: "/Thievery25/thievery_corporation_terminal5-58.jpg", type: "portrait" },
-    { src: "/Thievery25/thievery_corporation_terminal5-51.jpg", type: "portrait" },
-    { src: "/Thievery25/thievery_corporation_terminal5-35.jpg", type: "portrait" },
     { src: "/Thievery25/thievery_corporation_terminal5-38.jpg", type: "portrait" },
     { src: "/Thievery25/thievery_corporation_terminal5-56.jpg", type: "landscape" },
     { src: "/Thievery25/thievery_corporation_terminal5-58.jpg", type: "portrait" },
@@ -39,6 +35,7 @@ const Thievery25 = () => {
     { src: "/Thievery25/thievery_corporation_terminal5-11.jpg", type: "portrait" },
     { src: "/Thievery25/thievery_corporation_terminal5-19.jpg", type: "portrait" },
  { src: "/Thievery25/thievery_corporation_terminal5-59.jpg", type: "landscape" },
+
   
   ];
   
