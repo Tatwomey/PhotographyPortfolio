@@ -13,7 +13,7 @@ export default NextAuth({
         // ✅ Define users and their allowed pages
         const users = [
           { id: "1", username: "rayloser2025", password: "rayloser2025", allowedPages: ["/music/korn24"] },
-          { id: "2", username: "themazzeoshow2025", password: "themazzeoshow2025", allowedPages: ["/music/korn24"] },
+          { id: "2", username: "Themazzeoshow2025", password: "Themazzeoshow2025", allowedPages: ["/music/korn24"] },
           { id: "3", username: "jefffranca", password: "Thievery25", allowedPages: ["/music/thievery25"] }
         ];
 
