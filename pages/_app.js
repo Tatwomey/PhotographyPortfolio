@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { SessionProvider } from "next-auth/react";
 import Navbar from "@/components/Navbar";
 import Head from "next/head";
 import Footer from "@/components/Footer";
@@ -13,7 +14,7 @@ const GoogleAnalytics = dynamic(() => import("@/components/GoogleAnalytics"), { 
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 const GA_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID;
 
-const MyApp = ({ Component, pageProps }) => {
+const MyApp = ({ Component, pageProps: { session, ...pageProps } }) => {
   const router = useRouter();
   const [hydrated, setHydrated] = useState(false);
 
@@ -72,41 +73,43 @@ const MyApp = ({ Component, pageProps }) => {
   if (!hydrated) return null; // Avoids hydration mismatch errors
 
   return (
-    <ShopProvider>
-      <Head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <SessionProvider session={session}>
+      <ShopProvider>
+        <Head>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          {GTM_ID && (
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+                  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+                  'https://www.googletagmanager.com/gtm.js?id=${GTM_ID}';f.parentNode.insertBefore(j,f);
+                  })(window,document,'script','dataLayer','${GTM_ID}');
+                `,
+              }}
+            />
+          )}
+        </Head>
+
+        <NavigationProvider>
+          <Navbar />
+          <Component {...pageProps} />
+          <Footer />
+        </NavigationProvider>
+
         {GTM_ID && (
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                'https://www.googletagmanager.com/gtm.js?id=${GTM_ID}';f.parentNode.insertBefore(j,f);
-                })(window,document,'script','dataLayer','${GTM_ID}');
-              `,
-            }}
-          />
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+              height="0"
+              width="0"
+              style={{ display: "none", visibility: "hidden" }}
+            ></iframe>
+          </noscript>
         )}
-      </Head>
-
-      <NavigationProvider>
-        <Navbar />
-        <Component {...pageProps} />
-        <Footer />
-      </NavigationProvider>
-
-      {GTM_ID && (
-        <noscript>
-          <iframe
-            src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
-            height="0"
-            width="0"
-            style={{ display: "none", visibility: "hidden" }}
-          ></iframe>
-        </noscript>
-      )}
-    </ShopProvider>
+      </ShopProvider>
+    </SessionProvider>
   );
 };
 

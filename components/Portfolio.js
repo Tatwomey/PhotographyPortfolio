@@ -4,6 +4,7 @@ import "lightgallery/css/lightgallery.css";
 import "lightgallery/css/lg-thumbnail.css";
 import lgThumbnail from "lightgallery/plugins/thumbnail";
 import Image from "next/image";
+import Lenis from "@studio-freight/lenis";
 
 const Portfolio = ({ photos, sectionId }) => {
   const lightboxRef = useRef(null);
@@ -26,6 +27,19 @@ const Portfolio = ({ photos, sectionId }) => {
       });
     }
   }, [photos]);
+
+  /** ✅ Enable smooth scrolling */
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const lenis = new Lenis();
+      function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+      return () => lenis.destroy(); // ✅ Cleanup to prevent memory leaks
+    }
+  }, []);
 
   /** ✅ Handle image click to open LightGallery */
   const handlePhotoClick = (index) => {

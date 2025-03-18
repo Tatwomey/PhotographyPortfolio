@@ -1,9 +1,46 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";  // ✅ Import this
 import Hero from "@/components/Hero";
 import Portfolio from "@/components/Portfolio";
-import Lenis from "@studio-freight/lenis";
 
+const Korn24 = () => {
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const [lenisLoaded, setLenisLoaded] = useState(false);
+
+  // ✅ Redirects unauthenticated users to login
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
+
+  // ✅ Initializes Lenis AFTER authentication is confirmed
+  useEffect(() => {
+    if (typeof window !== "undefined" && session) {
+      import("@studio-freight/lenis").then(({ default: Lenis }) => {
+        const lenis = new Lenis();
+  
+        const raf = (time) => {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+  
+        return () => lenis.destroy();
+      });
+    }
+  }, [session]);
+
+  // ✅ Prevents UI flickering before authentication is known
+  if (status === "loading") {
+    return <div className="text-center py-20">Checking authentication...</div>;
+  }
+
+  if (status === "unauthenticated") {
+    return null; // Prevents rendering before redirecting
+  }
 // ✅ Evenly Distributed Photos Based on Provided Categories
 
   const photos = [
@@ -70,39 +107,13 @@ import Lenis from "@studio-freight/lenis";
     { src: "/korn24/korn_2024_trevortwomey_60.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_61.jpg", type: "landscape" },
 
-   
+  
   ];
   
-
-  
-
-
-const Korn24 = () => {
-  const router = useRouter();
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && router.isReady) {
-      // ✅ Fix unnecessary hash updates
-      if (!window.location.hash && !router.asPath.includes("#korn-photos")) {
-        router.replace("#korn-photos", undefined, { shallow: true });
-      }
-
-      // ✅ Fix: Remove manual scrollIntoView() call
-      const lenis = new Lenis();
-      const raf = (time) => {
-        lenis.raf(time);
-        requestAnimationFrame(raf);
-      };
-      requestAnimationFrame(raf);
-
-      return () => lenis.destroy();
-    }
-  }, [router.isReady]);
-
   return (
     <div>
       <Hero heading="Korn Photography" message="Explore the best live shots of Korn." />
-      <Portfolio photos={photos} sectionId="korn-photos" />
+      {lenisLoaded && <Portfolio photos={photos} sectionId="korn-photos" />}
     </div>
   );
 };
