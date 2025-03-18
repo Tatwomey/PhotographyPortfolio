@@ -30,6 +30,7 @@ const Thievery25 = () => {
     { src: "/Thievery25/thievery_corporation_terminal5-58.jpg", type: "portrait" },
     { src: "/Thievery25/thievery_corporation_terminal5-51.jpg", type: "portrait" },
     { src: "/Thievery25/thievery_corporation_terminal5-35.jpg", type: "portrait" },
+    { src: "/Thievery25/thievery_corporation_terminal5-38.jpg", type: "portrait" },
     { src: "/Thievery25/thievery_corporation_terminal5-56.jpg", type: "landscape" },
     { src: "/Thievery25/thievery_corporation_terminal5-58.jpg", type: "portrait" },
     { src: "/Thievery25/thievery_corporation_terminal5-20.jpg", type: "portrait" },
@@ -37,9 +38,7 @@ const Thievery25 = () => {
     { src: "/Thievery25/thievery_corporation_terminal5-55.jpg", type: "portrait" },
     { src: "/Thievery25/thievery_corporation_terminal5-11.jpg", type: "portrait" },
     { src: "/Thievery25/thievery_corporation_terminal5-19.jpg", type: "portrait" },
-    { src: "/Thievery25/thievery_corporation_terminal5-38.jpg", type: "portrait" },
-
-    { src: "/Thievery25/thievery_corporation_terminal5-59.jpg", type: "landscape" },
+ { src: "/Thievery25/thievery_corporation_terminal5-59.jpg", type: "landscape" },
   
   ];
   
