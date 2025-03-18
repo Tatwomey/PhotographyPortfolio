@@ -1,27 +1,10 @@
-import React, { useEffect } from "react";
-import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";
+import React from "react";
+import withAuth from "@/utils/withAuth";
 import Hero from "@/components/Hero";
 import Portfolio from "@/components/Portfolio";
-
 const Korn24 = () => {
-  const router = useRouter();
-  const { data: session, status } = useSession();
-
-  // ✅ Redirect unauthenticated users
-  useEffect(() => {
-    console.log("Session Status:", status);
-    console.log("Session Data:", session);
-    if (status === "unauthenticated") {
-      router.replace("/login");
-    }
-  }, [status, router]);
-
-  // ✅ Prevent rendering until authentication is confirmed
-  if (status === "loading" || status === "unauthenticated") {
-    return <div className="text-center py-20">Checking authentication...</div>;
-  }
-
+ 
+  
   const photos = [
     { src: "/korn24/korn_2024_trevortwomey_01.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_02.jpg", type: "portrait" },
@@ -96,4 +79,4 @@ const Korn24 = () => {
   );
 };
 
-export default Korn24;
+export default withAuth(Korn24, ["/music/korn24"]); // ✅ Only allow Korn24 users
