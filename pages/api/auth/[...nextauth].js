@@ -13,29 +13,44 @@ export default NextAuth({
         // Temporary hardcoded users (Replace with DB lookup)
         const users = [
           { id: "1", username: "rayloser2025", password: "rayloser2025" },
-          { id: "2", username: "vipClient", password: "vipaccess2025" },
+          { id: "2", username: "themazzeoshow2025", password: "themazzeoshow2025" },
         ];
 
         const user = users.find(
-          (u) => u.username === credentials.username && u.password === credentials.password
-        );
-
-        if (user) {
-          return user;
-        } else {
-          throw new Error("Invalid username or password");
-        }
-      },
-    }),
-  ],
-  pages: {
-    signIn: "/login", // Custom login page
-  },
-  callbacks: {
-    async session({ session, token }) {
-      session.user.id = token.sub;
-      return session;
+            (u) => u.username === credentials.username && u.password === credentials.password
+          );
+  
+          if (user) {
+            return user; // ✅ Returns user object on successful login
+          } else {
+            throw new Error("Invalid username or password");
+          }
+        },
+      }),
+    ],
+    pages: {
+      signIn: "/login", // ✅ Custom login page
     },
-  },
-  secret: process.env.NEXTAUTH_SECRET,
-});
+    session: {
+      strategy: "jwt",
+      maxAge: 30 * 60, // ✅ Session expires after 30 minutes
+    },
+    callbacks: {
+      async session({ session, token }) {
+        if (token) {
+          session.user = {
+            id: token.sub,
+            username: token.username, // ✅ Ensures username is available
+          };
+        }
+        return session;
+      },
+      async jwt({ token, user }) {
+        if (user) {
+          token.username = user.username;
+        }
+        return token;
+      },
+    },
+    secret: process.env.NEXTAUTH_SECRET,
+  });
