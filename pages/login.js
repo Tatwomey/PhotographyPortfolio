@@ -1,23 +1,34 @@
 import { useState, useEffect } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import Lenis from "@studio-freight/lenis";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const { status } = useSession(); // ✅ Ensures authentication state is checked
   const router = useRouter();
 
-  // ✅ Implement Smooth Scrolling with Lenis
+  // ✅ Redirect authenticated users immediately
   useEffect(() => {
-    const lenis = new Lenis();
-    const raf = (time) => {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    };
-    requestAnimationFrame(raf);
-    return () => lenis.destroy();
+    if (status === "authenticated") {
+      router.push("/music/korn24");
+    }
+  }, [status, router]);
+
+  // ✅ Import Lenis only on the client side
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      import("@studio-freight/lenis").then(({ default: Lenis }) => {
+        const lenis = new Lenis();
+        const raf = (time) => {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+        return () => lenis.destroy();
+      });
+    }
   }, []);
 
   const handleLogin = async (e) => {
@@ -30,10 +41,10 @@ export default function Login() {
       password,
     });
 
-    if (result.error) {
+    if (!result || result.error) {
       setError("Invalid login credentials.");
     } else {
-      router.push("/music/korn24"); // Redirect to private gallery
+      router.push("/music/korn24");
     }
   };
 
@@ -48,18 +59,16 @@ export default function Login() {
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="w-full p-2 mb-2 border border-gray-300 rounded"
-          style={{ color: username ? "black" : "gray" }}
+          className="w-full p-2 mb-2 border border-gray-300 rounded text-black placeholder-gray-400"
         />
-        
+
         {/* ✅ Password Input */}
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-2 mb-4 border border-gray-300 rounded"
-          style={{ color: password ? "black" : "gray" }}
+          className="w-full p-2 mb-4 border border-gray-300 rounded text-black placeholder-gray-400"
         />
 
         {/* ✅ Submit Button */}

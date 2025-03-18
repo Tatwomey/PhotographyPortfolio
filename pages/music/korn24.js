@@ -1,47 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";  // ✅ Import this
+import { useSession } from "next-auth/react";
 import Hero from "@/components/Hero";
 import Portfolio from "@/components/Portfolio";
 
 const Korn24 = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const [lenisLoaded, setLenisLoaded] = useState(false);
 
-  // ✅ Redirects unauthenticated users to login
+  // ✅ Redirect unauthenticated users
   useEffect(() => {
+    console.log("Session Status:", status);
+    console.log("Session Data:", session);
     if (status === "unauthenticated") {
-      router.push("/login");
+      router.replace("/login");
     }
   }, [status, router]);
 
-  // ✅ Initializes Lenis AFTER authentication is confirmed
-  useEffect(() => {
-    if (typeof window !== "undefined" && session) {
-      import("@studio-freight/lenis").then(({ default: Lenis }) => {
-        const lenis = new Lenis();
-  
-        const raf = (time) => {
-          lenis.raf(time);
-          requestAnimationFrame(raf);
-        };
-        requestAnimationFrame(raf);
-  
-        return () => lenis.destroy();
-      });
-    }
-  }, [session]);
-
-  // ✅ Prevents UI flickering before authentication is known
-  if (status === "loading") {
+  // ✅ Prevent rendering until authentication is confirmed
+  if (status === "loading" || status === "unauthenticated") {
     return <div className="text-center py-20">Checking authentication...</div>;
   }
-
-  if (status === "unauthenticated") {
-    return null; // Prevents rendering before redirecting
-  }
-// ✅ Evenly Distributed Photos Based on Provided Categories
 
   const photos = [
     { src: "/korn24/korn_2024_trevortwomey_01.jpg", type: "portrait" },
@@ -85,7 +64,6 @@ const Korn24 = () => {
     { src: "/korn24/korn_2024_trevortwomey_39.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_40.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_41.jpg", type: "portrait" },
-    
     { src: "/korn24/korn_2024_trevortwomey_42.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_43.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_44.jpg", type: "portrait" },
@@ -113,7 +91,7 @@ const Korn24 = () => {
   return (
     <div>
       <Hero heading="Korn Photography" message="Explore the best live shots of Korn." />
-      {lenisLoaded && <Portfolio photos={photos} sectionId="korn-photos" />}
+      <Portfolio photos={photos} sectionId="korn-photos" />
     </div>
   );
 };

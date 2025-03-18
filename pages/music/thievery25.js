@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import Hero from "@/components/Hero";
 import Portfolio from "@/components/Portfolio";
-import Lenis from "@studio-freight/lenis";
+
 
 
 // All Thievery Corporation photos, fully randomized
