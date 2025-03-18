@@ -22,7 +22,7 @@ export default NextAuth({
           );
   
           if (user) {
-            return user; // ✅ Pass user data, including allowed pages
+            return { id: user.id, username: user.username, allowedPages: user.allowedPages };
           } else {
             throw new Error("Invalid username or password");
           }
@@ -33,11 +33,20 @@ export default NextAuth({
       signIn: "/login",
     },
     callbacks: {
-      async session({ session, user }) {
-        if (user) {
-          session.user.allowedPages = user.allowedPages; // ✅ Add allowed pages to session
-        }
+      async session({ session, user, token }) {
+        session.user = {
+          id: token.sub,
+          username: token.username,
+          allowedPages: token.allowedPages || [],
+        };
         return session;
+      },
+      async jwt({ token, user }) {
+        if (user) {
+          token.username = user.username;
+          token.allowedPages = user.allowedPages;
+        }
+        return token;
       },
     },
     secret: process.env.NEXTAUTH_SECRET,

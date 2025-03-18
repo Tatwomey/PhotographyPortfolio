@@ -73,7 +73,7 @@ const Korn24 = () => {
   
   return (
     <div>
-      <Hero heading="Korn Photography" message="Explore the best live shots of Korn." />
+      
       <Portfolio photos={photos} sectionId="korn-photos" />
     </div>
   );
