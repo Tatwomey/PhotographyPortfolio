@@ -14,7 +14,9 @@ export default NextAuth({
         const users = [
           { id: "1", username: "rayloser2025", password: "rayloser2025", allowedPages: ["/music/korn24"] },
           { id: "2", username: "Themazzeoshow2025", password: "Themazzeoshow2025", allowedPages: ["/music/korn24"] },
-          { id: "3", username: "jefffranca", password: "Thievery25", allowedPages: ["/music/thievery25"] }
+          { id: "3", username: "jefffranca", password: "Thievery25", allowedPages: ["/music/thievery25"] },
+          { id: "4", username: "sunyaboy", password: "sunyaboy", allowedPages: ["/music/thievery25"] }
+
         ];
 
         const user = users.find(
