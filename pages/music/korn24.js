@@ -14,15 +14,14 @@ const Korn24 = () => {
     { src: "/korn24/korn_2024_trevortwomey_07.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_08.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_09.jpg", type: "portrait" },
-    { src: "/korn24/korn_2024_trevortwomey_10.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_11.jpg", type: "landscape" },
+    { src: "/korn24/korn_2024_trevortwomey_62.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_12.jpg", type: "landscape" },
     { src: "/korn24/korn_2024_trevortwomey_13.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_14.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_15.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_16.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_17.jpg", type: "portrait" },
-    { src: "/korn24/korn_2024_trevortwomey_18.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_19.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_20.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_21.jpg", type: "landscape" },
@@ -57,15 +56,14 @@ const Korn24 = () => {
     { src: "/korn24/korn_2024_trevortwomey_50.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_51.jpg", type: "landscape" },
     { src: "/korn24/korn_2024_trevortwomey_52.jpg", type: "landscape" },
-    { src: "/korn24/korn_2024_trevortwomey_53.jpg", type: "portrait" },
+  
     { src: "/korn24/korn_2024_trevortwomey_54.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_55.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_56.jpg", type: "portrait" },
-    { src: "/korn24/korn_2024_trevortwomey_57.jpg", type: "portrait" },
-    { src: "/korn24/korn_2024_trevortwomey_58.jpg", type: "portrait" },
-    { src: "/korn24/korn_2024_trevortwomey_59.jpg", type: "portrait" },
+ 
+
     { src: "/korn24/korn_2024_trevortwomey_60.jpg", type: "portrait" },
-    { src: "/korn24/korn_2024_trevortwomey_61.jpg", type: "landscape" },
+    { src: "/korn24/korn_2024_trevortwomey_61.jpg", type: "portrait" },
 
   
   ];
