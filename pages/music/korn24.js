@@ -8,7 +8,6 @@ const Korn24 = () => {
   const photos = [
     { src: "/korn24/korn_2024_trevortwomey_01.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_02.jpg", type: "portrait" },
-
     { src: "/korn24/korn_2024_trevortwomey_04.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_05.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_06.jpg", type: "portrait" },
