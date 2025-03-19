@@ -33,7 +33,7 @@ const Thievery25 = () => {
     { src: "/Thievery25/thievery_corporation_terminal5-30.jpg", type: "portrait" },
     { src: "/Thievery25/thievery_corporation_terminal5-55.jpg", type: "portrait" },
     { src: "/Thievery25/thievery_corporation_terminal5-11.jpg", type: "portrait" },
-    { src: "/Thievery25/thievery_corporation_terminal5-19.jpg", type: "portrait" },
+    { src: "/Thievery25/thievery_corporation_terminal5-laura.jpg", type: "portrait" },
  { src: "/Thievery25/thievery_corporation_terminal5-59.jpg", type: "landscape" },
 
   
