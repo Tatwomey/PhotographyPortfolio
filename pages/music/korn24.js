@@ -41,7 +41,7 @@ const Korn24 = () => {
  
     { src: "/korn24/korn_2024_trevortwomey_31.jpg", type: "portrait" },
 
-    { src: "/korn24/korn_2024_trevortwomey_33.jpg", type: "portrait" },
+
     { src: "/korn24/korn_2024_trevortwomey_34.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_35.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_36.jpg", type: "portrait" },
