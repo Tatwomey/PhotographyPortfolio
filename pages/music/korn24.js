@@ -1,6 +1,5 @@
 import React from "react";
 import withAuth from "@/utils/withAuth";
-import Hero from "@/components/Hero";
 import Portfolio from "@/components/Portfolio";
 const Korn24 = () => {
  
@@ -57,16 +56,12 @@ const Korn24 = () => {
     { src: "/korn24/korn_2024_trevortwomey_50.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_51.jpg", type: "landscape" },
     { src: "/korn24/korn_2024_trevortwomey_52.jpg", type: "landscape" },
-  
     { src: "/korn24/korn_2024_trevortwomey_54.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_55.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_56.jpg", type: "portrait" },
- 
-
     { src: "/korn24/korn_2024_trevortwomey_60.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_61.jpg", type: "portrait" },
 
-  
   ];
   
   return (
