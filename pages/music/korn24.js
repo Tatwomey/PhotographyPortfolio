@@ -15,6 +15,7 @@ const Korn24 = () => {
     { src: "/korn24/korn_2024_trevortwomey_09.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_10.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_11.jpg", type: "landscape" },
+    { src: "/korn24/korn_2024_trevortwomey.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_12.jpg", type: "landscape" },
     { src: "/korn24/korn_2024_trevortwomey_13.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_14.jpg", type: "portrait" },
@@ -58,10 +59,9 @@ const Korn24 = () => {
     { src: "/korn24/korn_2024_trevortwomey_52.jpg", type: "landscape" },
     { src: "/korn24/korn_2024_trevortwomey_54.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_55.jpg", type: "portrait" },
-    { src: "/korn24/korn_2024_trevortwomey_56.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_60.jpg", type: "portrait" },
     { src: "/korn24/korn_2024_trevortwomey_61.jpg", type: "portrait" },
-
+    { src: "/korn24/korn_2024_trevortwomey_-2.jpg", type: "portrait" },
   ];
   
   return (
