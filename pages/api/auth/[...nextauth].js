@@ -26,7 +26,7 @@ export default NextAuth({
           if (user) {
             return { id: user.id, username: user.username, allowedPages: user.allowedPages };
           } else {
-            throw new Error("Invalid username or password");
+            throw new Error("I think you fucked up.");
           }
         },
       }),

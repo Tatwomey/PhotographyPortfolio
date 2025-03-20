@@ -73,6 +73,7 @@ const Portfolio = ({ photos, sectionId }) => {
                   onLoad={() => console.log("✅ Image loaded:", photo.src)}
                   className="portfolio-image"
                 />
+                
               </div>
             ))}
           </div>
