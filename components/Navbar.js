@@ -36,7 +36,7 @@ const Navbar = () => {
       <div className='max-w-[1280px] m-auto flex justify-between items-center py-4 px-4'>
         <Link href='/#home' onClick={closeNav}>
           <Image
-            src='/waterlogo.PNG'
+            src='/Watermarklogo_2025.png'
             alt='Logo'
             width={374}
             height={374}

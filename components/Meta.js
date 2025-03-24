@@ -7,7 +7,7 @@ const Meta = ({ title, keywords, description }) => {
       <meta name="keywords" content={keywords} />
       <meta name="description" content={description} />
       <meta charSet="utf-8" />
-      <link rel="icon" href="/Watermarklogo.png" />
+      <link rel="icon" href="/Watermarklogo_2025.png" />
       <title>{title}</title>
       {/* Add additional tags as needed */}
     </Head>
