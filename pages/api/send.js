@@ -1,60 +1,72 @@
+// pages/api/send.js
 import nodemailer from 'nodemailer';
-import { Resend } from 'resend'; // Adjust if 'Resend' is not the correct import
+import { Resend } from 'resend';
 import { EmailTemplate } from '@/components/email-template';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Initialize your Resend client with the API key
 const resendClient = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    res.status(405).end('Method Not Allowed');
-    return;
-  }
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', 'POST');
+    return res.status(405).end('Method Not Allowed');
+  }
 
-  const { firstName, email, subject, message } = req.body;
+  const { firstName, email, subject, message } = req.body;
 
-  // Set up your SMTP server credentials for nodemailer
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
+  // Validate required fields
+  if (!firstName || !email || !subject || !message) {
+    return res.status(400).json({ success: false, error: 'Missing required fields' });
+  }
 
-  const mailOptions = {
-    from: 'Trevortwomeyphoto <info@trevortwomeyphoto.com>',
-    to: email,
-    subject: subject,
-    text: `Name: ${firstName}\nEmail: ${email}\nMessage: ${message}`,
-  };
+  // ✅ Nodemailer transporter
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
 
-  try {
-    // First, send the email from the user to your address
-    await transporter.sendMail(mailOptions);
+  const internalEmailOptions = {
+    from: 'Trevor Twomey Photo <info@trevortwomeyphoto.com>',
+    to: process.env.NOTIFY_EMAIL || process.env.EMAIL_USER,
+    subject: `[NEW MESSAGE] ${subject}`,
+    html: `
+      <div style="font-family: sans-serif;">
+        <h2>📬 New message from ${firstName}</h2>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Message:</strong></p>
+        <div style="padding: 10px; background: #f4f4f4; border-radius: 4px;">
+          ${message.replace(/\n/g, '<br>')}
+        </div>
+        <p>Sent via <strong>Contact Form</strong> on trevortwomeyphoto.com</p>
+      </div>
+    `,
+  };
 
-    // Then, send a confirmation/thank-you email to the user using the Resend service
-    const response = await resendClient.emails.send({
-      from: "Trevor Twomey Photo <info@trevortwomeyphoto.com>",
-      to: [email], // Send confirmation to the user's email
-      subject: "Thanks for reaching out!",
-      react: EmailTemplate({ firstName: firstName }),
-    });
+  try {
+    // ✅ Send email to internal address (you)
+    await transporter.sendMail(internalEmailOptions);
 
-    // Handle response from Resend service
-    if (response.status === 'success') {
-      res.status(200).json({ success: true, message: 'Both emails sent successfully!' });
-    } else {
-      // If Resend service fails, log it, but don't necessarily fail the whole request
-      console.error('Resend service did not return success:', response);
-      res.status(200).json({ success: true, message: 'Email to Trevor sent, but confirmation email had issues.' });
-    }
-  } catch (error) {
-    console.error('Error in sending emails:', error);
-    res.status(500).json({ success: false, error: error.message });
-  }
+    // ✅ Send confirmation email to user via Resend
+    const response = await resendClient.emails.send({
+      from: 'Trevor Twomey <info@trevortwomeyphoto.com>',
+      to: [email],
+      subject: 'Thanks for reaching out!',
+      react: EmailTemplate({ firstName }),
+    });
+
+    if (response.id) {
+      return res.status(200).json({ success: true, message: 'Emails sent successfully!' });
+    } else {
+      console.warn('⚠️ Resend response:', response);
+      return res.status(200).json({ success: true, message: 'Internal email sent, but confirmation email failed.' });
+    }
+  } catch (error) {
+    console.error('❌ Email send error:', error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
 }
