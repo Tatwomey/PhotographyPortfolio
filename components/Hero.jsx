@@ -1,25 +1,29 @@
 import React from "react";
 import Image from "next/image";
 
-const Hero = ({ heading, message }) => {
+const Hero = () => {
   return (
-    <div className="hero-section">
-      {/* ✅ Background Image Fix for Next.js 13 */}
-      <div className="hero-overlay">
+    <div className="hero-wrapper">
+      {/* Desktop */}
+      <div className="hero-img-desktop">
         <Image
-          src="/head-korn-ftl20-San-Francisco-2018-trevor-twomey-1 ios.jpg"
-          alt="Hero"
-          layout="fill"
-          objectFit="cover"
-          priority // ✅ Ensures faster loading
-          className="hero-background"
+          src="/head-korn-ftl20-San-Francisco-2018-trevor-twomey-1-3.jpg"
+          alt="Hero Desktop"
+          fill
+          priority
+          style={{ objectFit: "cover" }}
         />
       </div>
 
-      {/* ✅ Hero Content */}
-      <div className="hero-content">
-        <h1 className="hero-title">{heading}</h1>
-        <p className="hero-message">{message}</p>
+      {/* Mobile */}
+      <div className="hero-img-mobile">
+        <Image
+          src="/head-korn-ftl20-San-Francisco-2018-trevor-twomey-1-ios.jpg"
+          alt="Hero Mobile"
+          fill
+          priority
+          style={{ objectFit: "cover" }}
+        />
       </div>
     </div>
   );
