@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import withAuth from "@/utils/withAuth";
+import Hero from "@/components/Hero";
 import Portfolio from "@/components/Portfolio";
-const Korn24 = () => {
+import Lenis from "@studio-freight/lenis";
+
  
   
   const photos = [
@@ -64,12 +66,39 @@ const Korn24 = () => {
    
   ];
   
-  return (
-    <div>
-      
-      <Portfolio photos={photos} sectionId="korn-photos" />
-    </div>
-  );
-};
-
-export default withAuth(Korn24, ["/music/korn24"]); // ✅ Only allow Korn24 users
+  const Korn24 = () => {
+    useEffect(() => {
+      if (typeof window !== "undefined") {
+        // ✅ Scroll into view when page loads
+        setTimeout(() => {
+          const section = document.getElementById("korn-photos");
+          if (section) {
+            section.scrollIntoView({ behavior: "smooth" });
+          }
+        }, 250);
+  
+        // ✅ Lenis Smooth Scroll Init
+        const lenis = new Lenis();
+        const raf = (time) => {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+  
+        return () => lenis.destroy();
+      }
+    }, []);
+  
+    return (
+      <div>
+        <Hero
+          // You can use a conditional or pass different props depending on use case
+          heading=""
+          message=""
+        />
+        <Portfolio photos={photos} sectionId="korn-photos" />
+      </div>
+    );
+  };
+  
+  export default withAuth(Korn24, ["/music/korn24"]);
