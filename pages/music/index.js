@@ -7,14 +7,15 @@ import Lenis from "@studio-freight/lenis";
 
 const allPhotos = [
     { src: "/JD-korn-jones-beach-2022-trevor-twomey-5-2.jpg", type: "portrait", alt: "Jonathan Davis performing live with Korn at Jones Beach 2022", title: "Jonathan Davis - Korn Live at Jones Beach 2022" },
-    { src: "/q-unique-kings-bounty-denial-video-trevor-twomey-1.jpg", type: "portrait", alt: "Q-Unique performing with Kings Bounty during Denial video shoot", title: "Q-Unique - Kings Bounty Denial Video Shoot" },
-    { src: "/†††(Crosses)_chino_022024_nyc_trevor_twomey-3.jpg", type: "portrait", alt: "Chino Moreno of ††† (Crosses) performing live in NYC 2024", title: "Chino Moreno - ††† (Crosses) NYC 2024" },
+    { src: "/hidden.png", type: "portrait", alt: "Q-Unique performing with Kings Bounty during Denial video shoot", title: "Q-Unique - Kings Bounty Denial Video Shoot" },
+    { src: "/†††(Crosses)_chino_022024_nyc_trevor_twomey.jpg", type: "portrait", alt: "Chino Moreno of ††† (Crosses) performing live in NYC 2024", title: "Chino Moreno - ††† (Crosses) NYC 2024" },
+    { src: "/Elias_nonpoint_nyc_trevortwomey-16.jpg", type: "portrait", alt: "Chino Moreno of ††† (Crosses) performing live in NYC 2024", title: "Chino Moreno - ††† (Crosses) NYC 2024" },
     { src: "/thievery-corporation-capitol-theatre-trevor-twomey.jpg", type: "landscape", alt: "Thievery Corporation live at the Capitol Theatre", title: "Thievery Corporation - Capitol Theatre" },
     { src: "/korn-eagles-ballroom-2017-trevor-twomey-1jpg.jpg", type: "landscape", alt: "Korn live performance at Eagles Ballroom 2017", title: "Korn - Eagles Ballroom 2017" },
     { src: "/ray-luzier-korn-2020-trevor-twomey.jpg", type: "landscape", alt: "Ray Luzier of Korn performing live in 2020", title: "Ray Luzier - Korn Live 2020" },
     { src: "/Natalia-clavier-nublu-trevor-twomey.jpg", type: "landscape", alt: "Natalia Clavier performing live at Nublu", title: "Natalia Clavier - Live at Nublu" },
     { src: "/head-korn-2015-la-forum-trevor-twomey-1.jpg", type: "landscape", alt: "Brian 'Head' Welch of Korn performing at LA Forum 2015", title: "Brian 'Head' Welch - Korn LA Forum 2015" },
-    { src: "/raquel-jones-thievery-corporation-pier-17-trevor-twomey-1.jpg", type: "landscape", alt: "Raquel Jones performing with Thievery Corporation at Pier 17", title: "Raquel Jones - Thievery Corporation Pier 17" },
+
     { src: "/munky-fieldy-korn-eagles-ballroom-2017-trevor-twomey.jpg", type: "landscape", alt: "James 'Munky' Shaffer and Fieldy of Korn at Eagles Ballroom 2017", title: "Munky and Fieldy - Korn Eagles Ballroom 2017" },
     { src: "/jonathan-davis-solo-tour-2018-trevor-twomey.jpg.jpg", type: "landscape", alt: "Jonathan Davis performing solo tour in 2018", title: "Jonathan Davis - Solo Tour 2018" },
     { src: "/amy-lee-evanescence-jones-beach-2022-trevor-twomey.jpg", type: "portrait", alt: "Amy Lee of Evanescence performing live at Jones Beach 2022", title: "Amy Lee - Evanescence Jones Beach 2022" },
@@ -36,6 +37,7 @@ const allPhotos = [
     { src: "/raquel-jones-capitol-theatre-2018-trevor-twomey.jpg", type: "portrait", alt: "Raquel Jones performing live at Capitol Theatre 2018", title: "Raquel Jones - Capitol Theatre 2018" },
     { src: "/clint-lowery-sevendust-nyc-2022-trevor-twomey.jpg", type: "portrait", alt: "Clint Lowery of Sevendust performing live in NYC 2022", title: "Clint Lowery - Sevendust NYC 2022" },
     { src: "/hash-thievery-corporation-2013-trevor-twomey-1.jpg", type: "portrait", alt: "Hash performing live with Thievery Corporation in 2013", title: "Hash - Thievery Corporation 2013" },
+    { src: "/q-unique-kings-bounty-denial-video-trevor-twomey-1.jpg", type: "portrait", alt: "Q-Unique performing with Kings Bounty during Denial video shoot", title: "Q-Unique - Kings Bounty Denial Video Shoot" },
     ];
 
     const Music = () => {
