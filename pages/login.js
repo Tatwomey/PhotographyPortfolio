@@ -19,7 +19,7 @@ export default function Login() {
     });
 
     if (result.error) {
-      setError("Invalid login credentials.");
+      setError("You fucked up.");
     } else {
       // ✅ Wait for session update before redirecting
       setTimeout(async () => {
