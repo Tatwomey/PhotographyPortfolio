@@ -31,10 +31,11 @@ export default NextAuth({
       },
       async authorize(credentials) {
         const users = [
-          { id: "1", username: "rayloser2025", password: "rayloser2025", allowedPages: ["/music/korn24"] },
+          { id: "1", username: "rayloser2025", password: "korntour2024", allowedPages: ["/music/korn24"] },
           { id: "2", username: "Themazzeoshow2025", password: "Themazzeoshow2025", allowedPages: ["/music/korn24"] },
           { id: "3", username: "jefffranca", password: "Thievery25", allowedPages: ["/music/thievery25"] },
-          { id: "4", username: "sunyaboy", password: "sunyaboy", allowedPages: ["/music/thievery25"] }
+          { id: "4", username: "sunyaboy", password: "sunyaboy", allowedPages: ["/music/thievery25"] },
+          { id: "5", username: "munkshaffer", password: "korntour2024", allowedPages: ["/music/korn24"] },
         ];
 
         const user = users.find(
@@ -44,7 +45,7 @@ export default NextAuth({
         if (user) {
           return { id: user.id, username: user.username, allowedPages: user.allowedPages };
         } else {
-          throw new Error("I think you messed up.");
+          throw new Error("I think you fucked up.");
         }
       },
     }),
