@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Head from "next/head";
 import Hero from "@/components/Hero";
 import { useRouter } from "next/router";
-import { useShopContext } from "/contexts/shopContext";
+import { useShopContext } from '/contexts/shopContext';
 import Image from "next/image";
 import { fetchCart } from "@/lib/shopify";
 

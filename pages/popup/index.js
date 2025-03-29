@@ -10,7 +10,6 @@ export default function PopupShop({ products }) {
   const safeProducts = products || [];
   const shopPageRef = useRef(null);
   const { cart, loading, handleAddToCart } = useShopContext();
-
   const [quickViewProduct, setQuickViewProduct] = useState(null);
 
   useSmoothScroll('#popup', shopPageRef);
@@ -24,7 +23,7 @@ export default function PopupShop({ products }) {
     try {
       await handleAddToCart(product.variantId, 1);
     } catch (error) {
-      console.error("Error adding to cart:", error);
+      console.error('Error adding to cart:', error);
     }
   };
 

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useShopContext } from 'contexts/ShopContext';
+import { useShopContext } from '@contexts/shopContext';
 
 const Product = ({ product, isSoldOut, onAddToCart }) => {
   const { cart, handleAddToCart, refreshCart } = useShopContext();

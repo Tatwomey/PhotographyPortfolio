@@ -1,3 +1,4 @@
+// contexts/shopContext.js
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import {
   createCart,
@@ -9,18 +10,16 @@ import {
 
 const ShopContext = createContext();
 
-export function useShopContext() {
-  return useContext(ShopContext);
-}
+export const useShopContext = () => useContext(ShopContext);
 
-export function ShopProvider({ children }) {
+export const ShopProvider = ({ children }) => {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [cartId, setCartId] = useState(null);
   const [initialized, setInitialized] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const toggleCart = () => setIsCartOpen((prev) => !prev);
+  const toggleCart = () => setIsCartOpen(prev => !prev);
 
   const createNewCart = useCallback(async () => {
     try {
@@ -44,17 +43,14 @@ export function ShopProvider({ children }) {
           setCart(cartData);
           setCartId(storedCartId);
         } else {
-          const newId = await createNewCart();
-          setCartId(newId);
+          await createNewCart();
         }
       } catch (error) {
         console.error("Error fetching cart data:", error);
-        const newId = await createNewCart();
-        setCartId(newId);
+        await createNewCart();
       }
     } else {
-      const newId = await createNewCart();
-      setCartId(newId);
+      await createNewCart();
     }
     setLoading(false);
   }, [createNewCart]);
@@ -77,13 +73,9 @@ export function ShopProvider({ children }) {
   }, [cartId]);
 
   const handleAddToCart = async (variantId, quantity) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      let currentCartId = cartId;
-      if (!currentCartId) {
-        const newId = await createNewCart();
-        currentCartId = newId;
-      }
+      const currentCartId = cartId || await createNewCart();
       await addItemToCart({ cartId: currentCartId, variantId, quantity });
       await refreshCart();
     } catch (error) {
@@ -94,8 +86,8 @@ export function ShopProvider({ children }) {
   };
 
   const handleRemoveFromCart = async (item) => {
+    setLoading(true);
     try {
-      setLoading(true);
       if (item.quantity > 1) {
         const updatedCart = await updateCartItemQuantity(cartId, item.id, item.quantity - 1);
         setCart(updatedCart);
@@ -111,18 +103,16 @@ export function ShopProvider({ children }) {
   };
 
   return (
-    <ShopContext.Provider
-      value={{
-        cart,
-        loading,
-        handleAddToCart,
-        handleRemoveFromCart,
-        refreshCart,
-        isCartOpen,
-        toggleCart,
-      }}
-    >
+    <ShopContext.Provider value={{
+      cart,
+      loading,
+      handleAddToCart,
+      handleRemoveFromCart,
+      refreshCart,
+      isCartOpen,
+      toggleCart
+    }}>
       {children}
     </ShopContext.Provider>
   );
-}
+};

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BsCart3 } from "react-icons/bs";
-import { useShopContext } from "/contexts/ShopContext";
+import { useShopContext } from "/contexts/shopContext";
 
 const CartIcon = () => {
   const { cart, toggleCart } = useShopContext();

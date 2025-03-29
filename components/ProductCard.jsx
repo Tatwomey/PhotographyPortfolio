@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { useShopContext } from '@/contexts/ShopContext';
+import { useShopContext } from '/contexts/shopContext';
 
 const ProductCard = ({ product, onQuickView }) => {
   const [hovered, setHovered] = useState(false);
