@@ -1,169 +1,156 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import Head from 'next/head';
 import Hero from '@/components/Hero';
-import Product from '@/components/Product';
-import { useRouter } from 'next/router';
-import { useShopContext } from '@/contexts/shopContext';
+import PopupProductCard from '@/components/PopupProductCard';
+import PopupProductQuickView from '@/components/PopupProductQuickView';
+import { useSmoothScroll } from '@/hooks/useSmoothScroll';
+import { useShopContext } from '@/contexts/ShopContext';
 
-export default function Popup({ products }) {
-    const safeProducts = products || [];
-    const popupPageRef = useRef(null);
-    const heroRef = useRef(null); // Reference for the Hero section
-    const { cart, loading, handleAddToCart } = useShopContext();
-    const router = useRouter();
+export default function PopupShop({ products }) {
+  const safeProducts = products || [];
+  const shopPageRef = useRef(null);
+  const { cart, loading, handleAddToCart } = useShopContext();
 
-    useEffect(() => {
-        // Redirect to include #popup in the URL if not present
-        if (typeof window !== 'undefined') {
-            if (window.location.hash !== '#popup') {
-                router.replace('/popup#popup', undefined, { shallow: true });
-            }
-        }
+  const [quickViewProduct, setQuickViewProduct] = useState(null);
 
-        // Load Klaviyo script
-        const script = document.createElement('script');
-        script.src = `https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=${process.env.NEXT_PUBLIC_KLAVIYO_API_KEY}`;
-        script.async = true;
-        document.body.appendChild(script);
+  useSmoothScroll('#popup', shopPageRef);
 
-        return () => {
-            document.body.removeChild(script);
-        };
-    }, [router]);
+  const handleAddToCartClick = async (product) => {
+    if (loading || !cart) {
+      console.error('Cart is still loading or not available. Please wait.');
+      return;
+    }
 
-    useEffect(() => {
-        // Ensure the scroll happens once the page is loaded and the DOM is ready
-        const scrollToContent = () => {
-            if (window.location.hash === '#popup' && popupPageRef.current) {
-                const heroHeight = heroRef.current?.offsetHeight || 0; // Get height of Hero section
-                const scrollTarget = popupPageRef.current.offsetTop - heroHeight;
+    try {
+      await handleAddToCart(product.variantId, 1);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
+  };
 
-                window.scrollTo({
-                    top: scrollTarget,
-                    behavior: 'smooth',
-                });
-            }
-        };
+  return (
+    <>
+      <Head>
+        <title>Popup Shop</title>
+        <meta name="description" content="Shop exclusive popup items" />
+      </Head>
 
-        // Delay the scroll slightly to ensure layout rendering is complete
-        setTimeout(scrollToContent, 100); // 100ms delay
-    }, [popupPageRef]);
+      <Hero />
 
-    const handleAddToCartClick = async (product) => {
-        if (loading || !cart) {
-            console.error('Cart is still loading or not available. Please wait.');
-            return;
-        }
+      <main id="popup" ref={shopPageRef} className="container mx-auto px-4 py-16">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {safeProducts.map((product) => (
+            <PopupProductCard
+              key={product.id}
+              product={product}
+              onQuickView={() => setQuickViewProduct(product)}
+              onAddToCart={handleAddToCartClick}
+            />
+          ))}
+        </div>
+      </main>
 
-        try {
-            await handleAddToCart(product.variantId, 1);
-        } catch (error) {
-            console.error("Error adding to cart:", error);
-        }
-    };
-
-    return (
-        <>
-            <Head>
-                <title>Popup Shop</title>
-                <meta name="description" content="Exclusive products available for a limited time." />
-            </Head>
-            <Hero ref={heroRef} />
-            <main ref={popupPageRef} className="container mx-auto p-4 pb-20">
-                <div className="flex flex-wrap -mx-2">
-                    {safeProducts.map((product) => (
-                        <div key={product.id} className="w-full sm:w-1/2 md:w-1/3 px-2 mb-4 product-item">
-                            <Product
-                                product={product}
-                                isSoldOut={!product.availableForSale}
-                                onAddToCart={() => handleAddToCartClick(product)}
-                            />
-                        </div>
-                    ))}
-                </div>
-            </main>
-        </>
-    );
+      {quickViewProduct && (
+        <PopupProductQuickView
+          product={quickViewProduct}
+          onClose={() => setQuickViewProduct(null)}
+          onAddToCart={handleAddToCartClick}
+        />
+      )}
+    </>
+  );
 }
 
 export async function getStaticProps() {
-    const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
-    const token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN;
+  const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
+  const token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
-    const graphqlQuery = {
-        query: `
-            query getPopupProducts {
-                collectionByHandle(handle: "popup-shop") {
-                    products(first: 10) {
-                        edges {
-                            node {
-                                id
-                                title
-                                handle
-                                description
-                                availableForSale
-                                images(first: 1) {
-                                    edges {
-                                        node {
-                                            src
-                                            altText
-                                        }
-                                    }
-                                }
-                                variants(first: 1) {
-                                    edges {
-                                        node {
-                                            id
-                                            priceV2 {
-                                                amount
-                                                currencyCode
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+  const graphqlQuery = {
+    query: `
+      query getPopupProducts {
+        collectionByHandle(handle: "popup-shop") {
+          products(first: 100) {
+            edges {
+              node {
+                id
+                title
+                handle
+                description
+                availableForSale
+                images(first: 2) {
+                  edges {
+                    node {
+                      src
+                      altText
                     }
+                  }
                 }
+                variants(first: 10) {
+                  edges {
+                    node {
+                      id
+                      title
+                      availableForSale
+                      selectedOptions {
+                        name
+                        value
+                      }
+                      priceV2 {
+                        amount
+                        currencyCode
+                      }
+                    }
+                  }
+                }
+              }
             }
-        `,
-    };
-
-    try {
-        const res = await fetch(endpoint, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-Shopify-Storefront-Access-Token": token,
-            },
-            body: JSON.stringify(graphqlQuery),
-        });
-
-        if (!res.ok) {
-            throw new Error(`HTTP error! Status: ${res.status}`);
+          }
         }
+      }
+    `,
+  };
 
-        const responseJson = await res.json();
+  try {
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Storefront-Access-Token": token,
+      },
+      body: JSON.stringify(graphqlQuery),
+    });
 
-        if (!responseJson || !responseJson.data || !responseJson.data.collectionByHandle || !responseJson.data.collectionByHandle.products) {
-            throw new Error("Products data is not available in the response");
-        }
-
-        const products = responseJson.data.collectionByHandle.products.edges.map((edge) => ({
-            id: edge.node.id,
-            title: edge.node.title,
-            handle: edge.node.handle,
-            description: edge.node.description,
-            availableForSale: edge.node.availableForSale,
-            imageSrc: edge.node.images.edges[0]?.node.src || "/fallback-image.jpg",
-            imageAlt: edge.node.images.edges[0]?.node.altText || "Product Image",
-            price: edge.node.variants.edges[0]?.node.priceV2.amount || "0",
-            variantId: edge.node.variants.edges[0]?.node.id || null,
-        }));
-
-        return { props: { products } };
-    } catch (error) {
-        console.error("Error fetching products:", error);
-        return { props: { products: [] } };
+    if (!res.ok) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
     }
+
+    const responseJson = await res.json();
+    const products = responseJson.data.collectionByHandle.products.edges.map(({ node }) => {
+      const variants = node.variants.edges.map((v) => v.node);
+
+      return {
+        id: node.id,
+        title: node.title,
+        handle: node.handle,
+        description: node.description,
+        availableForSale: node.availableForSale,
+        imageSrc: node.images.edges[0]?.node.src || "/fallback-image.jpg",
+        altImageSrc: node.images.edges[1]?.node.src || null,
+        imageAlt: node.images.edges[0]?.node.altText || "Product Image",
+        variantId: variants[0]?.id || null,
+        variantOptions: variants.map((v) => ({
+          id: v.id,
+          title: v.title,
+          price: v.priceV2,
+          available: v.availableForSale,
+          options: v.selectedOptions
+        })),
+      };
+    });
+
+    return { props: { products } };
+  } catch (error) {
+    console.error("Error fetching popup products:", error);
+    return { props: { products: [] } };
+  }
 }

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Head from "next/head";
 import Hero from "@/components/Hero";
 import { useRouter } from "next/router";
-import { useShopContext } from "@/contexts/shopContext";
+import { useShopContext } from "@/contexts/ShopContext";
 import Image from "next/image";
 import { fetchCart } from "@/lib/shopify";
 
@@ -34,18 +34,14 @@ export async function getStaticPaths() {
       body: JSON.stringify(graphqlQuery),
     });
 
-    if (!res.ok) {
-      throw new Error(`HTTP error! Status: ${res.status}`);
-    }
-
-    const responseJson = await res.json();
-    const paths = responseJson.data.products.edges.map((edge) => ({
+    const json = await res.json();
+    const paths = json.data.products.edges.map((edge) => ({
       params: { slug: edge.node.handle },
     }));
 
     return { paths, fallback: "blocking" };
-  } catch (error) {
-    console.error("Failed to fetch product paths:", error);
+  } catch (err) {
+    console.error("Failed to generate static paths:", err);
     return { paths: [], fallback: "blocking" };
   }
 }
@@ -81,11 +77,11 @@ export async function getStaticProps({ params }) {
               node {
                 id
                 title
+                availableForSale
                 priceV2 {
                   amount
                   currencyCode
                 }
-                availableForSale
                 selectedOptions {
                   name
                   value
@@ -108,41 +104,35 @@ export async function getStaticProps({ params }) {
       body: JSON.stringify(graphqlQuery),
     });
 
-    if (!res.ok) {
-      throw new Error(`HTTP error! Status: ${res.status}`);
-    }
+    const json = await res.json();
+    const product = json.data.productByHandle;
 
-    const responseJson = await res.json();
-    if (!responseJson || !responseJson.data || !responseJson.data.productByHandle) {
-      throw new Error("Product data is not available in the response");
-    }
+    if (!product) return { notFound: true };
 
-    const product = responseJson.data.productByHandle;
     return { props: { product } };
-  } catch (error) {
-    console.error("Error fetching product:", error);
+  } catch (err) {
+    console.error("Failed to fetch product data:", err);
     return { notFound: true };
   }
 }
 
 const ProductPage = ({ product }) => {
   const router = useRouter();
-  const { handleAddToCart, cartLoading, cart, refreshCart } = useShopContext();
-  const [addingToCart, setAddingToCart] = useState(false);
   const productRef = useRef(null);
+  const { handleAddToCart, cartLoading, cart, refreshCart } = useShopContext();
 
-  const mainImageSrc =
-    product.images.edges.length > 0
-      ? `${product.images.edges[0].node.src}?width=1000&height=1000`
-      : "/fallback-image.jpg";
-  const [mainImage, setMainImage] = useState(mainImageSrc);
-  const selectedVariant =
-    product.variants.edges.length > 0 ? product.variants.edges[0].node : null;
+  const [mainImage, setMainImage] = useState(
+    product.images.edges[0]?.node.src || "/fallback-image.jpg"
+  );
+  const [selectedVariant, setSelectedVariant] = useState(
+    product.variants.edges[0]?.node || null
+  );
+  const [addingToCart, setAddingToCart] = useState(false);
 
   useEffect(() => {
     if (productRef.current) {
       window.scrollTo({
-        top: productRef.current.getBoundingClientRect().top + window.scrollY,
+        top: productRef.current.offsetTop,
         behavior: "smooth",
       });
     }
@@ -152,56 +142,35 @@ const ProductPage = ({ product }) => {
     refreshCart();
   }, [refreshCart]);
 
-  const handleThumbnailClick = (imageSrc) => {
-    setMainImage(`${imageSrc}?width=1000&height=1000`);
-  };
+  const handleThumbnailClick = (src) => setMainImage(src);
 
   const handleAddToCartClick = async () => {
-    if (cartLoading || !cart) {
-      console.error("Cart is still loading or not available. Please wait.");
-      return;
-    }
-
+    if (!cart || !selectedVariant || cartLoading) return;
     setAddingToCart(true);
     try {
-      const variantId = selectedVariant.id;
-      await handleAddToCart(variantId, 1);
+      await handleAddToCart(selectedVariant.id, 1);
       alert("Added to cart!");
-    } catch (error) {
-      console.error("Error adding to cart:", error);
+    } catch (err) {
+      console.error("Add to cart failed:", err);
     }
     setAddingToCart(false);
   };
 
   const handleBuyNow = async () => {
-    if (cartLoading || !cart) {
-      console.error("Cart is still loading or not available. Please wait.");
-      return;
-    }
-
+    if (!cart || !selectedVariant || cartLoading) return;
     setAddingToCart(true);
     try {
-      const variantId = selectedVariant.id;
-      await handleAddToCart(variantId, 1);
-
-      const localCartId = window.localStorage.getItem("shopify_cart_id");
-      if (localCartId) {
-        const updatedCart = await fetchCart(localCartId);
-        if (updatedCart.checkoutUrl) {
-          window.location.href = updatedCart.checkoutUrl;
-        } else {
-          console.error("Checkout URL not found in cart:", updatedCart);
-        }
-      }
-    } catch (error) {
-      console.error("Error adding to cart:", error);
+      await handleAddToCart(selectedVariant.id, 1);
+      const localCartId = localStorage.getItem("shopify_cart_id");
+      const updatedCart = await fetchCart(localCartId);
+      if (updatedCart?.checkoutUrl) window.location.href = updatedCart.checkoutUrl;
+    } catch (err) {
+      console.error("Buy now failed:", err);
     }
     setAddingToCart(false);
   };
 
-  if (router.isFallback || !product) {
-    return <div>Loading...</div>;
-  }
+  if (router.isFallback || !product) return <div>Loading...</div>;
 
   return (
     <>
@@ -214,35 +183,43 @@ const ProductPage = ({ product }) => {
         <div className="bg-white p-6 md:p-10 rounded-lg shadow-md flex flex-col md:flex-row gap-8">
           <div className="md:w-1/2 flex flex-col items-center space-y-4">
             <div className="relative w-full aspect-[4/5]">
-              <img
+              <Image
                 src={mainImage}
-                alt="Main Product Image"
-                className="w-full h-full object-cover rounded-lg"
+                alt="Main product image"
+                layout="fill"
+                objectFit="cover"
+                className="rounded-lg"
+                unoptimized
               />
             </div>
             <div className="flex space-x-2 md:space-x-4 overflow-x-auto">
-              {product.images.edges.map((image, index) => (
+              {product.images.edges.map((img, idx) => (
                 <div
-                  key={index}
-                  className="relative w-16 h-16 md:w-24 md:h-24 cursor-pointer border border-gray-200 rounded-lg overflow-hidden"
-                  onClick={() => handleThumbnailClick(image.node.src)}
+                  key={idx}
+                  className="w-16 h-16 md:w-24 md:h-24 border border-gray-200 rounded-lg overflow-hidden cursor-pointer"
+                  onClick={() => handleThumbnailClick(img.node.src)}
                 >
-                  <img
-                    src={`${image.node.src}?width=1000&height=1000`}
-                    alt={image.node.altText || "Product Thumbnail"}
-                    className="w-full h-full object-cover rounded-lg"
+                  <Image
+                    src={img.node.src}
+                    alt={img.node.altText || "Thumbnail"}
+                    layout="fill"
+                    objectFit="cover"
+                    className="rounded-lg"
+                    unoptimized
                   />
                 </div>
               ))}
             </div>
           </div>
+
           <div className="md:w-1/2 flex flex-col justify-start items-start text-black space-y-4">
             <h1 className="text-2xl md:text-4xl font-bold">{product.title}</h1>
             <p className="text-md md:text-lg">{product.description}</p>
             <p className="text-xl md:text-2xl font-bold">
-              {parseFloat(selectedVariant.priceV2.amount).toFixed(2)}{" "}
-              {selectedVariant.priceV2.currencyCode}
+              {parseFloat(selectedVariant?.priceV2?.amount).toFixed(2)}{" "}
+              {selectedVariant?.priceV2?.currencyCode}
             </p>
+
             <div className="w-full">
               <label htmlFor="variant" className="block mb-1 font-medium">
                 Size
@@ -252,24 +229,23 @@ const ProductPage = ({ product }) => {
                 name="variant"
                 className="w-full border rounded p-2"
                 onChange={(e) => {
-                  const variant = product.variants.edges.find(
+                  const newVariant = product.variants.edges.find(
                     (v) => v.node.id === e.target.value
                   );
-                  setSelectedVariant(variant.node);
+                  setSelectedVariant(newVariant?.node);
                 }}
-                value={selectedVariant.id}
+                value={selectedVariant?.id}
               >
-                {product.variants.edges.map((variant) => (
-                  <option key={variant.node.id} value={variant.node.id}>
-                    {variant.node.selectedOptions.find(
-                      (option) => option.name === "Size"
-                    )?.value || "Default"}
+                {product.variants.edges.map(({ node }) => (
+                  <option key={node.id} value={node.id}>
+                    {node.selectedOptions[0]?.value || "Default"}
                   </option>
                 ))}
               </select>
             </div>
+
             <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4 w-full">
-              {selectedVariant.availableForSale && (
+              {selectedVariant?.availableForSale && (
                 <button
                   onClick={handleAddToCartClick}
                   disabled={addingToCart}
@@ -280,14 +256,14 @@ const ProductPage = ({ product }) => {
               )}
               <button
                 onClick={handleBuyNow}
-                disabled={!selectedVariant.availableForSale}
+                disabled={!selectedVariant?.availableForSale}
                 className={`w-full md:w-auto font-bold py-2 px-4 rounded ${
-                  selectedVariant.availableForSale
+                  selectedVariant?.availableForSale
                     ? "bg-black text-white"
                     : "bg-gray-400 text-gray-200"
                 }`}
               >
-                {selectedVariant.availableForSale ? "Buy it Now" : "Sold Out"}
+                {selectedVariant?.availableForSale ? "Buy it Now" : "Sold Out"}
               </button>
             </div>
           </div>

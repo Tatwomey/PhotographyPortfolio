@@ -4,7 +4,7 @@ import {
   fetchCart,
   removeItemFromCart,
   addItemToCart,
-  updateCartItemQuantity
+  updateCartItemQuantity,
 } from "@/lib/shopify";
 
 const ShopContext = createContext();
@@ -18,6 +18,9 @@ export function ShopProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [cartId, setCartId] = useState(null);
   const [initialized, setInitialized] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  const toggleCart = () => setIsCartOpen((prev) => !prev);
 
   const createNewCart = useCallback(async () => {
     try {
@@ -25,31 +28,33 @@ export function ShopProvider({ children }) {
       window.localStorage.setItem("shopify_cart_id", newCart.id);
       setCart(newCart);
       setCartId(newCart.id);
-      console.log("Created new cart:", newCart);
+      return newCart.id;
     } catch (error) {
       console.error("Error creating new cart:", error);
+      return null;
     }
   }, []);
 
   const initializeCart = useCallback(async () => {
     const storedCartId = window.localStorage.getItem("shopify_cart_id");
-    console.log("Initializing cart with stored cart ID:", storedCartId);
     if (storedCartId) {
       try {
         const cartData = await fetchCart(storedCartId);
         if (cartData && cartData.id) {
           setCart(cartData);
           setCartId(storedCartId);
-          console.log("Fetched existing cart:", cartData);
         } else {
-          await createNewCart();
+          const newId = await createNewCart();
+          setCartId(newId);
         }
       } catch (error) {
         console.error("Error fetching cart data:", error);
-        await createNewCart();
+        const newId = await createNewCart();
+        setCartId(newId);
       }
     } else {
-      await createNewCart();
+      const newId = await createNewCart();
+      setCartId(newId);
     }
     setLoading(false);
   }, [createNewCart]);
@@ -63,34 +68,32 @@ export function ShopProvider({ children }) {
 
   const refreshCart = useCallback(async () => {
     if (!cartId) return;
-    console.log("Refreshing cart with ID:", cartId);
     try {
       const cartData = await fetchCart(cartId);
       setCart(cartData);
-      console.log("Refreshed cart data:", cartData);
     } catch (error) {
       console.error("Error refreshing cart:", error);
     }
   }, [cartId]);
 
   const handleAddToCart = async (variantId, quantity) => {
-    console.log("Adding item to cart:", { variantId, quantity });
     try {
       setLoading(true);
-      if (!cartId) {
-        await createNewCart();
+      let currentCartId = cartId;
+      if (!currentCartId) {
+        const newId = await createNewCart();
+        currentCartId = newId;
       }
-      await addItemToCart({ cartId, variantId, quantity });
+      await addItemToCart({ cartId: currentCartId, variantId, quantity });
       await refreshCart();
-      setLoading(false);
     } catch (error) {
       console.error("Failed to add item to cart:", error);
+    } finally {
       setLoading(false);
     }
   };
 
   const handleRemoveFromCart = async (item) => {
-    console.log("Removing item from cart:", item);
     try {
       setLoading(true);
       if (item.quantity > 1) {
@@ -100,9 +103,9 @@ export function ShopProvider({ children }) {
         await removeItemFromCart(cartId, item.id);
         await refreshCart();
       }
-      setLoading(false);
     } catch (error) {
       console.error("Failed to remove item from cart:", error);
+    } finally {
       setLoading(false);
     }
   };
@@ -115,7 +118,10 @@ export function ShopProvider({ children }) {
         handleAddToCart,
         handleRemoveFromCart,
         refreshCart,
-      }}>
+        isCartOpen,
+        toggleCart,
+      }}
+    >
       {children}
     </ShopContext.Provider>
   );

@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useShopContext } from '@/contexts/shopContext';
+import { useShopContext } from '@/contexts/ShopContext';
 import Image from 'next/image';
 
 export default function Cart() {
-  const { cart, handleRemoveFromCart, refreshCart } = useShopContext();
+  const { cart, handleRemoveFromCart, refreshCart, isCartOpen, toggleCart } = useShopContext();
   const [localCart, setLocalCart] = useState(cart || { id: null, lines: [], checkoutUrl: '', estimatedCost: null });
-  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (cart) {
@@ -13,63 +12,57 @@ export default function Cart() {
     }
   }, [cart]);
 
-  useEffect(() => {
-    const fetchCart = async () => {
-      await refreshCart();
-    };
-
-    if (!cart || !cart.id) {
-      fetchCart();
-    }
-  }, [refreshCart, cart]);
-
-  function toggleCart() {
-    setOpen(!open);
-  }
-
-  function emptyCart() {
-    window.localStorage.removeItem('shopify_cart_id');
-    setLocalCart({ id: null, lines: [], checkoutUrl: '', estimatedCost: null });
-    refreshCart();
-  }
-
   return (
-    <div className="cart">
-      <button className="icon" onClick={toggleCart}>
-        <Image src="/images/cart.svg" alt="cart" width={20} height={20} />
-        <div className="count">{localCart && localCart.lines ? localCart.lines.length : 0}</div>
+    <div
+      className={`drawer fixed top-0 right-0 w-full sm:w-96 h-full bg-white text-black shadow-xl transform transition-transform duration-300 z-50 ${
+        isCartOpen ? 'translate-x-0' : 'translate-x-full'
+      }`}
+    >
+      {/* Close Button */}
+      <button className="p-4 text-xl sm:text-2xl absolute top-0 right-0 z-10" onClick={toggleCart}>
+        &times;
       </button>
-      <div className={`drawer ${open ? 'open' : ''}`}>
-        <button className="close" onClick={toggleCart}>
-          &times; Close
-        </button>
-        <h3>Your Cart</h3>
-        {localCart && localCart.lines && localCart.lines.length > 0 ? (
+
+      <div className="p-4 pt-16 sm:pt-20">
+        <h3 className="text-xl sm:text-2xl mb-4 font-bold">Your Cart</h3>
+
+        {localCart?.lines?.edges?.length ? (
           <>
-            <ul>
-              {localCart.lines.map(({ node: item }, index) => (
-                <li key={index} className="cart-item flex items-center border-b pb-4 mb-4">
+            <ul className="divide-y divide-gray-200">
+              {localCart.lines.edges.map(({ node: item }) => (
+                <li key={item.id} className="flex items-center py-4">
                   <Image
-                    src={item.merchandise.product.images.edges[0].node.url}
+                    src={item.merchandise.product.images.edges[0].node.src}
                     alt={item.merchandise.product.title}
-                    width={50}
-                    height={50}
-                    style={{ marginRight: '10px' }}
+                    width={60}
+                    height={60}
+                    className="mr-4 rounded object-cover"
                   />
                   <div className="flex-1">
-                    <p className="font-semibold">{item.merchandise.product.title}</p>
-                    <p>Price: ${item.merchandise.priceV2.amount}</p>
-                    <p>Quantity: {item.quantity}</p>
+                    <p className="font-semibold text-sm sm:text-base">{item.merchandise.product.title}</p>
+                    <p>${parseFloat(item.merchandise.priceV2.amount).toFixed(2)}</p>
+
+                    <p className="text-sm">Qty: {item.quantity}</p>
                   </div>
-                  <button className="remove-btn text-red-600 ml-4" onClick={() => handleRemoveFromCart(item.id)}>Remove</button>
+                  <button
+                    className="text-red-600 text-sm ml-2 sm:ml-4"
+                    onClick={() => handleRemoveFromCart(item)}
+                  >
+                    Remove
+                  </button>
                 </li>
               ))}
             </ul>
-            <a className="button" href={localCart.checkoutUrl}>Check Out</a>
-            <button className="empty-cart" onClick={emptyCart}>Empty Cart</button>
+
+            <a
+              className="block w-full mt-6 bg-yellow-400 hover:bg-yellow-300 transition text-black text-center py-3 rounded font-semibold"
+              href={localCart.checkoutUrl}
+            >
+              Checkout
+            </a>
           </>
         ) : (
-          <p className="no-items">Your cart is empty.</p>
+          <p className="text-center mt-10 text-gray-600">Your cart is empty.</p>
         )}
       </div>
     </div>

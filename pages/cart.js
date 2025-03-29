@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { useShopContext } from '@/contexts/shopContext';
+import { useShopContext } from '@/contexts/ShopContext';
 import Hero from '@/components/Hero';
 import Image from 'next/image';
 import Link from 'next/link';

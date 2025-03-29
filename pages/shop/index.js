@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Hero from '@/components/Hero';
 import Product from '@/components/Product';
 import { useSmoothScroll } from '@/hooks/useSmoothScroll';
-import { useShopContext } from '@/contexts/shopContext';
+import { useShopContext } from '@/contexts/ShopContext';
 
 export default function Shop({ products }) {
   const safeProducts = products || [];

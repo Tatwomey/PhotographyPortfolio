@@ -1,25 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { BsCart3 } from "react-icons/bs";
-import { useShopContext } from "@/contexts/shopContext";
-import Link from "next/link";
+import { useShopContext } from "@/contexts/ShopContext";
 
 const CartIcon = () => {
-  const { cart } = useShopContext(); // ✅ Uses the correct context hook
+  const { cart, toggleCart } = useShopContext();
   const [hydrated, setHydrated] = useState(false);
+  const cartCount = cart?.lines?.edges?.length || 0;
 
   useEffect(() => {
-    setHydrated(true); // ✅ Prevents SSR hydration issues
+    setHydrated(true);
   }, []);
 
-  // ✅ Ensure cart is always an array to prevent `null` errors
-  const cartCount = Array.isArray(cart) ? cart.length : 0;
-
   return (
-    <div className="cart-icon-link cursor-pointer flex items-center">
-      <Link href="/shop">
-        <BsCart3 size={28} className="text-white" />
-      </Link>
-      {/* ✅ Only show badge if cart has items */}
+    <div className="cart-icon-link cursor-pointer flex items-center relative" onClick={toggleCart}>
+      <BsCart3 size={28} className="text-white" />
       {hydrated && cartCount > 0 && (
         <span className="cart-icon-badge">{cartCount}</span>
       )}

@@ -6,7 +6,8 @@ import Head from "next/head";
 import Footer from "@/components/Footer";
 import "@/styles/globals.css";
 import { NavigationProvider } from "@/contexts/NavigationContext";
-import { ShopProvider } from "@/contexts/shopContext";
+import { ShopProvider } from "@/contexts/ShopContext";
+import Cart from "@/components/Cart";
 import dynamic from "next/dynamic";
 
 const GoogleAnalytics = dynamic(() => import("@/components/GoogleAnalytics"), { ssr: false });
@@ -18,59 +19,43 @@ const MyApp = ({ Component, pageProps: { session, ...pageProps } }) => {
   const router = useRouter();
   const [hydrated, setHydrated] = useState(false);
 
-  // ✅ Initialize Google Analytics (GA4)
+  // ✅ Google Analytics
   useEffect(() => {
-    if (!window.dataLayer) {
-      window.dataLayer = [];
-    }
+    if (!window.dataLayer) window.dataLayer = [];
 
     if (!window.gtag) {
       window.gtag = function () {
         window.dataLayer.push(arguments);
       };
-
       window.gtag("js", new Date());
       window.gtag("config", GA_ID, { send_page_view: true });
-
-      console.log("✅ Google Analytics Initialized.");
     }
 
-    // Inject GA script if not already added
     if (!document.querySelector(`script[src*="googletagmanager.com/gtag"]`)) {
       const script = document.createElement("script");
       script.async = true;
       script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
       document.head.appendChild(script);
-
-      script.onload = () => console.log("✅ GA Script Loaded Successfully.");
-    } else {
-      console.log("✅ GA Script Already Present, Skipping.");
     }
   }, []);
 
-  // ✅ Track Page Views on Route Change
+  // ✅ Track GA page views on route change
   useEffect(() => {
     const handleRouteChange = (url) => {
       if (window.gtag) {
         window.gtag("config", GA_ID, { page_path: url });
-        console.log(`📊 GA Tracking Pageview: ${url}`);
-      } else {
-        console.warn("⚠️ GA Tracking Skipped: gtag not defined.");
       }
     };
-
     router.events.on("routeChangeComplete", handleRouteChange);
-    return () => {
-      router.events.off("routeChangeComplete", handleRouteChange);
-    };
+    return () => router.events.off("routeChangeComplete", handleRouteChange);
   }, [router.events]);
 
-  // ✅ Ensure Hydration Consistency
+  // ✅ Hydration
   useEffect(() => {
     setHydrated(true);
   }, []);
 
-  if (!hydrated) return null; // Avoids hydration mismatch errors
+  if (!hydrated) return null;
 
   return (
     <SessionProvider session={session}>
@@ -85,8 +70,8 @@ const MyApp = ({ Component, pageProps: { session, ...pageProps } }) => {
                   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
                   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                   'https://www.googletagmanager.com/gtm.js?id=${GTM_ID}';f.parentNode.insertBefore(j,f);
-                  })(window,document,'script','dataLayer','${GTM_ID}');
-                `,
+                })(window,document,'script','dataLayer','${GTM_ID}');
+              `,
               }}
             />
           )}
@@ -95,6 +80,7 @@ const MyApp = ({ Component, pageProps: { session, ...pageProps } }) => {
         <NavigationProvider>
           <Navbar />
           <Component {...pageProps} />
+          <Cart />
           <Footer />
         </NavigationProvider>
 
