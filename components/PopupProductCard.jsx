@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useShopContext } from '@/contexts/ShopContext';
+import { useShopContext } from 'contexts/ShopContext';
 import PopupProductQuickView from './PopupProductQuickView';
 
 const PopupProductCard = ({ product }) => {

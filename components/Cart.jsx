@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useShopContext } from '@/contexts/ShopContext';
+import { useShopContext } from '/contexts/ShopContext';
 import Image from 'next/image';
 
 export default function Cart() {

@@ -6,7 +6,7 @@ import Head from "next/head";
 import Footer from "@/components/Footer";
 import "@/styles/globals.css";
 import { NavigationProvider } from "@/contexts/NavigationContext";
-import { ShopProvider } from "@/contexts/ShopContext";
+import { ShopProvider } from "/contexts/ShopContext";
 import Cart from "@/components/Cart";
 import dynamic from "next/dynamic";
 
