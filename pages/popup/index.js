@@ -4,7 +4,7 @@ import Hero from '@/components/Hero';
 import PopupProductCard from '@/components/PopupProductCard';
 import PopupProductQuickView from '@/components/PopupProductQuickView';
 import { useSmoothScroll } from '@/hooks/useSmoothScroll';
-import { useShopContext } from '@/contexts/ShopContext';
+import { useShopContext } from '/contexts/shopContext';
 
 export default function PopupShop({ products }) {
   const safeProducts = products || [];

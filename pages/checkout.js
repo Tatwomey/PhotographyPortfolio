@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { useShopContext } from '@/contexts/shopContext';
+import { useShopContext } from '/contexts/shopContext';
 import Hero from "@/components/Hero";
 
 const CheckoutPage = () => {

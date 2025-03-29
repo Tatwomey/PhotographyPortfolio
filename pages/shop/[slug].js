@@ -3,7 +3,7 @@ import Head from "next/head";
 import Hero from "@/components/Hero";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useShopContext } from "@/contexts/shopContext";
+import { useShopContext } from "/contexts/shopContext";
 import { fetchCart } from "@/lib/shopify";
 
 export async function getStaticPaths() {
