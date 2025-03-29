@@ -32,30 +32,54 @@ export default function PopupProductQuickView({ product, onClose }) {
           <IoClose />
         </button>
 
-        {/* Image Section */}
-        <div className="quickview-image-section">
+        {/* Left Column: Main Image + Thumbnails + Arrows */}
+        <div className="quickview-image-section relative flex flex-col items-center">
+          {/* Arrows */}
           {images.length > 1 && (
-            <button className="modal-arrow left" onClick={prevImage}>
-              <IoChevronBack size={24} />
-            </button>
+            <>
+              <button className="modal-arrow left" onClick={prevImage}>
+                <IoChevronBack size={24} />
+              </button>
+              <button className="modal-arrow right" onClick={nextImage}>
+                <IoChevronForward size={24} />
+              </button>
+            </>
           )}
 
-          <Image
-            src={images[currentImageIdx]}
-            alt={product.title}
-            width={700}
-            height={875}
-            className="object-contain rounded-lg"
-          />
+          {/* Main Image */}
+          <div className="relative">
+            <Image
+              src={images[currentImageIdx]}
+              alt={product.title}
+              width={800}
+              height={1000}
+              className="object-cover rounded-lg product-main-image"
+            />
+          </div>
 
-          {images.length > 1 && (
-            <button className="modal-arrow right" onClick={nextImage}>
-              <IoChevronForward size={24} />
-            </button>
-          )}
+          {/* Thumbnails */}
+          <div className="flex gap-2 mt-4 overflow-x-auto">
+            {images.map((src, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentImageIdx(idx)}
+                className={`outline-none rounded-md overflow-hidden border ${
+                  currentImageIdx === idx ? 'border-black' : 'border-transparent'
+                }`}
+              >
+                <Image
+                  src={src}
+                  alt={`Thumbnail ${idx}`}
+                  width={80}
+                  height={100}
+                  className="thumbnail-image rounded object-cover"
+                />
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Details Section */}
+        {/* Right Column: Product Info */}
         <div className="quickview-details-section">
           <h2 className="text-2xl font-bold text-black mb-2">{product.title}</h2>
           <p className="text-xl text-gray-700 font-semibold mb-4">
@@ -95,8 +119,8 @@ export default function PopupProductQuickView({ product, onClose }) {
 
           {product.description && (
             <div className="mt-6 border-t pt-4 text-black">
-              <h3 className="font-semibold">Description</h3>
-              <p className="mt-2">{product.description}</p>
+              <h3 className="font-semibold mb-2">Description</h3>
+              <p>{product.description}</p>
             </div>
           )}
         </div>

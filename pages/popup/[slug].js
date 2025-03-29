@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useShopContext } from '@/contexts/shopContext';
 import Hero from '@/components/Hero';
+import { IoChevronBack, IoChevronForward } from 'react-icons/io5';
 
 export default function PopupProductPage({ product }) {
   const router = useRouter();
@@ -13,8 +14,16 @@ export default function PopupProductPage({ product }) {
   }
 
   const images = product.allImages?.length ? product.allImages : [product.imageSrc];
-  const [selectedImage, setSelectedImage] = useState(images[0]);
+  const [currentImageIdx, setCurrentImageIdx] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState(product.variantOptions[0]);
+
+  const prevImage = () => {
+    setCurrentImageIdx((idx) => (idx > 0 ? idx - 1 : images.length - 1));
+  };
+
+  const nextImage = () => {
+    setCurrentImageIdx((idx) => (idx < images.length - 1 ? idx + 1 : 0));
+  };
 
   const handleBuyNow = async () => {
     await handleAddToCart(selectedVariant.id, 1);
@@ -25,71 +34,96 @@ export default function PopupProductPage({ product }) {
     <>
       <Hero />
 
-      <div className="container mx-auto px-4 py-12 flex flex-col lg:flex-row gap-10">
-        {/* Thumbnails Vertical (Desktop), Horizontal Scroll (Mobile) */}
-        <div className="flex lg:flex-col gap-3 overflow-auto lg:overflow-visible">
-          {images.map((src, idx) => (
-            <button key={idx} onClick={() => setSelectedImage(src)}>
-              <Image
-                src={src}
-                width={80}
-                height={80}
-                alt={`${product.title}-${idx}`}
-                className={`rounded-lg object-cover ${selectedImage === src ? 'ring-2 ring-black' : ''}`}
-              />
-            </button>
-          ))}
+      <div className="container mx-auto px-4 py-12 flex flex-col lg:flex-row gap-10 items-start">
+        {/* Left: Image Section */}
+        <div className="flex flex-col items-center lg:w-[60%] w-full">
+          <div className="relative w-full max-w-[500px] aspect-[4/5] bg-gray-100 rounded-lg overflow-hidden">
+            {/* Arrows */}
+            {images.length > 1 && (
+              <>
+                <button className="modal-arrow left" onClick={prevImage}>
+                  <IoChevronBack size={24} />
+                </button>
+                <button className="modal-arrow right" onClick={nextImage}>
+                  <IoChevronForward size={24} />
+                </button>
+              </>
+            )}
+
+            <Image
+              src={images[currentImageIdx]}
+              alt={product.title}
+              layout="fill"
+              objectFit="cover"
+              className="rounded-lg"
+            />
+          </div>
+
+          {/* Thumbnails */}
+          {images.length > 1 && (
+            <div className="flex gap-3 mt-4 overflow-x-auto">
+              {images.map((src, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentImageIdx(idx)}
+                  className={`border rounded-md overflow-hidden ${
+                    currentImageIdx === idx ? 'border-black' : 'border-transparent'
+                  }`}
+                >
+                  <Image
+                    src={src}
+                    alt={`Thumb ${idx}`}
+                    width={80}
+                    height={100}
+                    className="thumbnail-image object-cover rounded"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Main Image */}
-        <div className="flex-1 bg-gray-100 rounded-lg shadow-sm flex justify-center items-center">
-          <Image
-            src={selectedImage}
-            width={800}
-            height={1000}
-            alt={product.title}
-            className="object-contain rounded-lg"
-          />
-        </div>
-
-        {/* Product Details */}
-        <div className="lg:w-96 flex flex-col">
-          <h1 className="text-3xl font-bold">{product.title}</h1>
-          <p className="text-xl my-3 font-semibold">
+        {/* Right: Product Details */}
+        <div className="lg:w-[40%] w-full">
+          <h1 className="text-3xl font-bold mb-2 text-black">{product.title}</h1>
+          <p className="text-xl mb-4 text-gray-700 font-semibold">
             ${parseFloat(selectedVariant.price.amount).toFixed(2)}
           </p>
 
           <select
-            className="w-full p-3 border rounded mb-4"
+            className="w-full border rounded p-3 mb-4"
             value={selectedVariant.id}
-            onChange={(e) => 
+            onChange={(e) =>
               setSelectedVariant(product.variantOptions.find(v => v.id === e.target.value))
             }
           >
-            {product.variantOptions.map(v => (
-              <option key={v.id} value={v.id}>
-                {v.title} - ${parseFloat(v.price.amount).toFixed(2)}
+            {product.variantOptions.map((variant) => (
+              <option key={variant.id} value={variant.id}>
+                {variant.title} - ${parseFloat(variant.price.amount).toFixed(2)}
               </option>
             ))}
           </select>
 
           <button
-            className="bg-black text-white py-3 rounded w-full mb-2"
+            className="w-full bg-black text-white py-3 rounded mb-2"
             onClick={() => handleAddToCart(selectedVariant.id, 1)}
           >
             Add to Cart
           </button>
-          
+
           <button
-            className="bg-yellow-400 text-black py-3 rounded w-full"
+            className="w-full bg-yellow-400 text-black py-3 rounded font-semibold"
             onClick={handleBuyNow}
           >
             Buy It Now
           </button>
 
-          <div className="mt-6 border-t pt-4">
-            <p>{product.description}</p>
-          </div>
+          {product.description && (
+            <div className="mt-6 border-t pt-4 text-black">
+              <h3 className="font-semibold mb-2">Description</h3>
+              <p>{product.description}</p>
+            </div>
+          )}
         </div>
       </div>
     </>
@@ -145,7 +179,7 @@ export async function getStaticProps({ params }) {
           title
           handle
           description
-          images(first: 5) {
+          images(first: 10) {
             edges {
               node {
                 src
