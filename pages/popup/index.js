@@ -1,10 +1,10 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Head from 'next/head';
 import Hero from '@/components/Hero';
 import PopupProductCard from '@/components/PopupProductCard';
 import PopupProductQuickView from '@/components/PopupProductQuickView';
 import { useSmoothScroll } from '@/hooks/useSmoothScroll';
-import { useShopContext } from '/contexts/shopContext';
+import { useShopContext } from '@/contexts/shopContext';
 
 export default function PopupShop({ products }) {
   const safeProducts = products || [];
@@ -76,7 +76,7 @@ export async function getStaticProps() {
                 handle
                 description
                 availableForSale
-                images(first: 2) {
+                images(first: 10) {  # 👈 Fetch up to 10 images for carousel
                   edges {
                     node {
                       src
@@ -136,13 +136,14 @@ export async function getStaticProps() {
         imageSrc: node.images.edges[0]?.node.src || "/fallback-image.jpg",
         altImageSrc: node.images.edges[1]?.node.src || null,
         imageAlt: node.images.edges[0]?.node.altText || "Product Image",
+        allImages: node.images.edges.map(edge => edge.node.src), // ✅ Fix: correctly set `allImages`
         variantId: variants[0]?.id || null,
         variantOptions: variants.map((v) => ({
           id: v.id,
           title: v.title,
           price: v.priceV2,
           available: v.availableForSale,
-          options: v.selectedOptions
+          options: v.selectedOptions,
         })),
       };
     });
