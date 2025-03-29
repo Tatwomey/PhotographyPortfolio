@@ -1,103 +1,106 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { useShopContext } from '@/contexts/shopContext';
+import { IoChevronForward, IoChevronBack, IoClose } from 'react-icons/io5';
+import { useRouter } from 'next/router';
 
-const PopupProductQuickView = ({ product, onClose }) => {
-  const { handleAddToCart, cart } = useShopContext();
+export default function PopupProductQuickView({ product, onClose }) {
+  const { handleAddToCart } = useShopContext();
+  const router = useRouter();
+
+  const images = product.allImages?.length ? product.allImages : [product.imageSrc];
+  const [currentImageIdx, setCurrentImageIdx] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState(product.variantOptions[0]);
-  const [loading, setLoading] = useState(false);
 
-  const handleVariantChange = (e) => {
-    const variant = product.variantOptions.find(v => v.id === e.target.value);
-    setSelectedVariant(variant);
+  const prevImage = () => {
+    setCurrentImageIdx((idx) => (idx > 0 ? idx - 1 : images.length - 1));
   };
 
-  const handleAddToCartClick = async () => {
-    if (!selectedVariant?.id) return;
-    setLoading(true);
-    await handleAddToCart(selectedVariant.id, 1);
-    setLoading(false);
+  const nextImage = () => {
+    setCurrentImageIdx((idx) => (idx < images.length - 1 ? idx + 1 : 0));
   };
 
   const handleBuyNow = async () => {
-    if (!selectedVariant?.id || !cart?.checkoutUrl) return;
-    setLoading(true);
     await handleAddToCart(selectedVariant.id, 1);
-    window.location.href = cart.checkoutUrl;
+    router.push('/checkout');
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-2 sm:p-4">
-      <div className="bg-white w-full max-w-xl mx-auto rounded-lg shadow-xl overflow-y-auto relative max-h-[90vh]">
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-3 text-3xl sm:text-4xl text-black"
-        >
-          &times;
+    <div className="quickview-modal">
+      <div className="quickview-modal-content">
+        <button className="quickview-close-btn" onClick={onClose}>
+          <IoClose />
         </button>
 
-        <div className="p-4 sm:p-6">
-          <h2 className="text-lg sm:text-2xl font-bold mb-3 sm:mb-4 text-center text-black">
-            {product.title}
-          </h2>
-
-          <div className="relative w-full h-[350px] sm:h-[500px] mb-4">
-            <Image
-              src={product.imageSrc}
-              alt={product.imageAlt}
-              layout="fill"
-              objectFit="contain"
-              className="rounded-md"
-            />
-          </div>
-
-          {product.altImageSrc && (
-            <div className="flex justify-center space-x-2 mb-3">
-              <div className="relative w-20 h-20 sm:w-24 sm:h-24">
-                <Image
-                  src={product.altImageSrc}
-                  alt={`${product.title} alternate`}
-                  layout="fill"
-                  objectFit="cover"
-                  className="rounded-md"
-                />
-              </div>
-            </div>
+        {/* Image Section */}
+        <div className="quickview-image-section">
+          {images.length > 1 && (
+            <button className="modal-arrow left" onClick={prevImage}>
+              <IoChevronBack size={24} />
+            </button>
           )}
 
+          <Image
+            src={images[currentImageIdx]}
+            alt={product.title}
+            width={700}
+            height={875}
+            className="object-contain rounded-lg"
+          />
+
+          {images.length > 1 && (
+            <button className="modal-arrow right" onClick={nextImage}>
+              <IoChevronForward size={24} />
+            </button>
+          )}
+        </div>
+
+        {/* Details Section */}
+        <div className="quickview-details-section">
+          <h2 className="text-2xl font-bold text-black mb-2">{product.title}</h2>
+          <p className="text-xl text-gray-700 font-semibold mb-4">
+            ${parseFloat(selectedVariant.price.amount).toFixed(2)}
+          </p>
+
+          <label className="block font-semibold mb-1 text-black">Edition / Size</label>
           <select
+            className="w-full border rounded p-3 mb-4"
             value={selectedVariant.id}
-            onChange={handleVariantChange}
-            className="border border-gray-300 rounded-md py-2 px-3 mb-3 sm:mb-4 w-full text-sm sm:text-base"
+            onChange={(e) =>
+              setSelectedVariant(
+                product.variantOptions.find((v) => v.id === e.target.value)
+              )
+            }
           >
-            {product.variantOptions.map(variant => (
+            {product.variantOptions.map((variant) => (
               <option key={variant.id} value={variant.id}>
-                {variant.title} — ${parseFloat(variant.price.amount).toFixed(2)}
+                {variant.title} - ${parseFloat(variant.price.amount).toFixed(2)}
               </option>
             ))}
           </select>
 
-          <div className="flex flex-col sm:flex-row sm:space-x-2">
-            <button
-              onClick={handleAddToCartClick}
-              disabled={loading}
-              className="w-full bg-black text-white py-2 rounded-md text-sm sm:text-base mb-2 sm:mb-0 transition hover:bg-gray-800"
-            >
-              {loading ? 'Adding...' : 'Add to Cart'}
-            </button>
+          <button
+            className="w-full bg-black text-white py-3 rounded mb-2"
+            onClick={() => handleAddToCart(selectedVariant.id, 1)}
+          >
+            Add to Cart
+          </button>
 
-            <button
-              onClick={handleBuyNow}
-              disabled={loading}
-              className="w-full bg-yellow-400 text-black py-2 rounded-md text-sm sm:text-base transition hover:bg-yellow-300"
-            >
-              {loading ? 'Processing...' : 'Buy It Now'}
-            </button>
-          </div>
+          <button
+            className="w-full bg-yellow-400 text-black py-3 rounded font-semibold"
+            onClick={handleBuyNow}
+          >
+            Buy It Now
+          </button>
+
+          {product.description && (
+            <div className="mt-6 border-t pt-4 text-black">
+              <h3 className="font-semibold">Description</h3>
+              <p className="mt-2">{product.description}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
-};
-
-export default PopupProductQuickView;
+}

@@ -15,6 +15,90 @@ body {
   height: 100%;
   cursor: default;
 }
+/* ✅ Quick View Modal Styles */
+.quickview-modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.quickview-modal-content {
+  background: white;
+  position: relative;
+  max-width: 1024px;
+  width: 95%;
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  max-height: 90vh;
+}
+
+@media (min-width: 768px) {
+  .quickview-modal-content {
+    flex-direction: row;
+    padding: 2rem;
+  }
+}
+
+.quickview-image-section {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quickview-details-section {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.quickview-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 2rem;
+  color: black;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.modal-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: black;
+  z-index: 10;
+  transition: background 0.3s ease;
+}
+
+.modal-arrow:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+.modal-arrow.left {
+  left: 10px;
+}
+
+.modal-arrow.right {
+  right: 10px;
+}
 
 /* ✅ Prevent Right-Click Save (for casual users) */
 img {
