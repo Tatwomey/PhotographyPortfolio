@@ -34,11 +34,17 @@ export default function PopupProductPage({ product }) {
     <>
       <Hero />
 
-      <div className="container mx-auto px-4 py-12 flex flex-col lg:flex-row gap-10 items-start">
-        {/* Left: Image Section */}
-        <div className="flex flex-col items-center lg:w-[60%] w-full">
-          <div className="relative w-full max-w-[500px] aspect-[4/5] bg-gray-100 rounded-lg overflow-hidden">
-            {/* Arrows */}
+      <div className="container mx-auto px-4 py-8 lg:py-12 flex flex-col lg:flex-row gap-10 lg:items-start">
+        {/* LEFT: Image & Thumbnails */}
+        <div className="w-full lg:max-w-[550px] mx-auto lg:mx-0">
+          <div className="relative aspect-[4/5] bg-gray-100 rounded-lg overflow-hidden shadow">
+            <Image
+              src={images[currentImageIdx]}
+              alt={product.title}
+              layout="fill"
+              objectFit="cover"
+              className="rounded-lg"
+            />
             {images.length > 1 && (
               <>
                 <button className="modal-arrow left" onClick={prevImage}>
@@ -49,17 +55,8 @@ export default function PopupProductPage({ product }) {
                 </button>
               </>
             )}
-
-            <Image
-              src={images[currentImageIdx]}
-              alt={product.title}
-              layout="fill"
-              objectFit="cover"
-              className="rounded-lg"
-            />
           </div>
 
-          {/* Thumbnails */}
           {images.length > 1 && (
             <div className="flex gap-3 mt-4 overflow-x-auto">
               {images.map((src, idx) => (
@@ -75,7 +72,7 @@ export default function PopupProductPage({ product }) {
                     alt={`Thumb ${idx}`}
                     width={80}
                     height={100}
-                    className="thumbnail-image object-cover rounded"
+                    className="thumbnail-image"
                   />
                 </button>
               ))}
@@ -83,45 +80,60 @@ export default function PopupProductPage({ product }) {
           )}
         </div>
 
-        {/* Right: Product Details */}
-        <div className="lg:w-[40%] w-full">
-          <h1 className="text-3xl font-bold mb-2 text-black">{product.title}</h1>
-          <p className="text-xl mb-4 text-gray-700 font-semibold">
+        {/* RIGHT: Product Info */}
+        <div className="w-full lg:max-w-md">
+          <h1 className="text-2xl lg:text-3xl font-bold text-black mb-2">{product.title}</h1>
+          <p className="text-xl text-gray-700 font-semibold mb-2">
             ${parseFloat(selectedVariant.price.amount).toFixed(2)}
           </p>
 
-          <select
-            className="w-full border rounded p-3 mb-4"
-            value={selectedVariant.id}
-            onChange={(e) =>
-              setSelectedVariant(product.variantOptions.find(v => v.id === e.target.value))
-            }
-          >
-            {product.variantOptions.map((variant) => (
-              <option key={variant.id} value={variant.id}>
-                {variant.title} - ${parseFloat(variant.price.amount).toFixed(2)}
-              </option>
-            ))}
-          </select>
+          {/* Conversion Enhancers */}
+          <div className="mb-4">
+            <p className="text-sm text-red-600 font-medium mb-1">Only a few left in stock</p>
+            <p className="text-sm text-gray-600">Ships in 3–5 business days</p>
+          </div>
 
-          <button
-            className="w-full bg-black text-white py-3 rounded mb-2"
-            onClick={() => handleAddToCart(selectedVariant.id, 1)}
-          >
-            Add to Cart
-          </button>
+          {/* Variant Selector */}
+          <div className="mb-4">
+            <label className="block font-semibold text-black mb-1">Edition / Size</label>
+            <select
+              className="w-full border rounded p-3"
+              value={selectedVariant.id}
+              onChange={(e) =>
+                setSelectedVariant(product.variantOptions.find(v => v.id === e.target.value))
+              }
+            >
+              {product.variantOptions.map((variant) => (
+                <option key={variant.id} value={variant.id}>
+                  {variant.title} - ${parseFloat(variant.price.amount).toFixed(2)}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <button
-            className="w-full bg-yellow-400 text-black py-3 rounded font-semibold"
-            onClick={handleBuyNow}
-          >
-            Buy It Now
-          </button>
+          {/* CTAs */}
+          <div className="space-y-3 mb-6">
+            <button
+              className="w-full bg-black text-white py-3 rounded text-lg font-medium"
+              onClick={() => handleAddToCart(selectedVariant.id, 1)}
+            >
+              Add to Cart
+            </button>
+            <button
+              className="w-full bg-yellow-400 text-black py-3 rounded text-lg font-semibold"
+              onClick={handleBuyNow}
+            >
+              Buy It Now
+            </button>
+          </div>
 
+          {/* Description */}
           {product.description && (
-            <div className="mt-6 border-t pt-4 text-black">
-              <h3 className="font-semibold mb-2">Description</h3>
-              <p>{product.description}</p>
+            <div className="border-t pt-4">
+              <h3 className="text-lg font-semibold mb-2 text-black">Details</h3>
+              <p className="text-sm leading-relaxed text-gray-800 whitespace-pre-line">
+                {product.description}
+              </p>
             </div>
           )}
         </div>
