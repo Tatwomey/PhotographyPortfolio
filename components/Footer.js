@@ -5,22 +5,30 @@ import { useRouter } from "next/router";
 const Footer = () => {
   const router = useRouter();
 
-  // Define when to show Terms & Privacy links
-  const showLinks = router.pathname.startsWith("/shop");
+  // Light mode pages
+  const isEcommercePage = router.pathname.startsWith("/shop") || router.pathname.startsWith("/popup");
 
   return (
-    <footer className="bg-black text-white py-4 mt-12 text-center">
+    <footer
+      className={`py-4 mt-12 text-center transition-colors duration-300 ${
+        isEcommercePage ? "bg-white text-black" : "bg-black text-white"
+      }`}
+    >
       &copy; 2025 Trevor Twomey Photography. All Rights Reserved. | Site Design by{" "}
-      <a href="mailto:trevor.a.twomey@gmail.com" className="text-white hover:text-gray-300">
+      <a
+        href="mailto:trevor.a.twomey@gmail.com"
+        className={isEcommercePage ? "text-black hover:text-gray-600" : "text-white hover:text-gray-300"}
+      >
         Trevor Twomey
       </a>
-      {showLinks && (
+
+      {isEcommercePage && (
         <div className="mt-2">
-          <Link href="/shop/terms" className="text-white hover:text-gray-300 mx-2">
+          <Link href="/shop/terms" className="mx-2 hover:underline">
             Terms of Service
           </Link>
           |
-          <Link href="/shop/privacy" className="text-white hover:text-gray-300 mx-2">
+          <Link href="/shop/privacy" className="mx-2 hover:underline">
             Privacy Policy
           </Link>
         </div>

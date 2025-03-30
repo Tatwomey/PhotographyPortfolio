@@ -28,7 +28,7 @@ export default function PopupShop({ products }) {
   };
 
   return (
-    <>
+    <div className="bg-white text-black w-full min-h-screen transition-colors duration-300">
       <Head>
         <title>Popup Shop</title>
         <meta name="description" content="Shop exclusive popup items" />
@@ -36,7 +36,12 @@ export default function PopupShop({ products }) {
 
       <Hero />
 
-      <main id="popup" ref={shopPageRef} className="container mx-auto px-4 py-16">
+      <main
+  id="popup"
+  ref={shopPageRef}
+  className="max-w-7xl mx-auto px-4 py-16 bg-white text-black transition-colors duration-300"
+>
+
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {safeProducts.map((product) => (
             <PopupProductCard
@@ -56,7 +61,7 @@ export default function PopupShop({ products }) {
           onAddToCart={handleAddToCartClick}
         />
       )}
-    </>
+    </div>
   );
 }
 
@@ -76,7 +81,7 @@ export async function getStaticProps() {
                 handle
                 description
                 availableForSale
-                images(first: 10) {  # 👈 Fetch up to 10 images for carousel
+                images(first: 10) {
                   edges {
                     node {
                       src
@@ -136,7 +141,7 @@ export async function getStaticProps() {
         imageSrc: node.images.edges[0]?.node.src || "/fallback-image.jpg",
         altImageSrc: node.images.edges[1]?.node.src || null,
         imageAlt: node.images.edges[0]?.node.altText || "Product Image",
-        allImages: node.images.edges.map(edge => edge.node.src), // ✅ Fix: correctly set `allImages`
+        allImages: node.images.edges.map(edge => edge.node.src),
         variantId: variants[0]?.id || null,
         variantOptions: variants.map((v) => ({
           id: v.id,

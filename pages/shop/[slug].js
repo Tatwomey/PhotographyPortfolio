@@ -206,7 +206,8 @@ const ProductPage = ({ product }) => {
         <meta name="description" content={product.description} />
       </Head>
       <Hero />
-      <main ref={productRef} className="container mx-auto p-4 md:p-8 pb-20">
+      <main ref={productRef} className="container mx-auto p-4 md:p-8 pb-20 bg-white text-black transition-colors duration-300">
+
         <div className="bg-white p-4 md:p-8 rounded-lg shadow-md flex flex-col md:flex-row gap-8">
           <div className="md:w-1/2 flex flex-col items-center space-y-4">
             <div className="relative w-full h-80 md:h-[600px]">

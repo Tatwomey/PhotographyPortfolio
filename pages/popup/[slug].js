@@ -34,7 +34,8 @@ export default function PopupProductPage({ product }) {
     <>
       <Hero />
 
-      <div className="container mx-auto px-4 py-8 lg:py-12 flex flex-col lg:flex-row gap-10 lg:items-start">
+      <div className="container mx-auto px-4 py-8 lg:py-12 flex flex-col lg:flex-row gap-10 lg:items-start bg-white text-black transition-colors duration-300">
+
         {/* LEFT: Image & Thumbnails */}
         <div className="w-full lg:max-w-[550px] mx-auto lg:mx-0">
           <div className="relative aspect-[4/5] bg-gray-100 rounded-lg overflow-hidden shadow">

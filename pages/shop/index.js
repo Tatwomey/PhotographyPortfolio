@@ -37,13 +37,20 @@ export default function Shop({ products }) {
   };
 
   return (
-    <>
+    <div className="bg-white text-black w-full min-h-screen transition-colors duration-300">
       <Head>
         <title>The Shop</title>
         <meta name="description" content="Shop our exclusive products" />
       </Head>
+
       <Hero />
-      <main ref={shopPageRef} className="container mx-auto p-4 pb-20">
+
+      <main
+  id="shop"
+  ref={shopPageRef}
+  className="max-w-7xl mx-auto px-4 py-16 bg-white text-black transition-colors duration-300"
+>
+
         <div className="flex flex-wrap -mx-2">
           {safeProducts.map((product) => (
             <div key={product.id} className="w-full sm:w-1/2 md:w-1/3 px-2 mb-4 product-item">
@@ -56,7 +63,7 @@ export default function Shop({ products }) {
           ))}
         </div>
       </main>
-    </>
+    </div>
   );
 }
 
@@ -127,7 +134,7 @@ export async function getStaticProps() {
       availableForSale: edge.node.availableForSale,
       imageSrc: edge.node.images.edges[0]?.node.src || "/fallback-image.jpg",
       imageAlt: edge.node.images.edges[0]?.node.altText || "Product Image",
-      price: edge.node.variants.edges[0]?.node.priceV2.amount || "0",
+      price: parseFloat(edge.node.variants.edges[0]?.node.priceV2.amount || "0").toFixed(2),
       variantId: edge.node.variants.edges[0]?.node.id || null,
     }));
 

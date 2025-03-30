@@ -6,15 +6,38 @@
 html,
 body {
   scroll-behavior: smooth;
+  transition: background-color 0.3s ease, color 0.3s ease;
   font-family: "Montserrat", sans-serif;
   font-size: 18px;
   margin: 0;
+  padding: 0;
   background-color: black;
   color: white;
   scroll-padding-top: 60px;
-  height: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   cursor: default;
 }
+
+
+
+
+main {
+  background-color: transparent;
+}
+
+
+body.light-mode,
+body.light-mode main,
+body.light-mode section,
+body.light-mode .container,
+body.light-mode .shop-wrapper {
+  background-color: white !important;
+  color: black !important;
+}
+
+
 /* ✅ Quick View Modal Styles */
 .quickview-modal {
   position: fixed;
@@ -397,4 +420,31 @@ h1 {
   width: 100%;
   overflow: hidden;
   border-radius: 8px;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+
+
+#__next {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
 }

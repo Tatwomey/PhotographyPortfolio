@@ -6,7 +6,7 @@ import Head from "next/head";
 import Footer from "@/components/Footer";
 import "@/styles/globals.css";
 import { NavigationProvider } from "@/contexts/NavigationContext";
-import { ShopProvider } from '/contexts/shopContext'; 
+import { ShopProvider } from "/contexts/shopContext";
 import Cart from "@/components/Cart";
 import dynamic from "next/dynamic";
 
@@ -19,7 +19,7 @@ const MyApp = ({ Component, pageProps: { session, ...pageProps } }) => {
   const router = useRouter();
   const [hydrated, setHydrated] = useState(false);
 
-  // Google Analytics Setup
+  // ✅ Google Analytics Setup
   useEffect(() => {
     if (!window.dataLayer) window.dataLayer = [];
 
@@ -39,7 +39,7 @@ const MyApp = ({ Component, pageProps: { session, ...pageProps } }) => {
     }
   }, []);
 
-  // GA pageview tracking on route change
+  // ✅ GA pageview tracking on route change
   useEffect(() => {
     const handleRouteChange = (url) => {
       if (window.gtag) {
@@ -50,10 +50,18 @@ const MyApp = ({ Component, pageProps: { session, ...pageProps } }) => {
     return () => router.events.off("routeChangeComplete", handleRouteChange);
   }, [router.events]);
 
-  // Hydration safety check
+  // ✅ Hydration safety check
   useEffect(() => {
     setHydrated(true);
   }, []);
+
+  // ✅ Scoped light-mode toggle (for /shop, /popup, and their slugs)
+  useEffect(() => {
+    const lightModeRoutes = ['/shop', '/popup'];
+    const isLightMode = lightModeRoutes.some((path) => router.pathname.startsWith(path));
+
+    document.body.classList.toggle('light-mode', isLightMode);
+  }, [router.pathname]);
 
   if (!hydrated) return null;
 
