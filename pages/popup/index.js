@@ -39,20 +39,19 @@ export default function PopupShop({ products }) {
       <main
   id="popup"
   ref={shopPageRef}
-  className="max-w-7xl mx-auto px-4 py-16 bg-white text-black transition-colors duration-300"
+  className="max-w-[1440px] mx-auto px-4 py-16 bg-white text-black transition-colors duration-300"
 >
-
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {safeProducts.map((product) => (
-            <PopupProductCard
-              key={product.id}
-              product={product}
-              onQuickView={() => setQuickViewProduct(product)}
-              onAddToCart={handleAddToCartClick}
-            />
-          ))}
-        </div>
-      </main>
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
+    {safeProducts.map((product) => (
+      <PopupProductCard
+        key={product.id}
+        product={product}
+        onQuickView={() => setQuickViewProduct(product)}
+        onAddToCart={handleAddToCartClick}
+      />
+    ))}
+  </div>
+</main>
 
       {quickViewProduct && (
         <PopupProductQuickView
