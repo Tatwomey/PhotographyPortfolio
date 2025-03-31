@@ -8,7 +8,10 @@ const PopupProductCard = ({ product }) => {
   const { handleAddToCart, loading } = useShopContext();
   const [hovered, setHovered] = useState(false);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
-  const [selectedVariant] = useState(product.variantOptions[0]);
+  const [selectedVariant, setSelectedVariant] = useState(
+    product?.variantOptions?.length ? product.variantOptions[0] : null
+  );
+  
 
   const hasAltImage = !!product.altImageSrc;
 

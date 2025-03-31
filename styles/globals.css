@@ -130,6 +130,33 @@ body.light-mode .shop-wrapper {
   max-height: 100%;
 }
 
+.product-image-wrapper {
+  aspect-ratio: 4 / 5;
+  position: relative;
+  overflow: hidden;
+}
+
+.product-container {
+  aspect-ratio: 4 / 5;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.sold-out-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: red;
+  color: white;
+  font-weight: bold;
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  z-index: 10;
+}
+
 .thumbnail-image {
   width: 80px;
   height: 100px;

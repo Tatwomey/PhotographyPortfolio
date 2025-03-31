@@ -12,22 +12,20 @@ const Product = ({ product, isSoldOut, onAddToCart }) => {
     refreshCart();
   }, [refreshCart]);
 
-  const price = product.price;
-
-  const formattedPrice = price
-    ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(price)
-    : 'Price Not Available';
+  const formattedPrice = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(product.price);
 
   const handleAddToCartClick = async () => {
     if (!cart) {
-      console.error('Cart is still loading or not available. Please wait.');
+      console.error('Cart is not ready');
       return;
     }
 
     setAddingToCart(true);
     try {
       await handleAddToCart(product.variantId, 1);
-      alert('Added to cart!');
     } catch (error) {
       console.error('Error adding to cart:', error);
     }
@@ -35,31 +33,30 @@ const Product = ({ product, isSoldOut, onAddToCart }) => {
   };
 
   return (
-    <div className="relative w-full aspect-[4/5] mb-6">
-      <Link href={`/popup/${product.handle || 'default-slug'}`} legacyBehavior>
-        <a className="block relative w-full h-full bg-gray-100 overflow-hidden rounded-lg shadow hover:shadow-lg">
-          <img
-            src={product.imageSrc || '/fallback-image.jpg'}
-            alt={product.imageAlt || 'Product Image'}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          {isSoldOut && (
-            <div className="absolute top-0 left-0 bg-red-500 text-white p-2 text-sm">
-              Sold out
-            </div>
-          )}
-        </a>
+    <div className="relative w-full bg-white group cursor-pointer">
+      <Link href={`/shop/${product.handle}`} className="block aspect-[4/5] w-full relative overflow-hidden rounded">
+        <img
+          src={product.imageSrc || '/fallback-image.jpg'}
+          alt={product.imageAlt || 'Product Image'}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        {!product.availableForSale && (
+          <div className="absolute top-0 left-0 bg-red-600 text-white px-2 py-1 text-xs font-semibold z-10">
+            Sold Out
+          </div>
+        )}
       </Link>
-      <div className="mt-2 text-center">
-        <h2 className="text-lg font-bold">{product.title}</h2>
-        <p className="text-sm text-gray-700">{product.description}</p>
-        <p className="text-md font-bold">{formattedPrice}</p>
+
+      <div className="mt-2 text-center px-2">
+        <h2 className="text-base font-semibold">{product.title}</h2>
+        <p className="text-sm text-gray-600 mb-1">{formattedPrice}</p>
+
         <button
           onClick={handleAddToCartClick}
-          className={`mt-2 px-4 py-2 text-sm font-bold rounded ${
+          className={`w-full py-2 mt-1 rounded text-sm font-semibold ${
             isSoldOut
-              ? 'bg-gray-300 text-gray-700 cursor-not-allowed'
-              : 'bg-blue-600 text-white hover:bg-blue-700'
+              ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+              : 'bg-black text-white hover:bg-gray-900'
           }`}
           disabled={addingToCart || isSoldOut}
         >

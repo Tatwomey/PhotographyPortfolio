@@ -1,76 +1,99 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { useShopContext } from '/contexts/shopContext';
+import Link from 'next/link';
+import { useShopContext } from '@/contexts/shopContext';
+import ProductQuickView from './ProductQuickView';
 
-const ProductCard = ({ product, onQuickView }) => {
+const ProductCard = ({ product }) => {
+  const { handleAddToCart, loading } = useShopContext();
   const [hovered, setHovered] = useState(false);
-  const [selectedSize, setSelectedSize] = useState(product.variants[0]?.id || '');
-  const { handleAddToCart, loading, cart } = useShopContext();
+  const [quickViewOpen, setQuickViewOpen] = useState(false);
+  const [selectedVariant, setSelectedVariant] = useState(product.variantOptions?.[0]);
 
-  const handleAdd = async () => {
-    if (loading || !cart) return;
-    try {
-      await handleAddToCart(selectedSize, 1);
-    } catch (err) {
-      console.error('Error adding to cart:', err);
+  const hasAltImage = !!product.altImageSrc;
+
+  const handleAdd = (e) => {
+    e.preventDefault();
+    if (selectedVariant?.id) {
+      handleAddToCart(selectedVariant.id, 1);
     }
   };
 
-  return (
-    <div
-      className="relative group overflow-hidden border border-gray-800 bg-white text-black rounded-lg"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      <div className="w-full aspect-[4/5] relative">
-        <Image
-          src={hovered ? product.altImageSrc : product.imageSrc}
-          alt={product.imageAlt}
-          layout="fill"
-          objectFit="cover"
-          className="transition duration-300 ease-in-out"
-          unoptimized
-        />
-        <button
-          onClick={() => onQuickView(product)}
-          className="absolute top-2 right-2 bg-white text-black text-xs px-2 py-1 rounded shadow hover:bg-black hover:text-white transition"
-        >
-          Quick View
-        </button>
-      </div>
+  const handleVariantChange = (e) => {
+    const variant = product.variantOptions.find(v => v.id === e.target.value);
+    setSelectedVariant(variant);
+  };
 
-      <div className="p-4">
-        {!hovered && (
-          <>
-            <h3 className="text-lg font-medium truncate">{product.title}</h3>
-            <p className="text-sm">${parseFloat(product.price).toFixed(2)}</p>
-          </>
-        )}
+  return (
+    <>
+      <div
+        className="relative w-full bg-white group cursor-pointer"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        <Link
+          href={`/shop/${product.handle}`}
+          className="block aspect-[4/5] w-full overflow-hidden relative"
+        >
+          <Image
+            src={hovered && hasAltImage ? product.altImageSrc : product.imageSrc}
+            alt={product.imageAlt || product.title}
+            fill
+            sizes="(max-width: 768px) 100vw, 25vw"
+            className="object-cover rounded-md transition duration-300 ease-in-out"
+            unoptimized
+          />
+        </Link>
+
+        <div className="absolute bottom-2 right-2 bg-black bg-opacity-60 text-white text-right p-2 rounded z-10">
+          <p className="text-sm font-semibold">{product.title}</p>
+          <p className="text-xs">${parseFloat(selectedVariant?.price?.amount || 0).toFixed(2)}</p>
+        </div>
 
         {hovered && (
-          <div className="space-y-2">
+          <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center space-x-2 z-10">
             <select
-              className="w-full border border-gray-300 rounded p-2 text-sm"
-              onChange={(e) => setSelectedSize(e.target.value)}
-              value={selectedSize}
+              onChange={handleVariantChange}
+              value={selectedVariant?.id}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white text-black text-xs px-2 py-1 rounded flex-1"
             >
-              {product.variants.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.title}
-                </option>
+              {product.variantOptions.map((variant) => (
+                <option key={variant.id} value={variant.id}>{variant.title}</option>
               ))}
             </select>
 
             <button
               onClick={handleAdd}
-              className="w-full bg-black text-white text-sm py-2 px-4 rounded hover:bg-gray-900 transition"
+              disabled={loading}
+              className="bg-white text-black text-xs font-semibold px-4 py-1 rounded flex-1"
             >
-              Add to Cart
+              {loading ? 'Adding...' : 'Add to Cart'}
             </button>
           </div>
         )}
+
+        {hovered && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setQuickViewOpen(true);
+            }}
+            className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded z-10"
+          >
+            Quick View
+          </button>
+        )}
       </div>
-    </div>
+
+      {quickViewOpen && (
+        <ProductQuickView
+          product={product}
+          selectedVariant={selectedVariant}
+          onClose={() => setQuickViewOpen(false)}
+        />
+      )}
+    </>
   );
 };
 
