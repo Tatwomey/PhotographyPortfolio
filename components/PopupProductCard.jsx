@@ -1,8 +1,7 @@
-// components/PopupProductCard.jsx
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useShopContext } from '/contexts/shopContext';
+import { useShopContext } from '@/contexts/shopContext';
 import PopupProductQuickView from './PopupProductQuickView';
 
 const PopupProductCard = ({ product }) => {
@@ -28,29 +27,33 @@ const PopupProductCard = ({ product }) => {
   return (
     <>
       <div
-        className="relative w-full aspect-[3/4] bg-gray-100 overflow-hidden group"
+        className="relative w-full bg-white group cursor-pointer"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        <Link href={`/popup/${product.handle}`} passHref>
-          <div className="relative w-full h-full cursor-pointer">
-            <Image
-              src={hovered && hasAltImage ? product.altImageSrc : product.imageSrc}
-              alt={product.imageAlt}
-              layout="fill"
-              objectFit="cover"
-              className="transition-opacity duration-300"
-            />
-          </div>
+        <Link
+          href={`/popup/${product.handle}`}
+          className="block aspect-[4/5] w-full overflow-hidden relative"
+        >
+          <Image
+            src={hovered && hasAltImage ? product.altImageSrc : product.imageSrc}
+            alt={product.imageAlt || product.title}
+            fill
+            sizes="(max-width: 768px) 100vw, 33vw"
+            className="object-cover rounded-md transition duration-300 ease-in-out"
+            unoptimized
+          />
         </Link>
 
-        <div className="absolute bottom-2 right-2 bg-black bg-opacity-60 text-white text-right p-2 rounded">
+        {/* Title & Price Overlay */}
+        <div className="absolute bottom-2 right-2 bg-black bg-opacity-60 text-white text-right p-2 rounded z-10">
           <p className="text-sm font-semibold">{product.title}</p>
           <p className="text-xs">${parseFloat(selectedVariant?.price?.amount || 0).toFixed(2)}</p>
         </div>
 
+        {/* Variant Selector + Add to Cart */}
         {hovered && (
-          <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center space-x-2">
+          <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center space-x-2 z-10">
             <select
               onChange={handleVariantChange}
               value={selectedVariant?.id}
@@ -72,13 +75,14 @@ const PopupProductCard = ({ product }) => {
           </div>
         )}
 
+        {/* Quick View Button */}
         {hovered && (
           <button
             onClick={(e) => {
               e.stopPropagation();
               setQuickViewOpen(true);
             }}
-            className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded"
+            className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded z-10"
           >
             Quick View
           </button>
