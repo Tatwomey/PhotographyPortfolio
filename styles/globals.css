@@ -147,6 +147,10 @@ img {
 }
 
 /* ✅ HERO SECTION */
+.hero-text {
+  font-family: 'Playfair Display', serif;
+}
+
 .hero-wrapper {
   position: relative;
   width: 100%;
