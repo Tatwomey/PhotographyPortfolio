@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import Head from 'next/head';
-import Hero from '@/components/Hero';
+import PopupHero from '@/components/PopupHero';
 import PopupProductCard from '@/components/PopupProductCard';
 import PopupProductQuickView from '@/components/PopupProductQuickView';
 import { useSmoothScroll } from '@/hooks/useSmoothScroll';
@@ -34,7 +34,7 @@ export default function PopupShop({ products }) {
         <meta name="description" content="Shop exclusive popup items" />
       </Head>
 
-      <Hero />
+      <PopupHero />
 
       <main
   id="popup"
