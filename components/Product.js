@@ -1,67 +1,108 @@
-'use client';
-
-import React from 'react';
+import React, { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useShopContext } from '@/contexts/shopContext';
+import PopupProductQuickView from './PopupProductQuickView';
 
-const Product = ({ product, isSoldOut, onAddToCart }) => {
-  const { cart, handleAddToCart, refreshCart } = useShopContext();
-  const [addingToCart, setAddingToCart] = React.useState(false);
+const Product = ({ product, isSoldOut }) => {
+  const { handleAddToCart, loading } = useShopContext();
+  const [hovered, setHovered] = useState(false);
+  const [quickViewOpen, setQuickViewOpen] = useState(false);
+  const [selectedVariant, setSelectedVariant] = useState(product.variantOptions?.[0]);
 
-  React.useEffect(() => {
-    refreshCart();
-  }, [refreshCart]);
+  const hasAltImage = !!product.altImageSrc;
 
-  const formattedPrice = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD'
-  }).format(product.price);
-
-  const handleAddToCartClick = async () => {
-    if (!cart) return console.error('Cart unavailable');
-
-    setAddingToCart(true);
-    try {
-      await handleAddToCart(product.variantId, 1);
-      alert('Added to cart!');
-    } catch (error) {
-      console.error('Error adding to cart:', error);
+  const handleAdd = (e) => {
+    e.preventDefault();
+    if (selectedVariant?.id) {
+      handleAddToCart(selectedVariant.id, 1);
     }
-    setAddingToCart(false);
+  };
+
+  const handleVariantChange = (e) => {
+    const variant = product.variantOptions.find(v => v.id === e.target.value);
+    setSelectedVariant(variant);
   };
 
   return (
-    <div className="relative w-full aspect-[4/5] bg-white rounded overflow-hidden shadow group">
-      <Link href={`/shop/${product.handle || 'default-slug'}`} className="block w-full h-full relative">
-        <img
-          src={product.imageSrc || '/fallback-image.jpg'}
-          alt={product.imageAlt || 'Product Image'}
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+    <>
+      <div
+        className="relative w-full bg-white group cursor-pointer"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        <Link
+          href={`/shop/${product.handle}`}
+          className="block aspect-[4/5] w-full overflow-hidden relative"
+        >
+          <Image
+            src={hovered && hasAltImage ? product.altImageSrc : product.imageSrc}
+            alt={product.imageAlt || product.title}
+            fill
+            sizes="(max-width: 768px) 100vw, 33vw"
+            className="object-cover rounded-md transition duration-300 ease-in-out"
+            unoptimized
+          />
+        </Link>
+
         {isSoldOut && (
-          <div className="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded z-10">
-            Sold out
+          <div className="absolute top-2 left-2 bg-black text-white text-xs font-semibold px-2 py-1 rounded z-10">
+            Sold Out
           </div>
         )}
-      </Link>
 
-      <div className="p-4 text-center">
-        <h2 className="text-md font-semibold">{product.title}</h2>
-        <p className="text-sm text-gray-600">{product.description}</p>
-        <p className="text-base font-bold mt-1">{formattedPrice}</p>
-        <button
-          onClick={handleAddToCartClick}
-          className={`mt-2 px-4 py-2 text-sm font-bold rounded ${
-            isSoldOut
-              ? 'bg-gray-300 text-gray-700 cursor-not-allowed'
-              : 'bg-black text-white hover:bg-gray-900'
-          }`}
-          disabled={addingToCart || isSoldOut}
-        >
-          {addingToCart ? 'Adding...' : isSoldOut ? 'Sold Out' : 'Add to Cart'}
-        </button>
+        {/* Title & Price */}
+        <div className="absolute bottom-2 right-2 bg-black bg-opacity-60 text-white text-right p-2 rounded z-10">
+          <p className="text-sm font-semibold">{product.title}</p>
+          <p className="text-xs">${parseFloat(selectedVariant?.price?.amount || product.price || 0).toFixed(2)}</p>
+        </div>
+
+        {/* Variant Selector + Add to Cart */}
+        {hovered && !isSoldOut && (
+          <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center space-x-2 z-10">
+            <select
+              onChange={handleVariantChange}
+              value={selectedVariant?.id}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white text-black text-xs px-2 py-1 rounded flex-1"
+            >
+              {product.variantOptions?.map((variant) => (
+                <option key={variant.id} value={variant.id}>{variant.title}</option>
+              ))}
+            </select>
+
+            <button
+              onClick={handleAdd}
+              disabled={loading}
+              className="bg-white text-black text-xs font-semibold px-4 py-1 rounded flex-1"
+            >
+              {loading ? 'Adding...' : 'Add to Cart'}
+            </button>
+          </div>
+        )}
+
+        {/* Quick View Button */}
+        {hovered && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setQuickViewOpen(true);
+            }}
+            className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded z-10"
+          >
+            Quick View
+          </button>
+        )}
       </div>
-    </div>
+
+      {quickViewOpen && (
+        <PopupProductQuickView
+          product={product}
+          selectedVariant={selectedVariant}
+          onClose={() => setQuickViewOpen(false)}
+        />
+      )}
+    </>
   );
 };
 
