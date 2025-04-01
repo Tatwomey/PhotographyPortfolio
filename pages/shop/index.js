@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import Head from 'next/head';
 import Hero from '@/components/Hero';
 import Product from '@/components/Product';
+import ProductQuickView from '@/components/ProductQuickView';
 import { useSmoothScroll } from '@/hooks/useSmoothScroll';
 import { useShopContext } from '@/contexts/shopContext';
 
@@ -38,19 +39,28 @@ export default function Shop({ products }) {
       <main
         id="shop"
         ref={shopPageRef}
-        className="max-w-7xl mx-auto px-4 py-16 bg-white text-black transition-colors duration-300"
+        className="max-w-[1440px] mx-auto px-4 py-16 bg-white text-black transition-colors duration-300"
       >
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
           {safeProducts.map((product) => (
             <Product
               key={product.id}
               product={product}
               isSoldOut={!product.availableForSale}
               onAddToCart={() => handleAddToCartClick(product)}
+              onQuickView={() => setQuickViewProduct(product)}
             />
           ))}
         </div>
       </main>
+
+      {quickViewProduct && (
+        <ProductQuickView
+          product={quickViewProduct}
+          onClose={() => setQuickViewProduct(null)}
+          onAddToCart={handleAddToCartClick}
+        />
+      )}
     </div>
   );
 }
@@ -118,6 +128,8 @@ export async function getStaticProps() {
 
     const products = responseJson.data.collectionByHandle.products.edges.map(({ node }) => {
       const variants = node.variants.edges.map((v) => v.node);
+      const firstVariant = variants[0] || {};
+
       return {
         id: node.id,
         title: node.title,
@@ -128,13 +140,14 @@ export async function getStaticProps() {
         altImageSrc: node.images.edges[1]?.node.src || null,
         imageAlt: node.images.edges[0]?.node.altText || "Product Image",
         allImages: node.images.edges.map(edge => edge.node.src),
-        variantId: variants[0]?.id || null,
+        variantId: firstVariant.id || null,
         variantOptions: variants.map((v) => ({
           id: v.id,
           title: v.title,
           price: v.priceV2,
           available: v.availableForSale,
         })),
+        price: parseFloat(firstVariant?.priceV2?.amount || "0").toFixed(2),
       };
     });
 
