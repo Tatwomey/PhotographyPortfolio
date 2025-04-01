@@ -8,11 +8,10 @@ const PopupProductCard = ({ product }) => {
   const { handleAddToCart, loading } = useShopContext();
   const [hovered, setHovered] = useState(false);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
-  const [selectedVariant, setSelectedVariant] = useState(
-    product.variantOptions?.[0] || null
-  );
+  const [selectedVariant, setSelectedVariant] = useState(product.variantOptions?.[0]);
 
   const hasAltImage = !!product.altImageSrc;
+  const isSoldOut = !product.availableForSale;
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -26,7 +25,11 @@ const PopupProductCard = ({ product }) => {
     setSelectedVariant(variant);
   };
 
-  const isSoldOut = !product.availableForSale;
+  const triggerKlaviyoForm = () => {
+    if (window?._klOnsite) {
+      window._klOnsite.push(['openForm', 'RjNi3C']);
+    }
+  };
 
   return (
     <>
@@ -47,21 +50,19 @@ const PopupProductCard = ({ product }) => {
             className="object-cover rounded-md transition duration-300 ease-in-out"
             unoptimized
           />
-
-          {isSoldOut && (
-            <div className="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded z-10">
-              Sold out
-            </div>
-          )}
         </Link>
 
-        {/* Title & Price Overlay */}
+        {isSoldOut && (
+          <div className="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded z-10">
+            Sold out
+          </div>
+        )}
+
         <div className="absolute bottom-2 right-2 bg-black bg-opacity-60 text-white text-right p-2 rounded z-10">
           <p className="text-sm font-semibold">{product.title}</p>
           <p className="text-xs">${parseFloat(selectedVariant?.price?.amount || 0).toFixed(2)}</p>
         </div>
 
-        {/* Variant Selector + Add to Cart */}
         {hovered && !isSoldOut && (
           <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center space-x-2 z-10">
             <select
@@ -85,7 +86,15 @@ const PopupProductCard = ({ product }) => {
           </div>
         )}
 
-        {/* Quick View */}
+        {hovered && isSoldOut && (
+          <button
+            onClick={triggerKlaviyoForm}
+            className="absolute bottom-2 left-2 right-2 text-xs px-4 py-1 rounded bg-gray-200 text-black font-semibold z-10"
+          >
+            Notify Me
+          </button>
+        )}
+
         {hovered && (
           <button
             onClick={(e) => {
