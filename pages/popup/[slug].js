@@ -1,131 +1,10 @@
-import { useState } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
-import { useShopContext } from '@/contexts/shopContext';
-import Hero from '@/components/Hero';
-import { IoChevronBack, IoChevronForward } from 'react-icons/io5';
-
-export default function PopupProductPage({ product }) {
-  const router = useRouter();
-  const { handleAddToCart } = useShopContext();
-
-  const images = product.allImages?.length ? product.allImages : [product.imageSrc];
-  const [currentImageIdx, setCurrentImageIdx] = useState(0);
-  const [selectedVariant, setSelectedVariant] = useState(product.variantOptions[0]);
-
-  const handleBuyNow = async () => {
-    await handleAddToCart(selectedVariant.id, 1);
-    router.push('/checkout');
-  };
-
-  if (router.isFallback || !product) return <div className="text-center py-20">Loading product…</div>;
-
-  return (
-    <>
-      <Hero />
-
-      <section className="bg-white text-black transition-colors duration-300">
-        <div className="container mx-auto px-4 py-12 flex flex-col lg:flex-row gap-10">
-          {/* LEFT: Gallery */}
-          <div className="w-full lg:max-w-[550px] mx-auto lg:mx-0">
-            <div className="relative aspect-[4/5] bg-gray-100 rounded-lg overflow-hidden shadow">
-              <Image
-                src={images[currentImageIdx]}
-                alt={product.title}
-                layout="fill"
-                objectFit="cover"
-                className="rounded-lg"
-              />
-              {images.length > 1 && (
-                <>
-                  <button className="modal-arrow left" onClick={() => setCurrentImageIdx((i) => (i > 0 ? i - 1 : images.length - 1))}>
-                    <IoChevronBack size={24} />
-                  </button>
-                  <button className="modal-arrow right" onClick={() => setCurrentImageIdx((i) => (i < images.length - 1 ? i + 1 : 0))}>
-                    <IoChevronForward size={24} />
-                  </button>
-                </>
-              )}
-            </div>
-            {images.length > 1 && (
-              <div className="flex gap-3 mt-4 overflow-x-auto">
-                {images.map((src, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentImageIdx(idx)}
-                    className={`border rounded-md overflow-hidden ${
-                      currentImageIdx === idx ? 'border-black' : 'border-transparent'
-                    }`}
-                  >
-                    <Image
-                      src={src}
-                      alt={`Thumb ${idx}`}
-                      width={80}
-                      height={100}
-                      className="thumbnail-image"
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* RIGHT: Details */}
-          <div className="w-full lg:max-w-md">
-            <h1 className="text-3xl font-bold mb-2">{product.title}</h1>
-            <p className="text-xl font-semibold mb-2">${parseFloat(selectedVariant.price.amount).toFixed(2)}</p>
-
-            <div className="mb-4">
-              <p className="text-sm text-red-600 font-medium mb-1">Only a few left</p>
-              <p className="text-sm text-gray-600">Ships in 3–5 business days</p>
-            </div>
-
-            <div className="mb-4">
-              <label className="block font-semibold mb-1">Edition / Size</label>
-              <select
-                className="w-full border rounded p-3"
-                value={selectedVariant.id}
-                onChange={(e) =>
-                  setSelectedVariant(product.variantOptions.find(v => v.id === e.target.value))
-                }
-              >
-                {product.variantOptions.map((variant) => (
-                  <option key={variant.id} value={variant.id}>
-                    {variant.title} - ${parseFloat(variant.price.amount).toFixed(2)}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="space-y-3 mb-6">
-              <button
-                className="w-full bg-black text-white py-3 rounded text-lg font-medium"
-                onClick={() => handleAddToCart(selectedVariant.id, 1)}
-              >
-                Add to Cart
-              </button>
-              <button
-                className="w-full bg-yellow-400 text-black py-3 rounded text-lg font-semibold"
-                onClick={handleBuyNow}
-              >
-                Buy It Now
-              </button>
-            </div>
-
-            {product.description && (
-              <div className="border-t pt-4">
-                <h3 className="text-lg font-semibold mb-2">Details</h3>
-                <p className="text-sm leading-relaxed text-gray-800 whitespace-pre-line">
-                  {product.description}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-    </>
-  );
-}
+import { useState, useEffect } from "react";
+import Head from "next/head";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import Hero from "@/components/Hero";
+import { useShopContext } from "@/contexts/shopContext";
+import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 
 export async function getStaticPaths() {
   const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
@@ -145,10 +24,10 @@ export async function getStaticPaths() {
   };
 
   const res = await fetch(endpoint, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': token,
+      "Content-Type": "application/json",
+      "X-Shopify-Storefront-Access-Token": token,
     },
     body: JSON.stringify(query),
   });
@@ -181,6 +60,7 @@ export async function getStaticProps({ params }) {
               node {
                 id
                 title
+                availableForSale
                 priceV2 { amount currencyCode }
               }
             }
@@ -192,10 +72,10 @@ export async function getStaticProps({ params }) {
   };
 
   const res = await fetch(endpoint, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': token,
+      "Content-Type": "application/json",
+      "X-Shopify-Storefront-Access-Token": token,
     },
     body: JSON.stringify(query),
   });
@@ -210,13 +90,172 @@ export async function getStaticProps({ params }) {
     description: node.description,
     imageSrc: node.images.edges[0]?.node.src || "/fallback-image.jpg",
     altImageSrc: node.images.edges[1]?.node.src || null,
-    allImages: node.images.edges.map(edge => edge.node.src),
-    variantOptions: node.variants.edges.map(edge => ({
-      id: edge.node.id,
-      title: edge.node.title,
-      price: edge.node.priceV2,
-    })),
+    allImages: node.images.edges.map((edge) => edge.node.src),
+    variantOptions: node.variants.edges.map((edge) => edge.node),
   };
 
   return { props: { product } };
+}
+
+export default function PopupProductPage({ product }) {
+  const router = useRouter();
+  const { handleAddToCart } = useShopContext();
+
+  const images = product.allImages.length ? product.allImages : [product.imageSrc];
+  const [currentImageIdx, setCurrentImageIdx] = useState(0);
+  const [mainImage, setMainImage] = useState(images[0]);
+  const [selectedVariant, setSelectedVariant] = useState(product.variantOptions[0]);
+
+  useEffect(() => {
+    setMainImage(images[0]);
+    setSelectedVariant(product.variantOptions[0]);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [product]);
+
+  const handleBuyNow = async () => {
+    await handleAddToCart(selectedVariant.id, 1);
+    router.push("/checkout");
+  };
+
+  const handleNotifyClick = () => {
+    if (window._klOnsite) {
+      window._klOnsite.push(["openForm", "RjNi3C"]);
+
+    }
+  };
+
+  if (router.isFallback || !product) return <div className="text-center py-20">Loading product…</div>;
+
+  return (
+    <>
+      <Head>
+        <title>{product.title}</title>
+        <meta name="description" content={product.description} />
+      </Head>
+      <Hero />
+
+      <section className="bg-white text-black px-4 py-12 transition-colors duration-300">
+        <div className="container mx-auto flex flex-col lg:flex-row gap-10">
+          {/* LEFT: Gallery */}
+          <div className="w-full lg:max-w-[550px]">
+            <div className="relative aspect-[4/5] bg-gray-100 rounded-lg overflow-hidden shadow">
+              <Image
+                src={mainImage}
+                alt={product.title}
+                layout="fill"
+                objectFit="cover"
+                className="rounded-lg"
+              />
+              {!selectedVariant.availableForSale && (
+                <div className="absolute top-0 left-0 bg-red-600 text-white text-sm font-bold px-3 py-1">
+                  Sold Out
+                </div>
+              )}
+              {images.length > 1 && (
+                <>
+                  <button
+                    className="modal-arrow left"
+                    onClick={() => setCurrentImageIdx((i) => (i > 0 ? i - 1 : images.length - 1))}
+                  >
+                    <IoChevronBack size={24} />
+                  </button>
+                  <button
+                    className="modal-arrow right"
+                    onClick={() => setCurrentImageIdx((i) => (i < images.length - 1 ? i + 1 : 0))}
+                  >
+                    <IoChevronForward size={24} />
+                  </button>
+                </>
+              )}
+            </div>
+
+            {images.length > 1 && (
+              <div className="flex gap-3 mt-4 overflow-x-auto">
+                {images.map((src, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      setMainImage(src);
+                      setCurrentImageIdx(idx);
+                    }}
+                    className={`border rounded-md overflow-hidden ${
+                      currentImageIdx === idx ? "border-black" : "border-transparent"
+                    }`}
+                  >
+                    <Image
+                      src={src}
+                      alt={`Thumb ${idx}`}
+                      width={80}
+                      height={100}
+                      className="thumbnail-image"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT: Details */}
+          <div className="w-full lg:max-w-md">
+            <h1 className="text-3xl font-bold mb-2">{product.title}</h1>
+            <p className="text-xl font-semibold mb-4">
+              ${parseFloat(selectedVariant.priceV2.amount).toFixed(2)}
+            </p>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Edition / Size</label>
+              <select
+                value={selectedVariant.id}
+                onChange={(e) =>
+                  setSelectedVariant(product.variantOptions.find((v) => v.id === e.target.value))
+                }
+                className="w-full border rounded p-2"
+              >
+                {product.variantOptions.map((variant) => (
+                  <option key={variant.id} value={variant.id}>
+                    {variant.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-3 mb-6">
+              {selectedVariant.availableForSale ? (
+                <>
+                  <button
+                    onClick={() => handleAddToCart(selectedVariant.id, 1)}
+                    className="w-full bg-black text-white py-3 rounded text-lg font-medium"
+                  >
+                    Add to Cart
+                  </button>
+                  <button
+                    onClick={handleBuyNow}
+                    className="w-full bg-yellow-400 text-black py-3 rounded text-lg font-semibold"
+                  >
+                    Buy It Now
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={handleNotifyClick}
+                  className="w-full border border-black py-3 rounded text-lg font-semibold hover:bg-gray-100"
+                >
+                  Notify Me When Back in Stock
+                </button>
+              )}
+            </div>
+
+            {product.description && (
+              <div className="border-t pt-4">
+                <h3 className="text-lg font-semibold mb-2">Details</h3>
+                <p className="text-sm leading-relaxed text-gray-800 whitespace-pre-line">
+                  {product.description}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    </>
+  );
 }

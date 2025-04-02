@@ -1,10 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Head from "next/head";
-import Hero from "@/components/Hero";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useShopContext } from "/contexts/shopContext";
-import { fetchCart } from "@/lib/shopify";
+import Hero from "@/components/Hero";
+import { useShopContext } from "@/contexts/shopContext";
 
 export async function getStaticPaths() {
   const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
@@ -24,30 +23,21 @@ export async function getStaticPaths() {
     `,
   };
 
-  try {
-    const res = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": token,
-      },
-      body: JSON.stringify(graphqlQuery),
-    });
+  const res = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Shopify-Storefront-Access-Token": token,
+    },
+    body: JSON.stringify(graphqlQuery),
+  });
 
-    if (!res.ok) {
-      throw new Error(`HTTP error! Status: ${res.status}`);
-    }
+  const responseJson = await res.json();
+  const paths = responseJson.data.products.edges.map(({ node }) => ({
+    params: { slug: node.handle },
+  }));
 
-    const responseJson = await res.json();
-    const paths = responseJson.data.products.edges.map((edge) => ({
-      params: { slug: edge.node.handle },
-    }));
-
-    return { paths, fallback: "blocking" };
-  } catch (error) {
-    console.error("Failed to fetch product paths:", error);
-    return { paths: [], fallback: "blocking" };
-  }
+  return { paths, fallback: "blocking" };
 }
 
 export async function getStaticProps({ params }) {
@@ -70,26 +60,13 @@ export async function getStaticProps({ params }) {
               }
             }
           }
-          priceRange {
-            minVariantPrice {
-              amount
-              currencyCode
-            }
-          }
           variants(first: 10) {
             edges {
               node {
                 id
                 title
-                priceV2 {
-                  amount
-                  currencyCode
-                }
+                priceV2 { amount currencyCode }
                 availableForSale
-                selectedOptions {
-                  name
-                  value
-                }
               }
             }
           }
@@ -98,106 +75,50 @@ export async function getStaticProps({ params }) {
     variables: { handle: params.slug },
   };
 
-  try {
-    const res = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": token,
-      },
-      body: JSON.stringify(graphqlQuery),
-    });
+  const res = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Shopify-Storefront-Access-Token": token,
+    },
+    body: JSON.stringify(graphqlQuery),
+  });
 
-    if (!res.ok) {
-      throw new Error(`HTTP error! Status: ${res.status}`);
-    }
+  const responseJson = await res.json();
+  const node = responseJson.data.productByHandle;
 
-    const responseJson = await res.json();
-    if (!responseJson || !responseJson.data || !responseJson.data.productByHandle) {
-      throw new Error("Product data is not available in the response");
-    }
+  const product = {
+    ...node,
+    images: node.images.edges.map((e) => e.node),
+    variants: node.variants.edges.map((e) => e.node),
+  };
 
-    const product = responseJson.data.productByHandle;
-    return { props: { product } };
-  } catch (error) {
-    console.error("Error fetching product:", error);
-    return { notFound: true };
-  }
+  return { props: { product } };
 }
 
-const ProductPage = ({ product }) => {
+export default function ShopSlug({ product }) {
   const router = useRouter();
-  const { handleAddToCart, cartLoading, cart, refreshCart } = useShopContext();
-  const [addingToCart, setAddingToCart] = useState(false);
-  const productRef = useRef(null);
+  const { handleAddToCart } = useShopContext();
 
-  const mainImageSrc = product.images.edges && product.images.edges[0]?.node.src ? product.images.edges[0].node.src : "/fallback-image.jpg";
-  const [mainImage, setMainImage] = useState(mainImageSrc);
-  const selectedVariant = product.variants.edges && product.variants.edges[0]?.node ? product.variants.edges[0].node : null;
+  const [selectedVariant, setSelectedVariant] = useState(product.variants[0]);
+  const [mainImage, setMainImage] = useState(product.images[0]?.src);
+  const [currentImageIdx, setCurrentImageIdx] = useState(0);
 
   useEffect(() => {
-    if (productRef.current) {
-      window.scrollTo({
-        top: productRef.current.getBoundingClientRect().top + window.scrollY,
-        behavior: "smooth",
-      });
-    }
-  }, [product]);
-
-  useEffect(() => {
-    refreshCart();
-  }, [refreshCart]);
-
-  const handleThumbnailClick = (imageSrc) => {
-    setMainImage(imageSrc);
-  };
-
-  const handleAddToCartClick = async () => {
-    if (cartLoading || !cart) {
-      console.error('Cart is still loading or not available. Please wait.');
-      return;
-    }
-
-    setAddingToCart(true);
-    try {
-      const variantId = selectedVariant.id;
-      await handleAddToCart(variantId, 1);
-      alert("Added to cart!");
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-    }
-    setAddingToCart(false);
-  };
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   const handleBuyNow = async () => {
-    if (cartLoading || !cart) {
-      console.error('Cart is still loading or not available. Please wait.');
-      return;
-    }
-
-    setAddingToCart(true);
-    try {
-      const variantId = selectedVariant.id;
-      await handleAddToCart(variantId, 1);
-
-      const localCartId = window.localStorage.getItem('shopify_cart_id');
-      if (localCartId) {
-        const updatedCart = await fetchCart(localCartId);
-        if (updatedCart.checkoutUrl) {
-          window.location.href = updatedCart.checkoutUrl;
-        } else {
-          console.error('Checkout URL not found in cart:', updatedCart);
-        }
-      }
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-    }
-    setAddingToCart(false);
+    await handleAddToCart(selectedVariant.id, 1);
+    router.push("/checkout");
   };
 
-  if (router.isFallback || !product) {
-    return <div>Loading...</div>;
-  }
+  const handleNotifyClick = () => {
+    if (window._klOnsite) {
+      window._klOnsite.push(["openForm", "RjNi3C"]);
+
+    }
+  };
 
   return (
     <>
@@ -206,101 +127,117 @@ const ProductPage = ({ product }) => {
         <meta name="description" content={product.description} />
       </Head>
       <Hero />
-      <main ref={productRef} className="container mx-auto p-4 md:p-8 pb-20 bg-white text-black transition-colors duration-300">
 
-        <div className="bg-white p-4 md:p-8 rounded-lg shadow-md flex flex-col md:flex-row gap-8">
-          <div className="md:w-1/2 flex flex-col items-center space-y-4">
-            <div className="relative w-full h-80 md:h-[600px]">
+      <main className="bg-white text-black px-4 py-12 container mx-auto">
+        <div className="flex flex-col lg:flex-row gap-10">
+          {/* Left: Gallery */}
+          <div className="w-full lg:max-w-[550px]">
+            <div className="relative aspect-[4/5] bg-gray-100 rounded overflow-hidden shadow">
               <Image
                 src={mainImage}
-                alt="Main Product Image"
+                alt={product.title}
                 layout="fill"
-                objectFit="contain"
-                className="rounded-lg"
-                unoptimized
+                objectFit="cover"
+                className="rounded"
               />
               {!selectedVariant.availableForSale && (
-                <div className="absolute top-0 left-0 bg-red-500 text-white p-2">
+                <div className="absolute top-0 left-0 bg-red-600 text-white text-sm font-bold px-3 py-1">
                   Sold Out
                 </div>
               )}
             </div>
-            <div className="flex space-x-2 md:space-x-4 overflow-x-auto">
-              {product.images.edges.map((image, index) => (
-                <div
-                  key={index}
-                  className="relative w-16 h-16 md:w-24 md:h-24 cursor-pointer border border-gray-200 rounded-lg overflow-hidden"
-                  onClick={() => handleThumbnailClick(image.node.src)}
-                >
-                  <Image
-                    src={image.node.src || "/fallback-image.jpg"}
-                    alt={image.node.altText || "Product Thumbnail"}
-                    layout="fill"
-                    objectFit="cover"
-                    className="rounded-lg"
-                    unoptimized
-                  />
-                </div>
-              ))}
-            </div>
+
+            {/* Thumbnails */}
+            {product.images.length > 1 && (
+              <div className="flex gap-3 mt-4 overflow-x-auto">
+                {product.images.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      setMainImage(img.src);
+                      setCurrentImageIdx(idx);
+                    }}
+                    className={`border rounded-md overflow-hidden ${
+                      currentImageIdx === idx ? "border-black" : "border-transparent"
+                    }`}
+                  >
+                    <Image
+                      src={img.src}
+                      alt={`Thumb ${idx}`}
+                      width={80}
+                      height={100}
+                      className="thumbnail-image"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-          <div className="md:w-1/2 flex flex-col justify-start items-start text-black space-y-4">
-            <h1 className="text-2xl md:text-4xl font-bold">{product.title}</h1>
-            <p className="text-md md:text-lg">{product.description}</p>
-            <p className="text-xl md:text-2xl font-bold">
-              {parseFloat(selectedVariant.priceV2.amount).toFixed(2)}{" "}
-              {selectedVariant.priceV2.currencyCode}
+
+          {/* Right: Info */}
+          <div className="w-full lg:max-w-md">
+            <h1 className="text-3xl font-bold mb-2">{product.title}</h1>
+            <p className="text-xl font-semibold mb-4">
+              ${parseFloat(selectedVariant.priceV2.amount).toFixed(2)}
             </p>
-            <div className="w-full">
-              <label htmlFor="variant" className="block mb-1 font-medium">
-                Size
-              </label>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Select Size</label>
               <select
-                id="variant"
-                name="variant"
-                className="w-full border rounded p-2"
-                onChange={(e) => {
-                  const variant = product.variants.edges.find(
-                    (v) => v.node.id === e.target.value
-                  );
-                  setSelectedVariant(variant.node);
-                }}
                 value={selectedVariant.id}
+                onChange={(e) =>
+                  setSelectedVariant(
+                    product.variants.find((v) => v.id === e.target.value)
+                  )
+                }
+                className="w-full border rounded p-2"
               >
-                {product.variants.edges.map((variant) => (
-                  <option key={variant.node.id} value={variant.node.id}>
-                    {(variant.node.selectedOptions &&
-                      variant.node.selectedOptions.find(
-                        (option) => option.name === "Size"
-                      )?.value) ||
-                      "Default"}
+                {product.variants.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.title}
                   </option>
                 ))}
               </select>
             </div>
-            <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4 w-full">
-              {selectedVariant.availableForSale && (
+
+            {/* Buttons */}
+            <div className="space-y-3 mb-6">
+              {selectedVariant.availableForSale ? (
+                <>
+                  <button
+                    onClick={() => handleAddToCart(selectedVariant.id, 1)}
+                    className="w-full bg-black text-white py-3 rounded text-lg font-medium"
+                  >
+                    Add to Cart
+                  </button>
+                  <button
+                    onClick={handleBuyNow}
+                    className="w-full bg-yellow-400 text-black py-3 rounded text-lg font-semibold"
+                  >
+                    Buy It Now
+                  </button>
+                </>
+              ) : (
                 <button
-                  onClick={handleAddToCartClick}
-                  disabled={addingToCart}
-                  className="w-full md:w-auto bg-white text-black border border-black font-bold py-2 px-4 rounded"
+                  onClick={handleNotifyClick}
+                  className="w-full border border-black py-3 rounded text-lg font-semibold hover:bg-gray-100"
                 >
-                  {addingToCart ? "Adding..." : "Add to Cart"}
+                  Notify Me When Back in Stock
                 </button>
               )}
-              <button
-                onClick={handleBuyNow}
-                disabled={!selectedVariant.availableForSale}
-                className={`w-full md:w-auto font-bold py-2 px-4 rounded ${selectedVariant.availableForSale ? "bg-black text-white" : "bg-gray-400 text-gray-200"}`}
-              >
-                {selectedVariant.availableForSale ? "Buy it Now" : "Sold Out"}
-              </button>
             </div>
+
+            {product.description && (
+              <div className="border-t pt-4">
+                <h3 className="text-lg font-semibold mb-2">Details</h3>
+                <p className="text-sm leading-relaxed text-gray-800 whitespace-pre-line">
+                  {product.description}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </main>
     </>
   );
-};
-
-export default ProductPage;
+}
