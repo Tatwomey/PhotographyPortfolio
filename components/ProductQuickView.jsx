@@ -15,13 +15,26 @@ const ProductQuickView = ({ product, selectedVariant: initialVariant, onClose, o
 
   const handleBackgroundClick = (e) => {
     if (e.target.id === 'quick-view-backdrop') {
-      onClose();
+      closeQuickView();
     }
+  };
+
+  const closeQuickView = () => {
+    document.body.classList.remove('form-open');
+    onClose();
   };
 
   const handleVariantChange = (e) => {
     const variant = product.variantOptions.find((v) => v.id === e.target.value);
     setSelectedVariant(variant);
+  };
+
+  const handleNotifyMeClick = () => {
+    if (typeof window !== 'undefined') {
+      window._klOnsite = window._klOnsite || [];
+      window._klOnsite.push(['openForm', 'RjNi3C']);
+      document.body.classList.add('form-open');
+    }
   };
 
   const price = selectedVariant?.price?.amount;
@@ -35,6 +48,7 @@ const ProductQuickView = ({ product, selectedVariant: initialVariant, onClose, o
       onClick={handleBackgroundClick}
     >
       <div className="bg-white text-black max-w-4xl w-full rounded-lg shadow-lg overflow-hidden flex flex-col md:flex-row">
+        {/* LEFT: Image */}
         <div className="md:w-1/2 relative h-96 md:h-auto">
           <Image
             src={mainImage}
@@ -46,11 +60,13 @@ const ProductQuickView = ({ product, selectedVariant: initialVariant, onClose, o
           />
         </div>
 
+        {/* RIGHT: Info */}
         <div className="md:w-1/2 p-6 flex flex-col justify-between">
           <div>
             <h2 className="text-2xl font-bold mb-2">{product.title}</h2>
             <p className="text-lg font-semibold mb-4">{formattedPrice}</p>
 
+            {/* Variant Selector */}
             <div className="mb-4">
               <label htmlFor="variant-select" className="block text-sm font-medium mb-1">
                 Select Size
@@ -73,13 +89,8 @@ const ProductQuickView = ({ product, selectedVariant: initialVariant, onClose, o
           <div className="flex flex-col gap-3 mt-4">
             {isSoldOut ? (
               <button
-                onClick={() => {
-                  if (typeof window !== 'undefined') {
-                    window._klOnsite = window._klOnsite || [];
-                    window._klOnsite.push(['openForm', 'RjNi3C']);
-                  }
-                }}
-                className="w-full bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+                onClick={handleNotifyMeClick}
+                className="w-full bg-black text-white px-4 py-2 rounded hover:bg-gray-800 native-notify-button"
               >
                 Notify Me When Available
               </button>
@@ -91,8 +102,9 @@ const ProductQuickView = ({ product, selectedVariant: initialVariant, onClose, o
                 Add to Cart
               </button>
             )}
+
             <button
-              onClick={onClose}
+              onClick={closeQuickView}
               className="w-full border border-black px-4 py-2 rounded hover:bg-gray-100"
             >
               Close

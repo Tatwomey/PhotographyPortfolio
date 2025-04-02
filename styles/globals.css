@@ -499,3 +499,27 @@ h1 {
 main {
   flex: 1;
 }
+/* Backdrop overlay for Klaviyo popup */
+.klaviyo-form-overlay {
+  backdrop-filter: blur(6px);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Cleanup popup spacing for mobile */
+.klaviyo-form {
+  max-width: 95vw;
+  margin: 5vh auto;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Optional: reduce the "Created with Klaviyo" branding size */
+.klaviyo-badge {
+  font-size: 10px !important;
+  opacity: 0.5;
+}
+/* Hide native Notify buttons when form is open */
+.form-open .native-notify-button {
+  display: none !important;
+}
