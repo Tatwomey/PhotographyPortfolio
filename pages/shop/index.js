@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import Head from 'next/head';
 import Hero from '@/components/Hero';
-import Product from '@/components/Product';
+import ProductCard from '@/components/ProductCard';
 import ProductQuickView from '@/components/ProductQuickView';
 import { useSmoothScroll } from '@/hooks/useSmoothScroll';
 import { useShopContext } from '@/contexts/shopContext';
@@ -43,13 +43,13 @@ export default function Shop({ products }) {
       >
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
           {safeProducts.map((product) => (
-            <Product
-              key={product.id}
-              product={product}
-              isSoldOut={!product.availableForSale}
-              onAddToCart={() => handleAddToCartClick(product)}
-              onQuickView={() => setQuickViewProduct(product)}
-            />
+         <ProductCard
+  key={product.id}
+  product={product}
+  isSoldOut={!product.availableForSale}
+  onAddToCart={() => handleAddToCartClick(product)}
+/>
+
           ))}
         </div>
       </main>

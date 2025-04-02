@@ -1,3 +1,4 @@
+// components/ProductCard.jsx
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -11,6 +12,7 @@ const ProductCard = ({ product }) => {
   const [selectedVariant, setSelectedVariant] = useState(product.variantOptions?.[0]);
 
   const hasAltImage = !!product.altImageSrc;
+  const isSoldOut = !product.availableForSale;
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -20,7 +22,7 @@ const ProductCard = ({ product }) => {
   };
 
   const handleVariantChange = (e) => {
-    const variant = product.variantOptions.find(v => v.id === e.target.value);
+    const variant = product.variantOptions.find((v) => v.id === e.target.value);
     setSelectedVariant(variant);
   };
 
@@ -45,12 +47,23 @@ const ProductCard = ({ product }) => {
           />
         </Link>
 
+        {/* Sold Out Badge */}
+        {isSoldOut && (
+          <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded z-10">
+            Sold Out
+          </div>
+        )}
+
+        {/* Title & Price */}
         <div className="absolute bottom-2 right-2 bg-black bg-opacity-60 text-white text-right p-2 rounded z-10">
           <p className="text-sm font-semibold">{product.title}</p>
-          <p className="text-xs">${parseFloat(selectedVariant?.price?.amount || 0).toFixed(2)}</p>
+          <p className="text-xs">
+            ${parseFloat(selectedVariant?.price?.amount || 0).toFixed(2)}
+          </p>
         </div>
 
-        {hovered && (
+        {/* Variant Selector + Add to Cart */}
+        {hovered && !isSoldOut && (
           <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center space-x-2 z-10">
             <select
               onChange={handleVariantChange}
@@ -59,7 +72,9 @@ const ProductCard = ({ product }) => {
               className="bg-white text-black text-xs px-2 py-1 rounded flex-1"
             >
               {product.variantOptions.map((variant) => (
-                <option key={variant.id} value={variant.id}>{variant.title}</option>
+                <option key={variant.id} value={variant.id}>
+                  {variant.title}
+                </option>
               ))}
             </select>
 
@@ -73,6 +88,7 @@ const ProductCard = ({ product }) => {
           </div>
         )}
 
+        {/* Quick View */}
         {hovered && (
           <button
             onClick={(e) => {

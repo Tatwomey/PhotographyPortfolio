@@ -8,11 +8,10 @@ const PopupProductCard = ({ product }) => {
   const { handleAddToCart, loading } = useShopContext();
   const [hovered, setHovered] = useState(false);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
-  const [selectedVariant, setSelectedVariant] = useState(
-    product.variantOptions?.[0] || null
-  );
+  const [selectedVariant, setSelectedVariant] = useState(product.variantOptions?.[0]);
 
   const hasAltImage = !!product.altImageSrc;
+  const isSoldOut = !product.availableForSale;
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -26,8 +25,6 @@ const PopupProductCard = ({ product }) => {
     setSelectedVariant(variant);
   };
 
-  const isSoldOut = !product.availableForSale;
-
   return (
     <>
       <div
@@ -35,6 +32,13 @@ const PopupProductCard = ({ product }) => {
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
+        {/* Sold Out Badge */}
+        {isSoldOut && (
+          <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded z-20">
+            Sold out
+          </div>
+        )}
+
         <Link
           href={`/popup/${product.handle}`}
           className="block aspect-[4/5] w-full overflow-hidden relative"
@@ -47,22 +51,16 @@ const PopupProductCard = ({ product }) => {
             className="object-cover rounded-md transition duration-300 ease-in-out"
             unoptimized
           />
-
-          {isSoldOut && (
-            <div className="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded z-10">
-              Sold out
-            </div>
-          )}
         </Link>
 
-        {/* Title & Price Overlay */}
+        {/* Title & Price */}
         <div className="absolute bottom-2 right-2 bg-black bg-opacity-60 text-white text-right p-2 rounded z-10">
           <p className="text-sm font-semibold">{product.title}</p>
           <p className="text-xs">${parseFloat(selectedVariant?.price?.amount || 0).toFixed(2)}</p>
         </div>
 
         {/* Variant Selector + Add to Cart */}
-        {hovered && !isSoldOut && (
+        {!isSoldOut && hovered && (
           <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center space-x-2 z-10">
             <select
               onChange={handleVariantChange}
@@ -71,7 +69,9 @@ const PopupProductCard = ({ product }) => {
               className="bg-white text-black text-xs px-2 py-1 rounded flex-1"
             >
               {product.variantOptions.map((variant) => (
-                <option key={variant.id} value={variant.id}>{variant.title}</option>
+                <option key={variant.id} value={variant.id}>
+                  {variant.title}
+                </option>
               ))}
             </select>
 
@@ -99,6 +99,7 @@ const PopupProductCard = ({ product }) => {
         )}
       </div>
 
+      {/* Modal */}
       {quickViewOpen && (
         <PopupProductQuickView
           product={product}

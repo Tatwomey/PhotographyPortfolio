@@ -19,6 +19,17 @@ const MyApp = ({ Component, pageProps: { session, ...pageProps } }) => {
   const router = useRouter();
   const [hydrated, setHydrated] = useState(false);
 
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = `https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=${process.env.NEXT_PUBLIC_KLAVIYO_API_KEY}`;
+    script.async = true;
+    document.body.appendChild(script);
+  
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+  
   // ✅ Google Analytics Setup
   useEffect(() => {
     if (!window.dataLayer) window.dataLayer = [];
