@@ -116,7 +116,6 @@ export default function ShopSlug({ product }) {
   const handleNotifyClick = () => {
     if (window._klOnsite) {
       window._klOnsite.push(["openForm", "RjNi3C"]);
-
     }
   };
 
@@ -147,7 +146,6 @@ export default function ShopSlug({ product }) {
               )}
             </div>
 
-            {/* Thumbnails */}
             {product.images.length > 1 && (
               <div className="flex gap-3 mt-4 overflow-x-auto">
                 {product.images.map((img, idx) => (
@@ -177,6 +175,11 @@ export default function ShopSlug({ product }) {
           {/* Right: Info */}
           <div className="w-full lg:max-w-md">
             <h1 className="text-3xl font-bold mb-2">{product.title}</h1>
+
+            {product.description && (
+              <p className="text-sm italic text-gray-600 mb-4">{product.description}</p>
+            )}
+
             <p className="text-xl font-semibold mb-4">
               ${parseFloat(selectedVariant.priceV2.amount).toFixed(2)}
             </p>
@@ -200,7 +203,6 @@ export default function ShopSlug({ product }) {
               </select>
             </div>
 
-            {/* Buttons */}
             <div className="space-y-3 mb-6">
               {selectedVariant.availableForSale ? (
                 <>
@@ -227,14 +229,31 @@ export default function ShopSlug({ product }) {
               )}
             </div>
 
-            {product.description && (
-              <div className="border-t pt-4">
-                <h3 className="text-lg font-semibold mb-2">Details</h3>
-                <p className="text-sm leading-relaxed text-gray-800 whitespace-pre-line">
-                  {product.description}
-                </p>
-              </div>
-            )}
+            <div className="border-t pt-4">
+              <h3 className="text-lg font-semibold mb-2">Details</h3>
+              <ul className="grid grid-cols-1 gap-2 text-sm text-gray-800 leading-relaxed list-inside">
+                <li className="flex items-start">
+                  <span className="text-black mt-1">•</span>
+                  <span className="ml-2">Printed on museum-grade archival Hahnemühle Baryta paper</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-black mt-1">•</span>
+                  <span className="ml-2">Each print is hand-signed, hand-numbered, and embossed for authenticity</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-black mt-1">•</span>
+                  <span className="ml-2">Sourced from the original RAW file — ultra high-resolution fidelity</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-black mt-1">•</span>
+                  <span className="ml-2">Limited to only 10 editions per image</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-black mt-1">•</span>
+                  <span className="ml-2">Print size: 16 x 20 inches</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </main>
