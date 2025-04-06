@@ -20,10 +20,21 @@ const PopupProductCard = ({ product }) => {
     }
   };
 
-  const handleVariantChange = (e) => {
-    const variant = product.variantOptions.find(v => v.id === e.target.value);
+  const handleVariantChange = (variantId) => {
+    const variant = product.variantOptions.find((v) => v.id === variantId);
     setSelectedVariant(variant);
   };
+
+  // Safely extract unique color values from selectedOptions
+  const colorOptions = product.variantOptions
+    .map((v) => {
+      if (!v?.selectedOptions) return null;
+      const match = v.selectedOptions.find((opt) => opt.name === "Color");
+      return match?.value || null;
+    })
+    .filter(Boolean);
+
+  const uniqueColors = [...new Set(colorOptions)];
 
   return (
     <>
@@ -59,11 +70,40 @@ const PopupProductCard = ({ product }) => {
           <p className="text-xs">${parseFloat(selectedVariant?.price?.amount || 0).toFixed(2)}</p>
         </div>
 
+        {/* Swatch Selectors */}
+        {uniqueColors.length > 1 && (
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+            {product.variantOptions.map((variant) => {
+              const colorObj = variant.selectedOptions?.find((opt) => opt.name === 'Color');
+              if (!colorObj) return null;
+              return (
+                <button
+                  key={variant.id}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    handleVariantChange(variant.id);
+                  }}
+                  className={`w-4 h-4 rounded-full border-2 ${
+                    selectedVariant?.id === variant.id ? 'border-black' : 'border-gray-300'
+                  }`}
+                  style={{
+                    backgroundColor:
+                      colorObj.value === 'Monochrome' ? '#000' :
+                      colorObj.value === 'Regular' ? '#ccc' :
+                      '#eee',
+                  }}
+                />
+              );
+            })}
+          </div>
+        )}
+
         {/* Variant Selector + Add to Cart */}
         {!isSoldOut && hovered && (
           <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center space-x-2 z-10">
             <select
-              onChange={handleVariantChange}
+              onChange={(e) => handleVariantChange(e.target.value)}
               value={selectedVariant?.id}
               onClick={(e) => e.stopPropagation()}
               className="bg-white text-black text-xs px-2 py-1 rounded flex-1"
