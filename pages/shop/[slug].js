@@ -100,7 +100,10 @@ export default function ShopSlug({ product }) {
   const router = useRouter();
   const { handleAddToCart } = useShopContext();
 
-  const [selectedVariant, setSelectedVariant] = useState(product.variants[0]);
+  const [selectedVariant, setSelectedVariant] = useState(
+    product.variants.find(v => v.title.toLowerCase().includes("regular")) || product.variants[0]
+  );
+  
   const [mainImage, setMainImage] = useState(product.images[0]?.src);
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
 

@@ -1,130 +1,157 @@
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useShopContext } from '@/contexts/shopContext';
-import { IoChevronForward, IoChevronBack, IoClose } from 'react-icons/io5';
-import { useRouter } from 'next/router';
 
-export default function PopupProductQuickView({ product, onClose }) {
+const PopupProductQuickView = ({ product, selectedVariant, onClose }) => {
   const { handleAddToCart } = useShopContext();
-  const router = useRouter();
+  const [mainImage, setMainImage] = useState(selectedVariant?.image?.src || product.imageSrc);
+  const [variant, setVariant] = useState(selectedVariant || product.variantOptions[0]);
 
-  const images = product.allImages?.length ? product.allImages : [product.imageSrc];
-  const [currentImageIdx, setCurrentImageIdx] = useState(0);
-  const [selectedVariant, setSelectedVariant] = useState(product.variantOptions[0]);
+  useEffect(() => {
+    if (selectedVariant?.image?.src) {
+      setMainImage(selectedVariant.image.src);
+      setVariant(selectedVariant);
+    }
+  }, [selectedVariant]);
 
-  const prevImage = () => {
-    setCurrentImageIdx((idx) => (idx > 0 ? idx - 1 : images.length - 1));
+  const handleVariantChange = (variantId) => {
+    const newVariant = product.variantOptions.find((v) => v.id === variantId);
+    if (newVariant) {
+      setVariant(newVariant);
+      setMainImage(newVariant.image?.src || product.imageSrc);
+    }
   };
 
-  const nextImage = () => {
-    setCurrentImageIdx((idx) => (idx < images.length - 1 ? idx + 1 : 0));
-  };
-
-  const handleBuyNow = async () => {
-    await handleAddToCart(selectedVariant.id, 1);
-    router.push('/checkout');
+  const getColorSwatches = () => {
+    const seen = new Set();
+    return product.variantOptions.filter((v) => {
+      const color = v.selectedOptions?.find((opt) => opt.name === 'Color')?.value;
+      if (!color || seen.has(color)) return false;
+      seen.add(color);
+      return true;
+    });
   };
 
   return (
-    <div className="quickview-modal">
-      <div className="quickview-modal-content">
-        <button className="quickview-close-btn" onClick={onClose}>
-          <IoClose />
+    <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center p-4">
+      <div className="bg-white max-w-4xl w-full rounded-lg shadow-lg relative p-6 text-black">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-black hover:text-gray-600 text-xl font-bold"
+        >
+          ×
         </button>
 
-        {/* Left Column: Main Image + Thumbnails + Arrows */}
-        <div className="quickview-image-section relative flex flex-col items-center">
-          {/* Arrows */}
-          {images.length > 1 && (
-            <>
-              <button className="modal-arrow left" onClick={prevImage}>
-                <IoChevronBack size={24} />
-              </button>
-              <button className="modal-arrow right" onClick={nextImage}>
-                <IoChevronForward size={24} />
-              </button>
-            </>
-          )}
-
-          {/* Main Image */}
-          <div className="relative">
-            <Image
-              src={images[currentImageIdx]}
-              alt={product.title}
-              width={800}
-              height={1000}
-              className="object-cover rounded-lg product-main-image"
-            />
-          </div>
-
-          {/* Thumbnails */}
-          <div className="flex gap-2 mt-4 overflow-x-auto">
-            {images.map((src, idx) => (
-              <button
-                key={idx}
-                onClick={() => setCurrentImageIdx(idx)}
-                className={`outline-none rounded-md overflow-hidden border ${
-                  currentImageIdx === idx ? 'border-black' : 'border-transparent'
-                }`}
-              >
-                <Image
-                  src={src}
-                  alt={`Thumbnail ${idx}`}
-                  width={80}
-                  height={100}
-                  className="thumbnail-image rounded object-cover"
-                />
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Right Column: Product Info */}
-        <div className="quickview-details-section">
-          <h2 className="text-2xl font-bold text-black mb-2">{product.title}</h2>
-          <p className="text-xl text-gray-700 font-semibold mb-4">
-            ${parseFloat(selectedVariant.price.amount).toFixed(2)}
-          </p>
-
-          <label className="block font-semibold mb-1 text-black">Edition / Size</label>
-          <select
-            className="w-full border rounded p-3 mb-4"
-            value={selectedVariant.id}
-            onChange={(e) =>
-              setSelectedVariant(
-                product.variantOptions.find((v) => v.id === e.target.value)
-              )
-            }
-          >
-            {product.variantOptions.map((variant) => (
-              <option key={variant.id} value={variant.id}>
-                {variant.title} - ${parseFloat(variant.price.amount).toFixed(2)}
-              </option>
-            ))}
-          </select>
-
-          <button
-            className="w-full bg-black text-white py-3 rounded mb-2"
-            onClick={() => handleAddToCart(selectedVariant.id, 1)}
-          >
-            Add to Cart
-          </button>
-
-          <button
-            className="w-full bg-yellow-400 text-black py-3 rounded font-semibold"
-            onClick={handleBuyNow}
-          >
-            Buy It Now
-          </button>
-
-          {product.description && (
-            <div className="mt-6 border-t pt-4 text-black">
-              <h3 className="font-semibold mb-2">Description</h3>
-              <p>{product.description}</p>
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Image Gallery */}
+          <div className="w-full md:w-1/2">
+            <div className="relative aspect-[4/5] bg-gray-100 rounded overflow-hidden">
+              <Image
+                src={mainImage}
+                alt={product.imageAlt || product.title}
+                layout="fill"
+                objectFit="cover"
+                className="rounded"
+                unoptimized
+              />
             </div>
-          )}
+
+            {/* Thumbnails */}
+            {product.allImages?.length > 1 && (
+              <div className="flex gap-2 mt-3 overflow-x-auto">
+                {product.allImages.map((src, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setMainImage(src)}
+                    className={`w-16 h-20 border rounded overflow-hidden ${
+                      mainImage === src ? 'border-black' : 'border-transparent'
+                    }`}
+                  >
+                    <Image
+                      src={src}
+                      alt={`Thumb ${idx}`}
+                      width={64}
+                      height={80}
+                      className="object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Product Info */}
+          <div className="w-full md:w-1/2">
+            <h2 className="text-2xl font-bold mb-1">{product.title}</h2>
+            <p className="text-gray-700 mb-3 text-sm">{product.description}</p>
+
+            <p className="text-lg font-semibold mb-3">
+              ${parseFloat(variant?.price?.amount || 0).toFixed(2)}
+            </p>
+
+            {/* Color Swatches */}
+            <div className="mb-3">
+              <label className="block text-sm font-medium mb-1">Color</label>
+              <div className="flex gap-2">
+                {getColorSwatches().map((v) => {
+                  const color = v.selectedOptions?.find((opt) => opt.name === 'Color')?.value;
+                  return (
+                    <button
+                      key={v.id}
+                      onClick={() => handleVariantChange(v.id)}
+                      className={`w-5 h-5 rounded-full border-2 ${
+                        variant?.id === v.id
+                          ? 'border-black ring-2 ring-black'
+                          : 'border-gray-300'
+                      }`}
+                      style={{
+                        backgroundColor:
+                          color === 'Monochrome' ? '#000' : color === 'Regular' ? '#e5e5e5' : '#ccc',
+                      }}
+                      aria-label={color}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Variant Selector */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Edition / Size</label>
+              <select
+                value={variant?.id}
+                onChange={(e) => handleVariantChange(e.target.value)}
+                className="w-full border rounded p-2"
+              >
+                {product.variantOptions
+                  .filter((v) => {
+                    const selectedColor = variant.selectedOptions?.find(
+                      (opt) => opt.name === 'Color'
+                    )?.value;
+                    const thisColor = v.selectedOptions?.find((opt) => opt.name === 'Color')?.value;
+                    return selectedColor === thisColor;
+                  })
+                  .map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.title}
+                    </option>
+                  ))}
+              </select>
+            </div>
+
+            {/* Buttons */}
+            <button
+              onClick={() => handleAddToCart(variant.id, 1)}
+              className="w-full bg-black text-white py-3 rounded text-lg font-medium"
+            >
+              Add to Cart
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default PopupProductQuickView;

@@ -1,31 +1,13 @@
 import React, { useRef, useState } from 'react';
+import clsx from 'clsx';
 import Head from 'next/head';
 import PopupHero from '@/components/PopupHero';
 import PopupProductCard from '@/components/PopupProductCard';
-import PopupProductQuickView from '@/components/PopupProductQuickView';
 import { useSmoothScroll } from '@/hooks/useSmoothScroll';
-import { useShopContext } from '@/contexts/shopContext';
 
 export default function PopupShop({ products }) {
-  const safeProducts = products || [];
   const shopPageRef = useRef(null);
-  const { cart, loading, handleAddToCart } = useShopContext();
-  const [quickViewProduct, setQuickViewProduct] = useState(null);
-
   useSmoothScroll('#popup', shopPageRef);
-
-  const handleAddToCartClick = async (product) => {
-    if (loading || !cart) {
-      console.error('Cart is still loading or not available. Please wait.');
-      return;
-    }
-
-    try {
-      await handleAddToCart(product.variantId, 1);
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-    }
-  };
 
   return (
     <div className="bg-white text-black w-full min-h-screen transition-colors duration-300">
@@ -37,29 +19,16 @@ export default function PopupShop({ products }) {
       <PopupHero />
 
       <main
-  id="popup"
-  ref={shopPageRef}
-  className="max-w-[1440px] mx-auto px-4 py-16 bg-white text-black transition-colors duration-300"
->
-  <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
-    {safeProducts.map((product) => (
-      <PopupProductCard
-        key={product.id}
-        product={product}
-        onQuickView={() => setQuickViewProduct(product)}
-        onAddToCart={handleAddToCartClick}
-      />
-    ))}
-  </div>
-</main>
-
-      {quickViewProduct && (
-        <PopupProductQuickView
-          product={quickViewProduct}
-          onClose={() => setQuickViewProduct(null)}
-          onAddToCart={handleAddToCartClick}
-        />
-      )}
+        id="popup"
+        ref={shopPageRef}
+        className="max-w-[1440px] mx-auto px-4 py-16 bg-white text-black transition-colors duration-300"
+      >
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
+          {products.map((product) => (
+            <PopupProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      </main>
     </div>
   );
 }
@@ -94,6 +63,7 @@ export async function getStaticProps() {
                       id
                       title
                       availableForSale
+                      image { src }
                       selectedOptions {
                         name
                         value
@@ -115,17 +85,13 @@ export async function getStaticProps() {
 
   try {
     const res = await fetch(endpoint, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": token,
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': token,
       },
       body: JSON.stringify(graphqlQuery),
     });
-
-    if (!res.ok) {
-      throw new Error(`HTTP error! Status: ${res.status}`);
-    }
 
     const responseJson = await res.json();
     const products = responseJson.data.collectionByHandle.products.edges.map(({ node }) => {
@@ -137,24 +103,24 @@ export async function getStaticProps() {
         handle: node.handle,
         description: node.description,
         availableForSale: node.availableForSale,
-        imageSrc: node.images.edges[0]?.node.src || "/fallback-image.jpg",
+        imageSrc: node.images.edges[0]?.node.src || '/fallback-image.jpg',
         altImageSrc: node.images.edges[1]?.node.src || null,
-        imageAlt: node.images.edges[0]?.node.altText || "Product Image",
+        imageAlt: node.images.edges[0]?.node.altText || 'Product Image',
         allImages: node.images.edges.map(edge => edge.node.src),
-        variantId: variants[0]?.id || null,
         variantOptions: variants.map((v) => ({
           id: v.id,
           title: v.title,
           price: v.priceV2,
-          available: v.availableForSale,
-          options: v.selectedOptions,
+          availableForSale: v.availableForSale,
+          image: v.image,
+          selectedOptions: v.selectedOptions,
         })),
       };
     });
 
     return { props: { products } };
   } catch (error) {
-    console.error("Error fetching popup products:", error);
+    console.error('Error fetching popup products:', error);
     return { props: { products: [] } };
   }
 }

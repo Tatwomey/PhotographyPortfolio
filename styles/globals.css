@@ -523,3 +523,23 @@ main {
 .form-open .native-notify-button {
   display: none !important;
 }
+
+.swatch {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  cursor: pointer;
+}
+
+.swatch.selected {
+  border-color: #000;
+}
+
+.swatch.monochrome {
+  background-color: #000;
+}
+
+.swatch.regular {
+  background-color: #fff;
+}

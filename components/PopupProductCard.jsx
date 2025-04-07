@@ -10,31 +10,35 @@ const PopupProductCard = ({ product }) => {
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(product.variantOptions?.[0]);
 
-  const hasAltImage = !!product.altImageSrc;
   const isSoldOut = !product.availableForSale;
 
-  const handleAdd = (e) => {
-    e.preventDefault();
-    if (selectedVariant?.id) {
-      handleAddToCart(selectedVariant.id, 1);
+  const getVariantByColor = (color) => {
+    return product.variantOptions.find((v) =>
+      v.selectedOptions?.some(
+        (opt) => opt.name.toLowerCase() === 'color' && opt.value === color
+      )
+    );
+  };
+
+  const handleSwatchClick = (color) => {
+    const variant = getVariantByColor(color);
+    if (variant) {
+      setSelectedVariant(variant);
     }
   };
 
-  const handleVariantChange = (variantId) => {
-    const variant = product.variantOptions.find((v) => v.id === variantId);
-    setSelectedVariant(variant);
-  };
-
-  // Safely extract unique color values from selectedOptions
   const colorOptions = product.variantOptions
-    .map((v) => {
-      if (!v?.selectedOptions) return null;
-      const match = v.selectedOptions.find((opt) => opt.name === "Color");
-      return match?.value || null;
-    })
+    .map((v) =>
+      v.selectedOptions?.find((opt) => opt.name.toLowerCase() === 'color')?.value || null
+    )
     .filter(Boolean);
 
   const uniqueColors = [...new Set(colorOptions)];
+
+  const displayImage =
+    hovered && product.altImageSrc
+      ? product.altImageSrc
+      : selectedVariant?.image?.src || product.imageSrc;
 
   return (
     <>
@@ -43,7 +47,6 @@ const PopupProductCard = ({ product }) => {
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        {/* Sold Out Badge */}
         {isSoldOut && (
           <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded z-20">
             Sold out
@@ -55,7 +58,7 @@ const PopupProductCard = ({ product }) => {
           className="block aspect-[4/5] w-full overflow-hidden relative"
         >
           <Image
-            src={hovered && hasAltImage ? product.altImageSrc : product.imageSrc}
+            src={displayImage}
             alt={product.imageAlt || product.title}
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
@@ -64,46 +67,55 @@ const PopupProductCard = ({ product }) => {
           />
         </Link>
 
-        {/* Title & Price */}
+        {/* Title, Price, and Swatches */}
         <div className="absolute bottom-2 right-2 bg-black bg-opacity-60 text-white text-right p-2 rounded z-10">
           <p className="text-sm font-semibold">{product.title}</p>
-          <p className="text-xs">${parseFloat(selectedVariant?.price?.amount || 0).toFixed(2)}</p>
+          <p className="text-xs">
+            ${parseFloat(selectedVariant?.price?.amount || 0).toFixed(2)}
+          </p>
+
+          {uniqueColors.length > 1 && (
+            <div className="flex justify-end gap-1 mt-1">
+              {uniqueColors.map((color) => {
+                const variant = getVariantByColor(color);
+                return (
+                  <button
+                    key={color}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleSwatchClick(color);
+                    }}
+                    className={`w-4 h-4 rounded-full border-2 ${
+                      selectedVariant?.id === variant?.id
+                        ? 'border-white ring-2 ring-white'
+                        : 'border-gray-400'
+                    }`}
+                    style={{
+                      backgroundColor:
+                        color.toLowerCase() === 'monochrome'
+                          ? '#000'
+                          : color.toLowerCase() === 'regular'
+                          ? '#e5e5e5'
+                          : '#ccc',
+                    }}
+                    aria-label={color}
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
 
-        {/* Swatch Selectors */}
-        {uniqueColors.length > 1 && (
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
-            {product.variantOptions.map((variant) => {
-              const colorObj = variant.selectedOptions?.find((opt) => opt.name === 'Color');
-              if (!colorObj) return null;
-              return (
-                <button
-                  key={variant.id}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    handleVariantChange(variant.id);
-                  }}
-                  className={`w-4 h-4 rounded-full border-2 ${
-                    selectedVariant?.id === variant.id ? 'border-black' : 'border-gray-300'
-                  }`}
-                  style={{
-                    backgroundColor:
-                      colorObj.value === 'Monochrome' ? '#000' :
-                      colorObj.value === 'Regular' ? '#ccc' :
-                      '#eee',
-                  }}
-                />
-              );
-            })}
-          </div>
-        )}
-
-        {/* Variant Selector + Add to Cart */}
+        {/* Variant Dropdown + Add to Cart */}
         {!isSoldOut && hovered && (
           <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center space-x-2 z-10">
             <select
-              onChange={(e) => handleVariantChange(e.target.value)}
+              onChange={(e) =>
+                setSelectedVariant(
+                  product.variantOptions.find((v) => v.id === e.target.value)
+                )
+              }
               value={selectedVariant?.id}
               onClick={(e) => e.stopPropagation()}
               className="bg-white text-black text-xs px-2 py-1 rounded flex-1"
@@ -116,11 +128,14 @@ const PopupProductCard = ({ product }) => {
             </select>
 
             <button
-              onClick={handleAdd}
+              onClick={(e) => {
+                e.preventDefault();
+                handleAddToCart(selectedVariant.id, 1);
+              }}
               disabled={loading}
               className="bg-white text-black text-xs font-semibold px-4 py-1 rounded flex-1"
             >
-              {loading ? 'Adding...' : 'Add to Cart'}
+              {loading ? 'Adding…' : 'Add to Cart'}
             </button>
           </div>
         )}
