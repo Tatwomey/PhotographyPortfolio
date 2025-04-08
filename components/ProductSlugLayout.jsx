@@ -1,115 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import Hero from '@/components/Hero';
 import { useShopContext } from '@/contexts/shopContext';
+import Hero from '@/components/Hero';
 
-export async function getStaticPaths() {
-  const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
-  const token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN;
-
-  const graphqlQuery = {
-    query: `
-      {
-        collectionByHandle(handle: "popup-shop") {
-          products(first: 100) {
-            edges {
-              node {
-                handle
-              }
-            }
-          }
-        }
-      }
-    `,
-  };
-
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': token,
-    },
-    body: JSON.stringify(graphqlQuery),
-  });
-
-  const responseJson = await res.json();
-  const paths = responseJson.data.collectionByHandle.products.edges.map(({ node }) => ({
-    params: { slug: node.handle },
-  }));
-
-  return { paths, fallback: 'blocking' };
-}
-
-export async function getStaticProps({ params }) {
-  const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
-  const token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN;
-
-  const graphqlQuery = {
-    query: `
-      query ProductByHandle($handle: String!) {
-        productByHandle(handle: $handle) {
-          id
-          title
-          handle
-          description
-          images(first: 10) {
-            edges {
-              node {
-                src
-                altText
-              }
-            }
-          }
-          variants(first: 25) {
-            edges {
-              node {
-                id
-                title
-                image { src }
-                selectedOptions {
-                  name
-                  value
-                }
-                priceV2 {
-                  amount
-                  currencyCode
-                }
-                availableForSale
-              }
-            }
-          }
-        }
-      }`,
-    variables: { handle: params.slug },
-  };
-
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': token,
-    },
-    body: JSON.stringify(graphqlQuery),
-  });
-
-  const responseJson = await res.json();
-  const node = responseJson.data.productByHandle;
-
-  const product = {
-    ...node,
-    images: node.images.edges.map((e) => e.node),
-    variants: node.variants.edges.map((e) => e.node),
-  };
-
-  return { props: { product } };
-}
-
-export default function PopupSlug({ product }) {
-  const router = useRouter();
+export default function ProductSlugLayout({ product }) {
   const { handleAddToCart } = useShopContext();
+  const router = useRouter();
 
+  // Extract unique colors from all variants
   const colorOptions = Array.from(
     new Set(
       product.variants
@@ -120,6 +19,7 @@ export default function PopupSlug({ product }) {
     )
   );
 
+  // Default to Regular variant if available
   const defaultVariant =
     product.variants.find((v) =>
       v.selectedOptions.some(
@@ -134,12 +34,14 @@ export default function PopupSlug({ product }) {
   const [mainImage, setMainImage] = useState(defaultVariant.image?.src || product.images[0]?.src);
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
 
+  // Filter all variants that match selected color
   const variantsForColor = product.variants.filter((v) =>
     v.selectedOptions.some(
       (opt) => opt.name.toLowerCase() === 'color' && opt.value === selectedColor
     )
   );
 
+  // When color changes, reset variant and image
   useEffect(() => {
     const variant = variantsForColor[0];
     if (variant) {
@@ -149,6 +51,7 @@ export default function PopupSlug({ product }) {
     }
   }, [selectedColor]);
 
+  // On variant dropdown change
   const handleVariantChange = (e) => {
     const variant = product.variants.find((v) => v.id === e.target.value);
     if (variant) {
@@ -170,12 +73,7 @@ export default function PopupSlug({ product }) {
 
   return (
     <>
-      <Head>
-        <title>{product.title}</title>
-        <meta name="description" content={product.description} />
-      </Head>
       <Hero />
-
       <main className="bg-white text-black px-4 py-12 container mx-auto">
         <div className="flex flex-col lg:flex-row gap-10">
           {/* Image Gallery */}
@@ -215,7 +113,7 @@ export default function PopupSlug({ product }) {
             )}
           </div>
 
-          {/* Info Section */}
+          {/* Product Info */}
           <div className="w-full lg:max-w-md">
             <h1 className="text-3xl font-bold mb-2">{product.title}</h1>
             {product.description && (
@@ -225,7 +123,7 @@ export default function PopupSlug({ product }) {
               ${parseFloat(selectedVariant?.priceV2?.amount || 0).toFixed(2)}
             </p>
 
-            {/* Color Swatches */}
+            {/* Swatches */}
             {colorOptions.length > 1 && (
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-1">Color</label>
@@ -307,19 +205,21 @@ export default function PopupSlug({ product }) {
                 </li>
                 <li className="flex items-start">
                   <span className="text-black mt-1">•</span>
-                  <span className="ml-2">Hand-signed, hand-numbered, and embossed</span>
+                  <span className="ml-2">Each print is hand-signed, hand-numbered, and embossed</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-black mt-1">•</span>
-                  <span className="ml-2">From original RAW file — ultra high-resolution</span>
+                  <span className="ml-2">
+                    From the original RAW file — ultra high-resolution fidelity
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-black mt-1">•</span>
-                  <span className="ml-2">Limited to 10 editions</span>
+                  <span className="ml-2">Limited to only 10 editions</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-black mt-1">•</span>
-                  <span className="ml-2">Print size: 16 × 20 inches</span>
+                  <span className="ml-2">Print size: 16 x 20 inches</span>
                 </li>
               </ul>
             </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useShopContext } from '@/contexts/shopContext';
@@ -8,35 +8,36 @@ const PopupProductCard = ({ product }) => {
   const { handleAddToCart, loading } = useShopContext();
   const [hovered, setHovered] = useState(false);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
-  const [selectedVariant, setSelectedVariant] = useState(product.variantOptions?.[0]);
 
-  const isSoldOut = !product.availableForSale;
-
-  const getVariantByColor = (color) => {
-    return product.variantOptions.find((v) =>
-      v.selectedOptions?.some(
-        (opt) => opt.name.toLowerCase() === 'color' && opt.value === color
-      )
+  // Get default variant (prefer "Regular" color)
+  const getDefaultVariant = () => {
+    return (
+      product.variantOptions.find((v) =>
+        v.selectedOptions?.some(
+          (opt) => opt.name.toLowerCase() === 'color' && opt.value.toLowerCase() === 'regular'
+        )
+      ) || product.variantOptions[0]
     );
   };
 
-  const handleSwatchClick = (color) => {
-    const variant = getVariantByColor(color);
-    if (variant) {
-      setSelectedVariant(variant);
-    }
+  const [selectedVariant, setSelectedVariant] = useState(getDefaultVariant());
+
+  const isSoldOut = !product.availableForSale;
+  const hasAltImage = !!product.altImageSrc;
+
+  const handleVariantChange = (variantId) => {
+    const variant = product.variantOptions.find((v) => v.id === variantId);
+    if (variant) setSelectedVariant(variant);
   };
 
+  // Extract unique colors
   const colorOptions = product.variantOptions
-    .map((v) =>
-      v.selectedOptions?.find((opt) => opt.name.toLowerCase() === 'color')?.value || null
-    )
+    .map((v) => v.selectedOptions?.find((opt) => opt.name.toLowerCase() === 'color')?.value || null)
     .filter(Boolean);
-
   const uniqueColors = [...new Set(colorOptions)];
 
   const displayImage =
-    hovered && product.altImageSrc
+    hovered && hasAltImage
       ? product.altImageSrc
       : selectedVariant?.image?.src || product.imageSrc;
 
@@ -47,12 +48,14 @@ const PopupProductCard = ({ product }) => {
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
+        {/* Sold Out badge */}
         {isSoldOut && (
           <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded z-20">
             Sold out
           </div>
         )}
 
+        {/* Product image with link */}
         <Link
           href={`/popup/${product.handle}`}
           className="block aspect-[4/5] w-full overflow-hidden relative"
@@ -67,27 +70,29 @@ const PopupProductCard = ({ product }) => {
           />
         </Link>
 
-        {/* Title, Price, and Swatches */}
+        {/* Title, price, color swatches */}
         <div className="absolute bottom-2 right-2 bg-black bg-opacity-60 text-white text-right p-2 rounded z-10">
           <p className="text-sm font-semibold">{product.title}</p>
-          <p className="text-xs">
-            ${parseFloat(selectedVariant?.price?.amount || 0).toFixed(2)}
-          </p>
+          <p className="text-xs">${parseFloat(selectedVariant?.price?.amount || 0).toFixed(2)}</p>
 
           {uniqueColors.length > 1 && (
             <div className="flex justify-end gap-1 mt-1">
-              {uniqueColors.map((color) => {
-                const variant = getVariantByColor(color);
+              {product.variantOptions.map((variant) => {
+                const color = variant.selectedOptions?.find(
+                  (opt) => opt.name.toLowerCase() === 'color'
+                )?.value;
+                if (!color) return null;
+
                 return (
                   <button
-                    key={color}
+                    key={variant.id}
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      handleSwatchClick(color);
+                      handleVariantChange(variant.id);
                     }}
-                    className={`w-4 h-4 rounded-full border-2 ${
-                      selectedVariant?.id === variant?.id
+                    className={`w-3.5 h-3.5 rounded-full border-2 ${
+                      selectedVariant?.id === variant.id
                         ? 'border-white ring-2 ring-white'
                         : 'border-gray-400'
                     }`}
@@ -107,43 +112,11 @@ const PopupProductCard = ({ product }) => {
           )}
         </div>
 
-        {/* Variant Dropdown + Add to Cart */}
-        {!isSoldOut && hovered && (
-          <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center space-x-2 z-10">
-            <select
-              onChange={(e) =>
-                setSelectedVariant(
-                  product.variantOptions.find((v) => v.id === e.target.value)
-                )
-              }
-              value={selectedVariant?.id}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white text-black text-xs px-2 py-1 rounded flex-1"
-            >
-              {product.variantOptions.map((variant) => (
-                <option key={variant.id} value={variant.id}>
-                  {variant.title}
-                </option>
-              ))}
-            </select>
-
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                handleAddToCart(selectedVariant.id, 1);
-              }}
-              disabled={loading}
-              className="bg-white text-black text-xs font-semibold px-4 py-1 rounded flex-1"
-            >
-              {loading ? 'Adding…' : 'Add to Cart'}
-            </button>
-          </div>
-        )}
-
         {/* Quick View */}
         {hovered && (
           <button
             onClick={(e) => {
+              e.preventDefault();
               e.stopPropagation();
               setQuickViewOpen(true);
             }}

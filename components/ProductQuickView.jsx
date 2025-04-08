@@ -2,31 +2,32 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 const ProductQuickView = ({ product, selectedVariant: initialVariant, onClose, onAddToCart }) => {
-  const [mainImage, setMainImage] = useState(product.imageSrc);
   const [selectedVariant, setSelectedVariant] = useState(initialVariant || product.variantOptions[0]);
-  const [isSoldOut, setIsSoldOut] = useState(!product.availableForSale);
+  const [mainImage, setMainImage] = useState(initialVariant?.image?.src || product.imageSrc);
+  const [currentImageIdx, setCurrentImageIdx] = useState(0);
+  const [isSoldOut, setIsSoldOut] = useState(!initialVariant?.availableForSale);
 
   useEffect(() => {
-    if (product.imageSrc) {
-      setMainImage(product.imageSrc);
+    if (selectedVariant?.image?.src) {
+      setMainImage(selectedVariant.image.src);
     }
-    setIsSoldOut(!product.availableForSale);
-  }, [product]);
+    setIsSoldOut(!selectedVariant?.availableForSale);
+  }, [selectedVariant]);
 
-  const handleBackgroundClick = (e) => {
-    if (e.target.id === 'quick-view-backdrop') {
-      closeQuickView();
-    }
-  };
-
-  const closeQuickView = () => {
-    document.body.classList.remove('form-open');
-    onClose();
-  };
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [onClose]);
 
   const handleVariantChange = (e) => {
     const variant = product.variantOptions.find((v) => v.id === e.target.value);
-    setSelectedVariant(variant);
+    if (variant) {
+      setSelectedVariant(variant);
+      setMainImage(variant.image?.src || product.imageSrc);
+    }
   };
 
   const handleNotifyMeClick = () => {
@@ -34,6 +35,12 @@ const ProductQuickView = ({ product, selectedVariant: initialVariant, onClose, o
       window._klOnsite = window._klOnsite || [];
       window._klOnsite.push(['openForm', 'RjNi3C']);
       document.body.classList.add('form-open');
+    }
+  };
+
+  const handleBackgroundClick = (e) => {
+    if (e.target.id === 'quick-view-backdrop') {
+      onClose();
     }
   };
 
@@ -66,10 +73,10 @@ const ProductQuickView = ({ product, selectedVariant: initialVariant, onClose, o
             <h2 className="text-2xl font-bold mb-2">{product.title}</h2>
             <p className="text-lg font-semibold mb-4">{formattedPrice}</p>
 
-            {/* Variant Selector */}
+            {/* Variant Dropdown */}
             <div className="mb-4">
               <label htmlFor="variant-select" className="block text-sm font-medium mb-1">
-                Select Size
+                Edition / Size
               </label>
               <select
                 id="variant-select"
@@ -86,11 +93,12 @@ const ProductQuickView = ({ product, selectedVariant: initialVariant, onClose, o
             </div>
           </div>
 
+          {/* Buttons */}
           <div className="flex flex-col gap-3 mt-4">
             {isSoldOut ? (
               <button
                 onClick={handleNotifyMeClick}
-                className="w-full bg-black text-white px-4 py-2 rounded hover:bg-gray-800 native-notify-button"
+                className="w-full bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
               >
                 Notify Me When Available
               </button>
@@ -104,7 +112,7 @@ const ProductQuickView = ({ product, selectedVariant: initialVariant, onClose, o
             )}
 
             <button
-              onClick={closeQuickView}
+              onClick={onClose}
               className="w-full border border-black px-4 py-2 rounded hover:bg-gray-100"
             >
               Close
