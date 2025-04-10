@@ -1,11 +1,6 @@
 // pages/shop/[slug].js
 
-import React, { useEffect, useState } from "react";
-import Head from "next/head";
-import Image from "next/image";
-import { useRouter } from "next/router";
-import Hero from "@/components/Hero";
-import { useShopContext } from "@/contexts/shopContext";
+import ProductSlugLayout from '@/components/ProductSlugLayout';
 
 export async function getStaticPaths() {
   const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
@@ -28,22 +23,20 @@ export async function getStaticPaths() {
   };
 
   const res = await fetch(endpoint, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
-      "X-Shopify-Storefront-Access-Token": token,
+      'Content-Type': 'application/json',
+      'X-Shopify-Storefront-Access-Token': token,
     },
     body: JSON.stringify(graphqlQuery),
   });
 
   const responseJson = await res.json();
-  const paths = responseJson.data.collectionByHandle.products.edges.map(
-    ({ node }) => ({
-      params: { slug: node.handle },
-    })
-  );
+  const paths = responseJson.data.collectionByHandle.products.edges.map(({ node }) => ({
+    params: { slug: node.handle },
+  }));
 
-  return { paths, fallback: "blocking" };
+  return { paths, fallback: 'blocking' };
 }
 
 export async function getStaticProps({ params }) {
@@ -71,9 +64,7 @@ export async function getStaticProps({ params }) {
               node {
                 id
                 title
-                image {
-                  src
-                }
+                image { src }
                 selectedOptions {
                   name
                   value
@@ -92,11 +83,12 @@ export async function getStaticProps({ params }) {
     variables: { handle: params.slug },
   };
 
+
   const res = await fetch(endpoint, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
-      "X-Shopify-Storefront-Access-Token": token,
+      'Content-Type': 'application/json',
+      'X-Shopify-Storefront-Access-Token': token,
     },
     body: JSON.stringify(graphqlQuery),
   });
@@ -114,249 +106,5 @@ export async function getStaticProps({ params }) {
 }
 
 export default function ShopSlug({ product }) {
-  const router = useRouter();
-  const { handleAddToCart } = useShopContext();
-
-  const colorOptions = Array.from(
-    new Set(
-      product.variants
-        .map((v) =>
-          v.selectedOptions.find((opt) => opt.name.toLowerCase() === "color")?.value
-        )
-        .filter(Boolean)
-    )
-  );
-
-  const defaultVariant =
-    product.variants.find((v) =>
-      v.selectedOptions.some(
-        (opt) => opt.name.toLowerCase() === "color" && opt.value.toLowerCase() === "regular"
-      )
-    ) || product.variants[0];
-
-  const [selectedColor, setSelectedColor] = useState(
-    defaultVariant.selectedOptions.find((opt) => opt.name.toLowerCase() === "color")?.value
-  );
-  const [selectedVariant, setSelectedVariant] = useState(defaultVariant);
-  const [mainImage, setMainImage] = useState(
-    defaultVariant.image?.src || product.images[0]?.src
-  );
-  const [currentImageIdx, setCurrentImageIdx] = useState(0);
-
-  const variantsForColor = product.variants.filter((v) =>
-    v.selectedOptions.some(
-      (opt) => opt.name.toLowerCase() === "color" && opt.value === selectedColor
-    )
-  );
-
-  useEffect(() => {
-    const match = product.variants.find((v) =>
-      v.selectedOptions.some(
-        (opt) => opt.name.toLowerCase() === "color" && opt.value === selectedColor
-      )
-    );
-    if (match) {
-      setSelectedVariant(match);
-      setMainImage(match.image?.src || product.images[0]?.src);
-    }
-  }, [selectedColor]);
-
-  const handleVariantChange = (e) => {
-    const variant = product.variants.find((v) => v.id === e.target.value);
-    if (variant) {
-      setSelectedVariant(variant);
-      setMainImage(variant.image?.src || product.images[0]?.src);
-
-      const colorOpt = variant.selectedOptions.find(
-        (opt) => opt.name.toLowerCase() === "color"
-      );
-      if (colorOpt?.value) {
-        setSelectedColor(colorOpt.value);
-      }
-    }
-  };
-
-  const handleBuyNow = async () => {
-    await handleAddToCart(selectedVariant.id, 1);
-    router.push("/checkout");
-  };
-
-  const handleNotifyClick = () => {
-    if (window._klOnsite) {
-      window._klOnsite.push(["openForm", "RjNi3C"]);
-    }
-  };
-
-  return (
-    <>
-      <Head>
-        <title>{product.title}</title>
-        <meta name="description" content={product.description} />
-      </Head>
-      <Hero />
-
-      <main className="bg-white text-black px-4 py-12 container mx-auto">
-        <div className="flex flex-col lg:flex-row gap-10">
-          {/* Gallery */}
-          <div className="w-full lg:max-w-[550px]">
-            <div className="relative aspect-[4/5] bg-gray-100 rounded overflow-hidden shadow group">
-              <Image
-                src={mainImage}
-                alt={product.title}
-                layout="fill"
-                objectFit="cover"
-                className="rounded transition-transform duration-300 ease-in-out group-hover:scale-105"
-              />
-              {!selectedVariant.availableForSale && (
-                <div className="absolute top-0 left-0 bg-red-600 text-white text-sm font-bold px-3 py-1">
-                  Sold Out
-                </div>
-              )}
-            </div>
-
-            {/* Thumbnails */}
-            {product.images.length > 1 && (
-              <div className="flex gap-3 mt-4 overflow-x-auto">
-                {product.images.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => {
-                      setMainImage(img.src);
-                      setCurrentImageIdx(idx);
-                    }}
-                    className={`border rounded-md overflow-hidden ${
-                      currentImageIdx === idx ? "border-black" : "border-gray-300"
-                    }`}
-                  >
-                    <Image
-                      src={img.src}
-                      alt={`Thumb ${idx}`}
-                      width={80}
-                      height={100}
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Info */}
-          <div className="w-full lg:max-w-md">
-            <h1 className="text-3xl font-bold mb-2">{product.title}</h1>
-            {product.description && (
-              <p className="text-sm italic text-gray-600 mb-4">
-                {product.description}
-              </p>
-            )}
-            <p className="text-xl font-semibold mb-4">
-              ${parseFloat(selectedVariant.priceV2.amount).toFixed(2)}
-            </p>
-
-            {/* Swatches */}
-            {colorOptions.length > 1 && (
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">Color</label>
-                <div className="flex gap-2">
-                  {colorOptions.map((color) => (
-                    <button
-                      key={color}
-                      onClick={() => setSelectedColor(color)}
-                      className={`w-6 h-6 rounded-full border-2 ${
-                        selectedColor === color
-                          ? "border-black ring-2 ring-black"
-                          : "border-gray-300"
-                      }`}
-                      style={{
-                        backgroundColor:
-                          color.toLowerCase() === "monochrome" ? "#000" : "#e5e5e5",
-                      }}
-                      aria-label={color}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Edition / Size */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">
-                Edition / Size
-              </label>
-              <select
-                value={selectedVariant.id}
-                onChange={handleVariantChange}
-                className="w-full border rounded p-2"
-              >
-                {variantsForColor.map((v) => (
-                  <option key={v.id} value={v.id}>
-                    {v.title}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Buttons */}
-            <div className="space-y-3 mb-6">
-              {selectedVariant.availableForSale ? (
-                <>
-                  <button
-                    onClick={() => handleAddToCart(selectedVariant.id, 1)}
-                    className="w-full bg-black text-white py-3 rounded text-lg font-medium"
-                  >
-                    Add to Cart
-                  </button>
-                  <button
-                    onClick={handleBuyNow}
-                    className="w-full bg-yellow-400 text-black py-3 rounded text-lg font-semibold"
-                  >
-                    Buy It Now
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={handleNotifyClick}
-                  className="w-full border border-black py-3 rounded text-lg font-semibold hover:bg-gray-100"
-                >
-                  Notify Me When Back in Stock
-                </button>
-              )}
-            </div>
-
-            {/* Details */}
-            <div className="border-t pt-4">
-              <h3 className="text-lg font-semibold mb-2">Details</h3>
-              <ul className="grid grid-cols-1 gap-2 text-sm text-gray-800 leading-relaxed list-inside">
-                <li className="flex items-start">
-                  <span className="text-black mt-1">•</span>
-                  <span className="ml-2">
-                    Printed on museum-grade archival Hahnemühle Baryta paper
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-black mt-1">•</span>
-                  <span className="ml-2">
-                    Each print is hand-signed, hand-numbered, and embossed
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-black mt-1">•</span>
-                  <span className="ml-2">
-                    From the original RAW file — ultra high-resolution fidelity
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-black mt-1">•</span>
-                  <span className="ml-2">Limited to only 10 editions</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-black mt-1">•</span>
-                  <span className="ml-2">Print size: 16 x 20 inches</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </main>
-    </>
-  );
+  return <ProductSlugLayout product={product} />;
 }

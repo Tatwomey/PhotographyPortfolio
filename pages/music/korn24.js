@@ -55,8 +55,8 @@ const photos = [
   { src: "/korn24/korn_2024_trevortwomey-46.jpg", type: "portrait" },
   { src: "/korn24/korn_2024_trevortwomey-47.jpg", type: "landscape" },
   { src: "/korn24/korn_2024_trevortwomey-48.jpg", type: "landscape" },
-  { src: "/korn24/korn_2024_trevortwomey-49.jpg", type: "portrait" },
-  { src: "/korn24/korn_2024_trevortwomey-50.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024_trevortwomey-49.jpg", type: "landscape" },
+ 
 ];
   
   const Korn24 = () => {

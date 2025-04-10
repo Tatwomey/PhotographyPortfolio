@@ -8,7 +8,12 @@ export default function ProductSlugLayout({ product }) {
   const { handleAddToCart } = useShopContext();
   const router = useRouter();
 
-  // Extract unique colors from all variants
+  // ✅ Guard for undefined product
+  if (!product || !product.variants) {
+    return <div className="text-center py-20 text-lg">Loading product...</div>;
+  }
+
+  // 🧠 Extract unique color options
   const colorOptions = Array.from(
     new Set(
       product.variants
@@ -19,7 +24,6 @@ export default function ProductSlugLayout({ product }) {
     )
   );
 
-  // Default to Regular variant if available
   const defaultVariant =
     product.variants.find((v) =>
       v.selectedOptions.some(
@@ -34,14 +38,12 @@ export default function ProductSlugLayout({ product }) {
   const [mainImage, setMainImage] = useState(defaultVariant.image?.src || product.images[0]?.src);
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
 
-  // Filter all variants that match selected color
   const variantsForColor = product.variants.filter((v) =>
     v.selectedOptions.some(
       (opt) => opt.name.toLowerCase() === 'color' && opt.value === selectedColor
     )
   );
 
-  // When color changes, reset variant and image
   useEffect(() => {
     const variant = variantsForColor[0];
     if (variant) {
@@ -51,12 +53,16 @@ export default function ProductSlugLayout({ product }) {
     }
   }, [selectedColor]);
 
-  // On variant dropdown change
   const handleVariantChange = (e) => {
     const variant = product.variants.find((v) => v.id === e.target.value);
     if (variant) {
       setSelectedVariant(variant);
       setMainImage(variant.image?.src || product.images[0]?.src);
+
+      const newColor = variant.selectedOptions.find((opt) => opt.name.toLowerCase() === 'color');
+      if (newColor?.value) {
+        setSelectedColor(newColor.value);
+      }
     }
   };
 
@@ -76,7 +82,7 @@ export default function ProductSlugLayout({ product }) {
       <Hero />
       <main className="bg-white text-black px-4 py-12 container mx-auto">
         <div className="flex flex-col lg:flex-row gap-10">
-          {/* Image Gallery */}
+          {/* Left: Image */}
           <div className="w-full lg:max-w-[550px]">
             <div className="relative aspect-[4/5] bg-gray-100 rounded overflow-hidden shadow group">
               <Image
@@ -86,7 +92,7 @@ export default function ProductSlugLayout({ product }) {
                 objectFit="cover"
                 className="rounded transition-transform duration-300 ease-in-out group-hover:scale-105"
               />
-              {!selectedVariant?.availableForSale && (
+              {!selectedVariant.availableForSale && (
                 <div className="absolute top-0 left-0 bg-red-600 text-white text-sm font-bold px-3 py-1">
                   Sold Out
                 </div>
@@ -113,7 +119,7 @@ export default function ProductSlugLayout({ product }) {
             )}
           </div>
 
-          {/* Product Info */}
+          {/* Right: Product Info */}
           <div className="w-full lg:max-w-md">
             <h1 className="text-3xl font-bold mb-2">{product.title}</h1>
             {product.description && (
@@ -122,6 +128,13 @@ export default function ProductSlugLayout({ product }) {
             <p className="text-xl font-semibold mb-4">
               ${parseFloat(selectedVariant?.priceV2?.amount || 0).toFixed(2)}
             </p>
+
+            {/* Low Inventory Notice */}
+            {selectedVariant.quantityAvailable <= 3 && selectedVariant.quantityAvailable > 0 && (
+              <p className="text-sm text-red-600 font-semibold mt-1">
+                Only {selectedVariant.quantityAvailable} left in stock!
+              </p>
+            )}
 
             {/* Swatches */}
             {colorOptions.length > 1 && (
@@ -148,7 +161,7 @@ export default function ProductSlugLayout({ product }) {
               </div>
             )}
 
-            {/* Edition / Size Dropdown */}
+            {/* Edition / Size */}
             {variantsForColor.length > 1 && (
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-1">Edition / Size</label>
@@ -166,7 +179,7 @@ export default function ProductSlugLayout({ product }) {
               </div>
             )}
 
-            {/* Buttons */}
+            {/* CTA Buttons */}
             <div className="space-y-3 mb-6">
               {selectedVariant.availableForSale ? (
                 <>
@@ -205,7 +218,9 @@ export default function ProductSlugLayout({ product }) {
                 </li>
                 <li className="flex items-start">
                   <span className="text-black mt-1">•</span>
-                  <span className="ml-2">Each print is hand-signed, hand-numbered, and embossed</span>
+                  <span className="ml-2">
+                    Hand-signed, hand-numbered, and embossed
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-black mt-1">•</span>
@@ -215,11 +230,11 @@ export default function ProductSlugLayout({ product }) {
                 </li>
                 <li className="flex items-start">
                   <span className="text-black mt-1">•</span>
-                  <span className="ml-2">Limited to only 10 editions</span>
+                  <span className="ml-2">Limited to 10 editions</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-black mt-1">•</span>
-                  <span className="ml-2">Print size: 16 x 20 inches</span>
+                  <span className="ml-2">Print size: 16 × 20 inches</span>
                 </li>
               </ul>
             </div>
