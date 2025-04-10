@@ -37,7 +37,8 @@ export default NextAuth({
           { id: "4", username: "sunyaboy", password: "sunyaboy", allowedPages: ["/music/thievery25"] },
           { id: "5", username: "munkshaffer", password: "korntour2024", allowedPages: ["/music/korn24"] },
           { id: "6", username: "toddytodd", password: "thankstodd!", allowedPages: ["/music/korn24"] },
-          { id: "7", username: "robgarzamusic@gmail.com", password: "terminal5", allowedPages: ["/music/thievery25"] },
+          { id: "7", username: "trevor.a.twomey@gmail.com", password: "tatwomey", allowedPages: ["/music/korn24"] },
+          { id: "8", username: "robgarzamusic@gmail.com", password: "terminal5", allowedPages: ["/music/thievery25"] },
         ];
 
         const user = users.find(
