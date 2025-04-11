@@ -1,9 +1,26 @@
-// pages/popup/[slug].js
-
 import ProductSlugLayout from '@/components/ProductSlugLayout';
+import {
+  getPopupProductPaths,
+  getPopupProductByHandle,
+} from '@/lib/popupSlugUtils';
 
-// This uses the shared fetch logic from the utility file
-export { getStaticPaths, getStaticProps } from '@/lib/shopSlugUtils';
+export async function getStaticPaths() {
+  return await getPopupProductPaths(); // returns { paths, fallback }
+}
+
+export async function getStaticProps({ params }) {
+  const product = await getPopupProductByHandle(params.slug);
+
+  if (!product) {
+    return {
+      notFound: true,
+    };
+  }
+
+  return {
+    props: { product },
+  };
+}
 
 export default function PopupSlug({ product }) {
   return <ProductSlugLayout product={product} />;

@@ -1,142 +1,78 @@
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useShopContext } from '@/contexts/shopContext';
-import PopupProductQuickView from './PopupProductQuickView';
+import { useState } from "react";
+import Image from "next/image";
+import PopupProductQuickView from "./PopupProductQuickView";
 
-const PopupProductCard = ({ product }) => {
-  const { handleAddToCart, loading } = useShopContext();
-  const [hovered, setHovered] = useState(false);
-  const [quickViewOpen, setQuickViewOpen] = useState(false);
+export default function PopupProductCard({ product }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
-  // Get default variant (prefer "Regular" color)
-  const getDefaultVariant = () => {
-    return (
-      product.variantOptions.find((v) =>
-        v.selectedOptions?.some(
-          (opt) => opt.name.toLowerCase() === 'color' && opt.value.toLowerCase() === 'regular'
-        )
-      ) || product.variantOptions[0]
-    );
+  // Normalize product for modal
+  const normalizedProduct = {
+    title: product.title,
+    handle: product.handle,
+    description: product.description,
+    images: product.allImages?.map((src) => ({ src })) || [],
+    variants: product.variantOptions?.map((variant) => ({
+      id: variant.id,
+      title: variant.title,
+      price: variant.price.amount,
+      image: variant.image,
+      availableForSale: variant.availableForSale,
+      selectedOptions: variant.selectedOptions,
+    })) || [],
   };
 
-  const [selectedVariant, setSelectedVariant] = useState(getDefaultVariant());
+  const defaultVariant = normalizedProduct.variants[0];
+  const isSoldOut = !defaultVariant?.availableForSale;
+  const displayPrice = parseFloat(defaultVariant?.price || "0.00").toFixed(2);
 
-  const isSoldOut = !product.availableForSale;
-  const hasAltImage = !!product.altImageSrc;
-
-  const handleVariantChange = (variantId) => {
-    const variant = product.variantOptions.find((v) => v.id === variantId);
-    if (variant) setSelectedVariant(variant);
-  };
-
-  // Extract unique colors
-  const colorOptions = product.variantOptions
-    .map((v) => v.selectedOptions?.find((opt) => opt.name.toLowerCase() === 'color')?.value || null)
-    .filter(Boolean);
-  const uniqueColors = [...new Set(colorOptions)];
-
-  const displayImage =
-    hovered && hasAltImage
-      ? product.altImageSrc
-      : selectedVariant?.image?.src || product.imageSrc;
+  const hoverImage = product.altImageSrc || product.imageSrc;
 
   return (
     <>
       <div
-        className="relative w-full bg-white group cursor-pointer"
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
+        className="relative group cursor-pointer"
+        onClick={() => setIsModalOpen(true)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Sold Out badge */}
-        {isSoldOut && (
-          <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded z-20">
-            Sold out
-          </div>
-        )}
-
-        {/* Product image with link */}
-        <Link
-          href={`/popup/${product.handle}`}
-          className="block aspect-[4/5] w-full overflow-hidden relative"
-        >
+        <div className="aspect-[4/5] relative bg-gray-100 overflow-hidden rounded-lg shadow">
           <Image
-            src={displayImage}
-            alt={product.imageAlt || product.title}
-            fill
-            sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover rounded-md transition duration-300 ease-in-out"
-            unoptimized
+            src={isHovered ? hoverImage : product.imageSrc}
+            alt={product.imageAlt}
+            layout="fill"
+            objectFit="cover"
+            className="transition-transform duration-300 ease-in-out group-hover:scale-105"
           />
-        </Link>
 
-        {/* Title, price, color swatches */}
-        <div className="absolute bottom-2 right-2 bg-black bg-opacity-60 text-white text-right p-2 rounded z-10">
-          <p className="text-sm font-semibold">{product.title}</p>
-          <p className="text-xs">${parseFloat(selectedVariant?.price?.amount || 0).toFixed(2)}</p>
-
-          {uniqueColors.length > 1 && (
-            <div className="flex justify-end gap-1 mt-1">
-              {product.variantOptions.map((variant) => {
-                const color = variant.selectedOptions?.find(
-                  (opt) => opt.name.toLowerCase() === 'color'
-                )?.value;
-                if (!color) return null;
-
-                return (
-                  <button
-                    key={variant.id}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleVariantChange(variant.id);
-                    }}
-                    className={`w-3.5 h-3.5 rounded-full border-2 ${
-                      selectedVariant?.id === variant.id
-                        ? 'border-white ring-2 ring-white'
-                        : 'border-gray-400'
-                    }`}
-                    style={{
-                      backgroundColor:
-                        color.toLowerCase() === 'monochrome'
-                          ? '#000'
-                          : color.toLowerCase() === 'regular'
-                          ? '#e5e5e5'
-                          : '#ccc',
-                    }}
-                    aria-label={color}
-                  />
-                );
-              })}
+          {/* Sold Out Badge */}
+          {isSoldOut && (
+            <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
+              Sold Out
             </div>
           )}
+
+          {/* Quick View Button Overlay */}
+          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition duration-200 flex items-center justify-center">
+            <span className="opacity-0 group-hover:opacity-100 text-white text-xs font-medium bg-black px-4 py-2 rounded shadow transition">
+              Quick View
+            </span>
+          </div>
         </div>
 
-        {/* Quick View */}
-        {hovered && (
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setQuickViewOpen(true);
-            }}
-            className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded z-10"
-          >
-            Quick View
-          </button>
-        )}
+        <div className="mt-2">
+          <h3 className="text-sm font-semibold">{product.title}</h3>
+          <p className="text-sm text-gray-600">${displayPrice}</p>
+        </div>
       </div>
 
       {/* Modal */}
-      {quickViewOpen && (
+      {isModalOpen && (
         <PopupProductQuickView
-          product={product}
-          selectedVariant={selectedVariant}
-          onClose={() => setQuickViewOpen(false)}
+          product={normalizedProduct}
+          onClose={() => setIsModalOpen(false)}
         />
       )}
     </>
   );
-};
-
-export default PopupProductCard;
+}

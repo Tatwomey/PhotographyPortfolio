@@ -1,206 +1,174 @@
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { useShopContext } from '@/contexts/shopContext';
+import { useState } from "react";
+import Image from "next/image";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { useShopContext } from "@/contexts/shopContext";
 
-const PopupProductQuickView = ({ product, selectedVariant: initialVariant, onClose }) => {
-  const { handleAddToCart, loading } = useShopContext();
+export default function PopupProductQuickView({ product, onClose }) {
+  if (!product || !product.variants || product.variants.length === 0) return null;
 
-  const getDefaultVariant = () => {
-    return (
-      product.variantOptions.find((v) =>
-        v.selectedOptions?.some(
-          (opt) => opt.name.toLowerCase() === 'color' && opt.value.toLowerCase() === 'regular'
-        )
-      ) || product.variantOptions[0]
-    );
-  };
+  const {
+    title,
+    description,
+    images,
+    variants,
+    handle,
+  } = product;
 
-  const [selectedVariant, setSelectedVariant] = useState(initialVariant || getDefaultVariant());
-  const [mainImage, setMainImage] = useState(selectedVariant?.image?.src || product.imageSrc);
-  const [currentImageIdx, setCurrentImageIdx] = useState(0);
+  const [selectedVariant, setSelectedVariant] = useState(variants[0]);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState("DETAILS");
 
-  const colorOptions = Array.from(
-    new Set(
-      product.variantOptions
-        .map((v) =>
-          v.selectedOptions?.find((opt) => opt.name.toLowerCase() === 'color')?.value
-        )
-        .filter(Boolean)
-    )
-  );
-
-  const [selectedColor, setSelectedColor] = useState(
-    selectedVariant?.selectedOptions.find((opt) => opt.name.toLowerCase() === 'color')?.value
-  );
-
-  const variantsForColor = product.variantOptions.filter((v) =>
-    v.selectedOptions.some(
-      (opt) => opt.name.toLowerCase() === 'color' && opt.value === selectedColor
-    )
-  );
-
-  useEffect(() => {
-    const variant = variantsForColor[0];
-    if (variant) {
-      setSelectedVariant(variant);
-      setMainImage(variant.image?.src || product.imageSrc);
-    }
-  }, [selectedColor]);
-
-  useEffect(() => {
-    const escape = (e) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', escape);
-    return () => document.removeEventListener('keydown', escape);
-  }, [onClose]);
+  const { addToCart } = useShopContext();
 
   const handleVariantChange = (e) => {
-    const variant = product.variantOptions.find((v) => v.id === e.target.value);
-    if (variant) {
-      setSelectedVariant(variant);
-      setMainImage(variant.image?.src || product.imageSrc);
-
-      const colorOpt = variant.selectedOptions.find(
-        (opt) => opt.name.toLowerCase() === 'color'
-      );
-      if (colorOpt?.value) {
-        setSelectedColor(colorOpt.value);
-      }
-    }
+    const variant = variants.find((v) => v.id === e.target.value);
+    setSelectedVariant(variant);
+    const imageIndex = images.findIndex(
+      (img) => img.src === variant.image?.src
+    );
+    if (imageIndex !== -1) setSelectedImageIndex(imageIndex);
   };
 
-  const handleBuyNow = async () => {
-    await handleAddToCart(selectedVariant.id, 1);
-    window.location.href = '/checkout';
+  const nextImage = () => {
+    setSelectedImageIndex((prev) => (prev + 1) % images.length);
   };
 
-  const handleNotifyClick = () => {
-    if (window._klOnsite) {
-      window._klOnsite.push(['openForm', 'RjNi3C']);
-    }
+  const prevImage = () => {
+    setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-      <div className="bg-white text-black p-6 max-w-4xl w-full rounded shadow-lg relative">
+    <div className="fixed inset-0 z-50 bg-white bg-opacity-95 overflow-y-auto flex justify-center items-center px-4 py-8">
+      <div className="relative w-full max-w-5xl bg-white shadow-lg rounded-lg grid md:grid-cols-2 gap-6 p-4 md:p-8">
+        
+        {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-black text-xl font-bold"
+          className="absolute top-4 right-4 text-black hover:scale-110 transition"
         >
-          ×
+          <X size={24} />
         </button>
 
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* Gallery */}
-          <div className="w-full md:w-1/2">
-            <div className="relative aspect-[4/5] bg-gray-100 rounded overflow-hidden shadow">
+        {/* Image Section */}
+        <div className="relative">
+          {images.length > 1 && (
+            <>
+              <button
+                onClick={prevImage}
+                className="absolute top-1/2 left-2 -translate-y-1/2 bg-white bg-opacity-70 p-1 rounded-full shadow-md hover:scale-105"
+              >
+                <ChevronLeft />
+              </button>
+              <button
+                onClick={nextImage}
+                className="absolute top-1/2 right-2 -translate-y-1/2 bg-white bg-opacity-70 p-1 rounded-full shadow-md hover:scale-105"
+              >
+                <ChevronRight />
+              </button>
+            </>
+          )}
+          <Image
+            src={images[selectedImageIndex].src}
+            alt={title}
+            width={800}
+            height={1000}
+            className="w-full h-auto object-contain rounded-md"
+          />
+
+          {/* Thumbnails */}
+          <div className="flex mt-4 gap-2 justify-center">
+            {images.map((img, idx) => (
               <Image
-                src={mainImage}
-                alt={selectedVariant?.title || product.title}
-                layout="fill"
-                objectFit="cover"
-                className="rounded"
+                key={idx}
+                src={img.src}
+                alt={`thumb-${idx}`}
+                width={80}
+                height={100}
+                onClick={() => setSelectedImageIndex(idx)}
+                className={`cursor-pointer border rounded-md ${
+                  idx === selectedImageIndex ? "border-black" : "border-transparent"
+                }`}
               />
-            </div>
-
-            {/* Thumbnails */}
-            {product.allImages?.length > 1 && (
-              <div className="flex gap-2 mt-4 overflow-x-auto">
-                {product.allImages.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => {
-                      setMainImage(img);
-                      setCurrentImageIdx(idx);
-                    }}
-                    className={`w-[60px] h-[75px] border rounded-md overflow-hidden ${
-                      currentImageIdx === idx ? 'border-black' : 'border-gray-300'
-                    }`}
-                  >
-                    <Image src={img} alt={`Thumb ${idx}`} width={60} height={75} />
-                  </button>
-                ))}
-              </div>
-            )}
+            ))}
           </div>
+        </div>
 
-          {/* Product Info */}
-          <div className="w-full md:w-1/2 space-y-4">
-            <h2 className="text-2xl font-semibold">{product.title}</h2>
-            <p className="text-sm italic text-gray-600">{product.description}</p>
-            <p className="text-xl font-bold">
-              ${parseFloat(selectedVariant?.price?.amount || 0).toFixed(2)}
+        {/* Product Info */}
+        <div className="flex flex-col justify-between space-y-6">
+          <div>
+            <h2 className="text-xl font-semibold">{title}</h2>
+            <p className="italic text-gray-600 mt-1">{description}</p>
+            <p className="text-xl font-bold mt-4">
+              ${parseFloat(selectedVariant.price).toFixed(2)}
             </p>
 
-            {/* Color Swatches */}
-            {colorOptions.length > 1 && (
-              <div>
-                <label className="block text-sm font-medium mb-1">Color</label>
-                <div className="flex gap-2">
-                  {colorOptions.map((color) => (
-                    <button
-                      key={color}
-                      onClick={() => setSelectedColor(color)}
-                      className={`w-6 h-6 rounded-full border-2 ${
-                        selectedColor === color
-                          ? 'border-black ring-2 ring-black'
-                          : 'border-gray-300'
-                      }`}
-                      style={{
-                        backgroundColor:
-                          color.toLowerCase() === 'monochrome' ? '#000' : '#e5e5e5',
-                      }}
-                      aria-label={color}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Variant Dropdown */}
+            <div className="mt-4">
+              <label htmlFor="variant" className="block mb-1 font-medium">
+                Edition / Size
+              </label>
+              <select
+                id="variant"
+                value={selectedVariant.id}
+                onChange={handleVariantChange}
+                className="w-full border px-3 py-2 rounded-md"
+              >
+                {variants.map((variant) => (
+                  <option key={variant.id} value={variant.id}>
+                    {variant.title}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-            {/* Edition / Size */}
-            {variantsForColor.length > 1 && (
-              <div>
-                <label className="block text-sm font-medium mb-1">Edition / Size</label>
-                <select
-                  value={selectedVariant?.id}
-                  onChange={handleVariantChange}
-                  className="w-full border rounded p-2"
-                >
-                  {variantsForColor.map((v) => (
-                    <option key={v.id} value={v.id}>
-                      {v.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
+            {/* Action Buttons */}
+            <div className="flex flex-col gap-2 mt-6">
+              <button
+                onClick={() => addToCart(selectedVariant.id, 1)}
+                className="bg-black text-white py-2 px-4 rounded-md hover:opacity-90 transition"
+              >
+                Add to Cart
+              </button>
+              <button className="bg-yellow-400 text-black py-2 px-4 rounded-md hover:opacity-90 transition">
+                Buy It Now
+              </button>
+            </div>
 
-            {/* Actions */}
-            <div className="space-y-2">
-              {selectedVariant?.availableForSale ? (
-                <>
-                  <button
-                    onClick={() => handleAddToCart(selectedVariant.id, 1)}
-                    disabled={loading}
-                    className="w-full bg-black text-white py-2 rounded text-lg font-medium"
-                  >
-                    {loading ? 'Adding…' : 'Add to Cart'}
-                  </button>
-                  <button
-                    onClick={handleBuyNow}
-                    className="w-full bg-yellow-400 text-black py-2 rounded text-lg font-semibold"
-                  >
-                    Buy It Now
-                  </button>
-                </>
-              ) : (
+            {/* Purchase Limit */}
+            <p className="text-sm mt-2 text-gray-700">
+              Limited to 2 units per customer.
+            </p>
+
+            {/* View Product Details Link */}
+            <Link href={`/popup/${handle}`}>
+              <span className="block text-center mt-2 text-black font-medium relative w-fit mx-auto cursor-pointer group">
+                VIEW PRODUCT DETAILS
+                <span className="absolute bottom-0 left-1/2 w-0 group-hover:w-full group-hover:left-0 h-[2px] bg-black transition-all duration-300 ease-out"></span>
+              </span>
+            </Link>
+          </div>
+
+          {/* Tabbed Info */}
+          <div className="mt-6">
+            <div className="flex gap-4 border-b pb-1">
+              {["DETAILS", "SIZE & FIT", "SHIPPING & RETURNS"].map((tab) => (
                 <button
-                  onClick={handleNotifyClick}
-                  className="w-full border border-black py-2 rounded text-lg font-semibold hover:bg-gray-100"
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`text-sm font-semibold pb-1 ${
+                    activeTab === tab ? "border-b-2 border-black" : "text-gray-500"
+                  }`}
                 >
-                  Notify Me When Back in Stock
+                  {tab}
                 </button>
+              ))}
+            </div>
+            <div className="mt-4 text-sm text-gray-800">
+              {activeTab === "DETAILS" && <p>{description}</p>}
+              {activeTab === "SIZE & FIT" && <p>[Size & Fit content coming soon]</p>}
+              {activeTab === "SHIPPING & RETURNS" && (
+                <p>[Shipping & Returns content coming soon]</p>
               )}
             </div>
           </div>
@@ -208,6 +176,4 @@ const PopupProductQuickView = ({ product, selectedVariant: initialVariant, onClo
       </div>
     </div>
   );
-};
-
-export default PopupProductQuickView;
+}
