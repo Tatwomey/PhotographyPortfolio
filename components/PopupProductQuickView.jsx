@@ -17,8 +17,6 @@ export default function PopupProductQuickView({ product, onClose }) {
 
   const [selectedVariant, setSelectedVariant] = useState(variants[0]);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState("DETAILS");
-
   const { addToCart } = useShopContext();
 
   const handleVariantChange = (e) => {
@@ -75,8 +73,6 @@ export default function PopupProductQuickView({ product, onClose }) {
             height={1000}
             className="w-full h-auto object-contain rounded-md"
           />
-
-          {/* Thumbnails */}
           <div className="flex mt-4 gap-2 justify-center">
             {images.map((img, idx) => (
               <Image
@@ -86,9 +82,7 @@ export default function PopupProductQuickView({ product, onClose }) {
                 width={80}
                 height={100}
                 onClick={() => setSelectedImageIndex(idx)}
-                className={`cursor-pointer border rounded-md ${
-                  idx === selectedImageIndex ? "border-black" : "border-transparent"
-                }`}
+                className={`cursor-pointer border rounded-md ${idx === selectedImageIndex ? "border-black" : "border-transparent"}`}
               />
             ))}
           </div>
@@ -122,7 +116,7 @@ export default function PopupProductQuickView({ product, onClose }) {
               </select>
             </div>
 
-            {/* Action Buttons */}
+            {/* CTA Buttons */}
             <div className="flex flex-col gap-2 mt-6">
               <button
                 onClick={() => addToCart(selectedVariant.id, 1)}
@@ -135,42 +129,17 @@ export default function PopupProductQuickView({ product, onClose }) {
               </button>
             </div>
 
-            {/* Purchase Limit */}
             <p className="text-sm mt-2 text-gray-700">
               Limited to 2 units per customer.
             </p>
 
-            {/* View Product Details Link */}
+            {/* View Product Details Only */}
             <Link href={`/popup/${handle}`}>
-              <span className="block text-center mt-2 text-black font-medium relative w-fit mx-auto cursor-pointer group">
+              <span className="block text-center mt-4 text-black font-medium relative w-fit mx-auto cursor-pointer group">
                 VIEW PRODUCT DETAILS
                 <span className="absolute bottom-0 left-1/2 w-0 group-hover:w-full group-hover:left-0 h-[2px] bg-black transition-all duration-300 ease-out"></span>
               </span>
             </Link>
-          </div>
-
-          {/* Tabbed Info */}
-          <div className="mt-6">
-            <div className="flex gap-4 border-b pb-1">
-              {["DETAILS", "SIZE & FIT", "SHIPPING & RETURNS"].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`text-sm font-semibold pb-1 ${
-                    activeTab === tab ? "border-b-2 border-black" : "text-gray-500"
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-            <div className="mt-4 text-sm text-gray-800">
-              {activeTab === "DETAILS" && <p>{description}</p>}
-              {activeTab === "SIZE & FIT" && <p>[Size & Fit content coming soon]</p>}
-              {activeTab === "SHIPPING & RETURNS" && (
-                <p>[Shipping & Returns content coming soon]</p>
-              )}
-            </div>
           </div>
         </div>
       </div>

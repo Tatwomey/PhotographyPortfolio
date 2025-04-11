@@ -1,19 +1,19 @@
+// components/ProductSlugLayout.jsx
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useShopContext } from '@/contexts/shopContext';
 import Hero from '@/components/Hero';
+import TabSection from '@/components/TabSection';
 
 export default function ProductSlugLayout({ product }) {
   const { handleAddToCart } = useShopContext();
   const router = useRouter();
 
-  // ✅ Guard for undefined product
   if (!product || !product.variants) {
     return <div className="text-center py-20 text-lg">Loading product...</div>;
   }
 
-  // 🧠 Extract unique color options
   const colorOptions = Array.from(
     new Set(
       product.variants
@@ -206,38 +206,8 @@ export default function ProductSlugLayout({ product }) {
               )}
             </div>
 
-            {/* Details */}
-            <div className="border-t pt-4">
-              <h3 className="text-lg font-semibold mb-2">Details</h3>
-              <ul className="grid grid-cols-1 gap-2 text-sm text-gray-800 leading-relaxed list-inside">
-                <li className="flex items-start">
-                  <span className="text-black mt-1">•</span>
-                  <span className="ml-2">
-                    Printed on museum-grade archival Hahnemühle Baryta paper
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-black mt-1">•</span>
-                  <span className="ml-2">
-                    Hand-signed, hand-numbered, and embossed
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-black mt-1">•</span>
-                  <span className="ml-2">
-                    From the original RAW file — ultra high-resolution fidelity
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-black mt-1">•</span>
-                  <span className="ml-2">Limited to 10 editions</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-black mt-1">•</span>
-                  <span className="ml-2">Print size: 16 × 20 inches</span>
-                </li>
-              </ul>
-            </div>
+            {/* Tabs Component */}
+            <TabSection details={product.description} />
           </div>
         </div>
       </main>
