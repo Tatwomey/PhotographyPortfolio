@@ -134,7 +134,8 @@ export default function PopupProductQuickView({ product, onClose }) {
             </p>
 
             {/* View Product Details Only */}
-            <Link href={`/popup/${handle}`}>
+            <Link href={`/popup/${handle}#product-details`}>
+
               <span className="block text-center mt-4 text-black font-medium relative w-fit mx-auto cursor-pointer group">
                 VIEW PRODUCT DETAILS
                 <span className="absolute bottom-0 left-1/2 w-0 group-hover:w-full group-hover:left-0 h-[2px] bg-black transition-all duration-300 ease-out"></span>

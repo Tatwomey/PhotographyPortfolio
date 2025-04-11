@@ -81,7 +81,7 @@ export default function ProductSlugLayout({ product }) {
     <>
       <Hero />
       <main className="bg-white text-black px-4 py-12 container mx-auto">
-        <div className="flex flex-col lg:flex-row gap-10">
+        <div id="product-details" className="flex flex-col lg:flex-row gap-10 scroll-mt-20">
           {/* Left: Image */}
           <div className="w-full lg:max-w-[550px]">
             <div className="relative aspect-[4/5] bg-gray-100 rounded overflow-hidden shadow group">
