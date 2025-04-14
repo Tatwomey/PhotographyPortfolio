@@ -14,7 +14,7 @@ module.exports = {
       },
       keyframes: {
         fadeInUp: {
-          '0%': { opacity: '0', transform: 'translateY(1rem)' },
+          '0%': { opacity: '0', transform: 'translateY(1.5rem)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         scaleUp: {
@@ -25,11 +25,16 @@ module.exports = {
           '0%': { opacity: '0', filter: 'blur(4px)' },
           '100%': { opacity: '1', filter: 'blur(0)' },
         },
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        }
       },
       animation: {
-        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
-        'scale-up': 'scaleUp 0.4s ease-out forwards',
-        'blur-reveal': 'blurReveal 0.5s ease-out forwards',
+        'fade-in-up': 'fadeInUp 1.5s ease-out forwards',
+        'scale-up': 'scaleUp 0.6s ease-out forwards',
+        'blur-reveal': 'blurReveal 0.7s ease-out forwards',
+        'fade-in': 'fadeIn 1s ease-out forwards',
       },
     },
   },
