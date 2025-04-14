@@ -1,4 +1,3 @@
-// components/Portfolio.jsx (Updated with mobile-friendly fade + slide-up animation)
 import React, { useRef, useEffect, useState } from "react";
 import LightGallery from "lightgallery/react";
 import "lightgallery/css/lightgallery.css";
@@ -21,21 +20,24 @@ const Portfolio = ({ photos, sectionId }) => {
           loadedImages++;
           if (loadedImages === photos.length) setImagesLoaded(true);
         };
-        img.onerror = () => console.error("❌ Failed to load:", photo.src);
+        img.onerror = () => {
+          console.error("❌ Failed to load:", photo.src);
+          loadedImages++;
+          if (loadedImages === photos.length) setImagesLoaded(true);
+        };
+        
       });
     }
   }, [photos]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const lenis = new Lenis();
-      function raf(time) {
-        lenis.raf(time);
-        requestAnimationFrame(raf);
-      }
+    const lenis = new Lenis();
+    const raf = (time) => {
+      lenis.raf(time);
       requestAnimationFrame(raf);
-      return () => lenis.destroy();
-    }
+    };
+    requestAnimationFrame(raf);
+    return () => lenis.destroy();
   }, []);
 
   const handlePhotoClick = (index) => {

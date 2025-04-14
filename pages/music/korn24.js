@@ -1,11 +1,10 @@
+// pages/music/korn24.jsx
 import React, { useEffect } from "react";
 import withAuth from "@/utils/withAuth";
 import Hero from "@/components/Hero";
 import Portfolio from "@/components/Portfolio";
 import Lenis from "@studio-freight/lenis";
 
- 
-  
 const photos = [
   { src: "/korn24/korn_2024_trevortwomey-1.jpg", type: "portrait" },
   { src: "/korn24/korn_2024_trevortwomey-2.jpg", type: "portrait" },
@@ -29,8 +28,8 @@ const photos = [
   { src: "/korn24/korn_2024_trevortwomey-20.jpg", type: "portrait" },
   { src: "/korn24/korn_2024_trevortwomey-51.jpg", type: "portrait" },
   { src: "/korn24/korn_2024_trevortwomey-52.jpg", type: "portrait" },
-  { src: "/korn24/korn_2024_trevortwomey-21.jpg", type: "portait" },
-  { src: "/korn24/korn_2024_trevortwomey-022.jpg", type: "landscape" },
+  { src: "/korn24/korn_2024_trevortwomey-21.jpg", type: "portrait" },
+  { src: "/korn24/korn_2024_trevortwomey-22.jpg", type: "landscape" },
   { src: "/korn24/korn_2024_trevortwomey-49.jpg", type: "landscape" },
   { src: "/korn24/korn_2024_trevortwomey-23.jpg", type: "landscape" },
   { src: "/korn24/korn_2024_trevortwomey-24.jpg", type: "portrait" },
@@ -57,43 +56,37 @@ const photos = [
   { src: "/korn24/korn_2024_trevortwomey-45.jpg", type: "portrait" },
   { src: "/korn24/korn_2024_trevortwomey-46.jpg", type: "portrait" },
   { src: "/korn24/korn_2024_trevortwomey-48.jpg", type: "landscape" },
- 
- 
 ];
-  
-  const Korn24 = () => {
-    useEffect(() => {
-      if (typeof window !== "undefined") {
-        // ✅ Scroll into view when page loads
-        setTimeout(() => {
-          const section = document.getElementById("korn-photos");
-          if (section) {
-            section.scrollIntoView({ behavior: "smooth" });
-          }
-        }, 250);
-  
-        // ✅ Lenis Smooth Scroll Init
-        const lenis = new Lenis();
-        const raf = (time) => {
-          lenis.raf(time);
-          requestAnimationFrame(raf);
-        };
+
+const Korn24 = () => {
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // ✅ Scroll to photo section on mount
+      setTimeout(() => {
+        const section = document.getElementById("korn-photos");
+        if (section) {
+          section.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 250);
+
+      // ✅ Init Lenis smooth scroll
+      const lenis = new Lenis();
+      const raf = (time) => {
+        lenis.raf(time);
         requestAnimationFrame(raf);
-  
-        return () => lenis.destroy();
-      }
-    }, []);
-  
-    return (
-      <div>
-        <Hero
-          // You can use a conditional or pass different props depending on use case
-          heading=""
-          message=""
-        />
-        <Portfolio photos={photos} sectionId="korn-photos" />
-      </div>
-    );
-  };
-  
-  export default withAuth(Korn24, ["/music/korn24"]);
+      };
+      requestAnimationFrame(raf);
+
+      return () => lenis.destroy();
+    }
+  }, []);
+
+  return (
+    <div>
+      <Hero />
+      <Portfolio photos={photos} sectionId="korn-photos" />
+    </div>
+  );
+};
+
+export default withAuth(Korn24, ["/music/korn24"]);
