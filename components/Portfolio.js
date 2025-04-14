@@ -1,3 +1,4 @@
+// components/Portfolio.jsx (Updated with mobile-friendly fade + slide-up animation)
 import React, { useRef, useEffect, useState } from "react";
 import LightGallery from "lightgallery/react";
 import "lightgallery/css/lightgallery.css";
@@ -10,7 +11,6 @@ const Portfolio = ({ photos, sectionId }) => {
   const lightboxRef = useRef(null);
   const [imagesLoaded, setImagesLoaded] = useState(false);
 
-  /** ✅ Ensure all images are fully loaded before rendering */
   useEffect(() => {
     if (typeof window !== "undefined" && photos.length > 0) {
       let loadedImages = 0;
@@ -19,16 +19,13 @@ const Portfolio = ({ photos, sectionId }) => {
         img.src = photo.src;
         img.onload = () => {
           loadedImages++;
-          if (loadedImages === photos.length) {
-            setImagesLoaded(true);
-          }
+          if (loadedImages === photos.length) setImagesLoaded(true);
         };
         img.onerror = () => console.error("❌ Failed to load:", photo.src);
       });
     }
   }, [photos]);
 
-  /** ✅ Enable smooth scrolling */
   useEffect(() => {
     if (typeof window !== "undefined") {
       const lenis = new Lenis();
@@ -37,17 +34,12 @@ const Portfolio = ({ photos, sectionId }) => {
         requestAnimationFrame(raf);
       }
       requestAnimationFrame(raf);
-      return () => lenis.destroy(); // ✅ Cleanup to prevent memory leaks
+      return () => lenis.destroy();
     }
   }, []);
 
-  /** ✅ Handle image click to open LightGallery */
   const handlePhotoClick = (index) => {
-    console.log("📸 Photo Clicked:", photos[index]?.src);
-    if (lightboxRef.current) {
-      console.log("🖼️ Opening Lightbox at index:", index);
-      lightboxRef.current.openGallery(index);
-    }
+    if (lightboxRef.current) lightboxRef.current.openGallery(index);
   };
 
   return (
@@ -58,7 +50,8 @@ const Portfolio = ({ photos, sectionId }) => {
             {photos.map((photo, index) => (
               <div
                 key={photo.src}
-                className={`grid-item ${photo.type === "landscape" ? "landscape" : "portrait"}`}
+                className={`grid-item ${photo.type === "landscape" ? "landscape" : "portrait"} group cursor-pointer overflow-hidden opacity-0 translate-y-4 animate-fade-in-up`}
+                style={{ animationDelay: `${index * 75}ms`, animationFillMode: "forwards" }}
                 onClick={() => handlePhotoClick(index)}
               >
                 <Image
@@ -67,13 +60,12 @@ const Portfolio = ({ photos, sectionId }) => {
                   width={photo.type === "landscape" ? 1200 : 800}
                   height={photo.type === "landscape" ? 800 : 1200}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  priority={index < 4} // ✅ Ensures first 4 images load immediately
-                  loading={index < 4 ? "eager" : "lazy"} // ✅ Prevents blank placeholders
+                  className="portfolio-image transition-all duration-300 group-hover:scale-[1.03] group-hover:brightness-105 group-hover:shadow-xl"
+                  priority={index < 4}
+                  loading={index < 4 ? "eager" : "lazy"}
                   onError={() => console.error("❌ Image failed to load:", photo.src)}
                   onLoad={() => console.log("✅ Image loaded:", photo.src)}
-                  className="portfolio-image"
                 />
-                
               </div>
             ))}
           </div>
@@ -81,10 +73,7 @@ const Portfolio = ({ photos, sectionId }) => {
           <LightGallery
             key={photos.length}
             onInit={(ref) => {
-              if (ref) {
-                console.log("✅ LightGallery initialized successfully");
-                lightboxRef.current = ref.instance;
-              }
+              if (ref) lightboxRef.current = ref.instance;
             }}
             id="lightGallery"
             download={false}
