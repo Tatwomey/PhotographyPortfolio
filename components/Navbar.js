@@ -39,28 +39,26 @@ const Navbar = () => {
 
   return (
     <div
-    style={{
-      backgroundColor: nav ? 'black' : navbarStyle.backgroundColor,
-      transition: 'background-color 0.3s ease',
-    }}
-    className={`fixed left-0 top-0 w-full z-30 ease-in duration-300 opacity-0 animate-fadeIn`}
-  >
-  
-      <div className='max-w-[1280px] m-auto flex justify-between items-center py-4 px-4'>
-        <Link href='/#home' onClick={closeNav}>
-        <Image
-  src={isShopPage ? '/Watermarklogo_bw.png' : '/Watermarklogo_2025.png'}
-  alt='Logo'
-  width={374}
-  height={374}
-  className='navbar-logo transition-all duration-500 ease-in-out'
-  style={{ cursor: 'pointer' }}
-/>
-
+      style={{
+        backgroundColor: nav ? 'black' : navbarStyle.backgroundColor,
+        transition: 'background-color 0.3s ease',
+      }}
+      className="fixed left-0 top-0 w-full z-50 transition-opacity duration-300 opacity-100"
+    >
+      <div className="max-w-[1280px] m-auto flex justify-between items-center py-4 px-4">
+        <Link href="/#home" onClick={closeNav}>
+          <Image
+            src={isShopPage ? '/Watermarklogo_bw.png' : '/Watermarklogo_2025.png'}
+            alt="Logo"
+            width={374}
+            height={374}
+            className="navbar-logo transition-all duration-500 ease-in-out"
+            style={{ cursor: 'pointer' }}
+          />
         </Link>
 
         {/* Desktop Nav */}
-        <div className='hidden md:flex space-x-4 items-center'>
+        <div className="hidden md:flex space-x-4 items-center">
           {[
             { href: '/#home', label: 'Home' },
             { href: '/about#about', label: 'About' },
@@ -75,11 +73,11 @@ const Navbar = () => {
             </Link>
           ))}
 
-          <div className='flex space-x-2'>
+          <div className="flex space-x-2">
             <a
-              href='https://www.instagram.com/trevortwomey/'
-              target='_blank'
-              rel='noopener noreferrer'
+              href="https://www.instagram.com/trevortwomey/"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <FaInstagram
                 size={20}
@@ -87,9 +85,9 @@ const Navbar = () => {
               />
             </a>
             <a
-              href='https://www.linkedin.com/in/trevor-twomey'
-              target='_blank'
-              rel='noopener noreferrer'
+              href="https://www.linkedin.com/in/trevor-twomey"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <FaLinkedin
                 size={20}
@@ -100,7 +98,7 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Menu Toggle */}
-        <div onClick={handleNav} className='block md:hidden z-10 cursor-pointer'>
+        <div onClick={handleNav} className="block md:hidden z-50 cursor-pointer">
           {nav ? (
             <AiOutlineClose size={30} className={isShopPage ? 'text-black' : 'text-white'} />
           ) : (
@@ -114,18 +112,27 @@ const Navbar = () => {
 
       {/* Mobile Nav */}
       {nav && (
-  <div className={`md:hidden py-4 ${isShopPage ? 'bg-white' : 'bg-black'}`}>
-    <ul
-      className={`flex flex-col space-y-4 px-6 text-lg ${
-        isShopPage ? 'text-black' : 'text-white'
-      }`}
-    >
-
-            <li onClick={closeNav}><Link href='/#home'>Home</Link></li>
-            <li onClick={closeNav}><Link href='/about#about'>About</Link></li>
-            <li onClick={closeNav}><Link href='/music#music-photography'>Music</Link></li>
-            <li onClick={closeNav}><Link href='/contact#work-with-me'>Let&apos;s talk</Link></li>
-            <li onClick={closeNav}><Link href='/shop#shop'>Shop</Link></li>
+        <div className={`md:hidden py-4 ${isShopPage ? 'bg-white' : 'bg-black'}`}>
+          <ul
+            className={`flex flex-col space-y-4 px-6 text-lg ${
+              isShopPage ? 'text-black' : 'text-white'
+            }`}
+          >
+            <li onClick={closeNav}>
+              <Link href="/#home">Home</Link>
+            </li>
+            <li onClick={closeNav}>
+              <Link href="/about#about">About</Link>
+            </li>
+            <li onClick={closeNav}>
+              <Link href="/music#music-photography">Music</Link>
+            </li>
+            <li onClick={closeNav}>
+              <Link href="/contact#work-with-me">Let&apos;s talk</Link>
+            </li>
+            <li onClick={closeNav}>
+              <Link href="/shop#shop">Shop</Link>
+            </li>
           </ul>
         </div>
       )}
