@@ -22,24 +22,38 @@ export async function getStaticPaths() {
     `,
   };
 
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': token,
-    },
-    body: JSON.stringify(graphqlQuery),
-  });
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': token,
+      },
+      body: JSON.stringify(graphqlQuery),
+    });
 
-  const responseJson = await res.json();
-  const paths = responseJson.data.collectionByHandle.products.edges.map(({ node }) => ({
-    params: { slug: node.handle },
-  }));
+    const responseJson = await res.json();
+    const paths = responseJson.data.collectionByHandle.products.edges.map(({ node }) => ({
+      params: { slug: node.handle },
+    }));
 
-  return { paths, fallback: 'blocking' };
+    return { paths, fallback: 'blocking' };
+  } catch (err) {
+    console.error('Error fetching static paths:', err);
+    return { paths: [], fallback: 'blocking' };
+  }
 }
 
 export async function getStaticProps({ params }) {
+  const RESERVED_SLUGS = ['terms', 'privacy'];
+
+  // ⚠️ If slug is reserved for a legal page, show 404
+  if (RESERVED_SLUGS.includes(params.slug)) {
+    return {
+      notFound: true,
+    };
+  }
+
   const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
   const token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
@@ -83,26 +97,39 @@ export async function getStaticProps({ params }) {
     variables: { handle: params.slug },
   };
 
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': token,
+      },
+      body: JSON.stringify(graphqlQuery),
+    });
 
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': token,
-    },
-    body: JSON.stringify(graphqlQuery),
-  });
+    const responseJson = await res.json();
+    const node = responseJson?.data?.productByHandle;
 
-  const responseJson = await res.json();
-  const node = responseJson.data.productByHandle;
+    // ❌ Product not found = 404 page
+    if (!node) {
+      return {
+        notFound: true,
+      };
+    }
 
-  const product = {
-    ...node,
-    images: node.images.edges.map((e) => e.node),
-    variants: node.variants.edges.map((e) => e.node),
-  };
+    const product = {
+      ...node,
+      images: node.images.edges.map((e) => e.node),
+      variants: node.variants.edges.map((e) => e.node),
+    };
 
-  return { props: { product } };
+    return { props: { product } };
+  } catch (error) {
+    console.error('Error loading product slug:', error);
+    return {
+      notFound: true,
+    };
+  }
 }
 
 export default function ShopSlug({ product }) {
