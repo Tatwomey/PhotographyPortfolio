@@ -11,17 +11,22 @@ const GoogleAnalytics = () => {
   useEffect(() => {
     const email = session?.user?.email;
 
+    if (!email || typeof email !== "string") return;
+
     const hashEmail = async (email) => {
-      const encoder = new TextEncoder();
-      const data = encoder.encode(email.toLowerCase().trim());
-      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+      try {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(email.toLowerCase().trim());
+        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashed = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+        setHashedUserId(hashed);
+      } catch (err) {
+        console.error("Error hashing user email for GA4:", err);
+      }
     };
 
-    if (email) {
-      hashEmail(email).then(setHashedUserId);
-    }
+    hashEmail(email);
   }, [session]);
 
   if (!gaId) {
@@ -31,47 +36,46 @@ const GoogleAnalytics = () => {
 
   return (
     <>
-      {/* Load GA4 Script */}
+      {/* Load GA4 script */}
       <Script
         strategy="afterInteractive"
         src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
       />
 
-      {/* GA4 base config + photo click listener + trackGAEvent definition */}
+      {/* Init GA4 and attach tracking helpers */}
       <Script
         id="ga4-init"
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: `
             window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
+            function gtag() { dataLayer.push(arguments); }
             gtag('js', new Date());
 
-            // Default fallback user ID until we inject the real one
+            // Init with default placeholder
             window.__hashedUserId = "anonymous_user";
 
-            // Expose custom event trigger
+            // Track custom events with consistent user binding
             window.trackGAEvent = (eventName, eventParams = {}) => {
               if (window.gtag) {
                 window.gtag("event", eventName, {
                   ...eventParams,
-                  user_id: window.__hashedUserId,
                   user_identifier: window.__hashedUserId
                 });
               }
             };
 
-            // Auto-track gallery photo clicks
-            document.addEventListener('DOMContentLoaded', function () {
-              document.body.addEventListener('click', function (e) {
+            // Track image clicks inside .gallery
+            document.addEventListener("DOMContentLoaded", function () {
+              document.body.addEventListener("click", function (e) {
                 const target = e.target;
-                if (target.tagName === 'IMG' && target.closest('.gallery')) {
-                  const galleryName = window.location.pathname.split('/').pop();
-                  const imgSrc = target.src || '';
-                  const imgAlt = target.alt || '';
-                  const imgClass = target.className || '';
+                if (target.tagName === "IMG" && target.closest(".gallery")) {
+                  const galleryName = window.location.pathname.split("/").pop();
+                  const imgSrc = target.src || "";
+                  const imgAlt = target.alt || "";
+                  const imgClass = target.className || "";
 
-                  window.trackGAEvent('photo_click', {
+                  window.trackGAEvent("photo_click", {
                     gallery_name: galleryName,
                     image_src: imgSrc,
                     image_alt: imgAlt,
@@ -85,7 +89,7 @@ const GoogleAnalytics = () => {
         }}
       />
 
-      {/* Inject hashed user_id + custom dimension value */}
+      {/* Inject hashed user ID after it's available */}
       {hashedUserId !== "anonymous_user" && (
         <Script
           id="ga4-user-id"
@@ -95,7 +99,6 @@ const GoogleAnalytics = () => {
               window.__hashedUserId = "${hashedUserId}";
               gtag('config', '${gaId}', {
                 page_path: window.location.pathname,
-                user_id: "${hashedUserId}",
                 user_properties: {
                   user_identifier: "${hashedUserId}"
                 }
