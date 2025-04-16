@@ -47,11 +47,8 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const RESERVED_SLUGS = ['terms', 'privacy'];
 
-  // ⚠️ If slug is reserved for a legal page, show 404
   if (RESERVED_SLUGS.includes(params.slug)) {
-    return {
-      notFound: true,
-    };
+    return { notFound: true };
   }
 
   const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
@@ -108,14 +105,13 @@ export async function getStaticProps({ params }) {
     });
 
     const responseJson = await res.json();
-    const node = responseJson?.data?.productByHandle;
 
-    // ❌ Product not found = 404 page
-    if (!node) {
-      return {
-        notFound: true,
-      };
+    // ✅ Exit early if product not found
+    if (!responseJson?.data?.productByHandle) {
+      return { notFound: true };
     }
+
+    const node = responseJson.data.productByHandle;
 
     const product = {
       ...node,
@@ -125,12 +121,11 @@ export async function getStaticProps({ params }) {
 
     return { props: { product } };
   } catch (error) {
-    console.error('Error loading product slug:', error);
-    return {
-      notFound: true,
-    };
+    console.error('Error in getStaticProps for slug:', error);
+    return { notFound: true };
   }
 }
+
 
 export default function ShopSlug({ product }) {
   return <ProductSlugLayout product={product} />;
