@@ -1,114 +1,84 @@
-import { useEffect, useState } from "react";
-import Script from "next/script";
-import { useSession } from "next-auth/react";
+import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import nodemailer from "nodemailer";
 
-const GoogleAnalytics = () => {
-  const gaId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID;
-  const { data: session } = useSession();
+const sendLoginNotification = async (username) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
 
-  const [hashedUserId, setHashedUserId] = useState("anonymous_user");
+  const mailOptions = {
+    from: '"Login Notifier" <info@trevortwomeyphoto.com>',
+    to: process.env.EMAIL_USER,
+    subject: `New Login - ${username}`,
+    text: `${username} just logged in.`,
+  };
 
-  useEffect(() => {
-    const email = session?.user?.email;
-
-    const hashEmail = async (email) => {
-      const encoder = new TextEncoder();
-      const data = encoder.encode(email.toLowerCase().trim());
-      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-    };
-
-    if (email) {
-      hashEmail(email).then(setHashedUserId);
-    }
-  }, [session]);
-
-  if (!gaId) {
-    console.warn("Google Analytics ID is missing.");
-    return null;
-  }
-
-  return (
-    <>
-      {/* Load GA4 Script */}
-      <Script
-        strategy="afterInteractive"
-        src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-      />
-
-      {/* GA4 base config + debug mode + photo click tracker */}
-      <Script
-        id="ga4-init"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-
-            // ✅ Force debug mode
-            gtag('set', 'debug_mode', true);
-
-            // Default user ID until we inject the real one
-            window.__hashedUserId = "anonymous_user";
-
-            // Expose global custom event tracker
-            window.trackGAEvent = (eventName, eventParams = {}) => {
-              if (window.gtag) {
-                window.gtag("event", eventName, {
-                  ...eventParams,
-                  user_id: window.__hashedUserId,
-                  user_identifier: window.__hashedUserId
-                });
-              }
-            };
-
-            // Track clicks on gallery images
-            document.addEventListener('DOMContentLoaded', function () {
-              document.body.addEventListener('click', function (e) {
-                const target = e.target;
-                if (target.tagName === 'IMG' && target.closest('.gallery')) {
-                  const galleryName = window.location.pathname.split('/').pop();
-                  const imgSrc = target.src || '';
-                  const imgAlt = target.alt || '';
-                  const imgClass = target.className || '';
-
-                  window.trackGAEvent('photo_click', {
-                    gallery_name: galleryName,
-                    image_src: imgSrc,
-                    image_alt: imgAlt,
-                    image_class: imgClass,
-                    page_path: window.location.pathname
-                  });
-                }
-              });
-            });
-          `,
-        }}
-      />
-
-      {/* Inject hashed user_id + custom dimension */}
-      {hashedUserId !== "anonymous_user" && (
-        <Script
-          id="ga4-user-id"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.__hashedUserId = "${hashedUserId}";
-              gtag('config', '${gaId}', {
-                page_path: window.location.pathname,
-                user_id: "${hashedUserId}",
-                user_properties: {
-                  user_identifier: "${hashedUserId}"
-                }
-              });
-            `,
-          }}
-        />
-      )}
-    </>
-  );
+  await transporter.sendMail(mailOptions);
 };
 
-export default GoogleAnalytics;
+export default NextAuth({
+  providers: [
+    CredentialsProvider({
+      name: "Client Login",
+      credentials: {
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        const users = [
+          { id: "1", username: "loseear@gmail.com", password: "korntour2025", allowedPages: ["/music/korn24"] },
+          { id: "2", username: "jcshaffer@me.com", password: "Jcshaffer70", allowedPages: ["/music/korn24"] },
+          { id: "3", username: "jefffranca", password: "Thievery25", allowedPages: ["/music/thievery25"] },
+          { id: "4", username: "sunyaboy", password: "sunyaboy", allowedPages: ["/music/thievery25"] },
+          { id: "5", username: "munkshaffer", password: "korntour2024", allowedPages: ["/music/korn24"] },
+          { id: "6", username: "toddytodd", password: "thankstodd!", allowedPages: ["/music/korn24"] },
+          { id: "7", username: "trevor.a.twomey@gmail.com", password: "tatwomey", allowedPages: ["/music/korn24"] },
+          { id: "8", username: "robgarzamusic@gmail.com", password: "terminal5", allowedPages: ["/music/thievery25"] },
+        ];
+
+        const user = users.find(
+          (u) => u.username === credentials.username && u.password === credentials.password
+        );
+
+        if (user) {
+          return { id: user.id, username: user.username, allowedPages: user.allowedPages };
+        } else {
+          throw new Error("I think you fucked up.");
+        }
+      },
+    }),
+  ],
+  pages: {
+    signIn: "/login",
+  },
+  callbacks: {
+    async session({ session, token }) {
+      session.user = {
+        id: token.sub,
+        username: token.username,
+        allowedPages: token.allowedPages || [],
+      };
+      return session;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.username = user.username;
+        token.allowedPages = user.allowedPages;
+      }
+      return token;
+    },
+  },
+  events: {
+    async signIn({ user }) {
+      if (user?.username) {
+        await sendLoginNotification(user.username);
+      }
+    },
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+});
