@@ -37,7 +37,7 @@ const GoogleAnalytics = () => {
         src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
       />
 
-      {/* Base GA4 Config and photo click tracker */}
+      {/* GA4 base config + photo click listener + trackGAEvent definition */}
       <Script
         id="ga4-init"
         strategy="afterInteractive"
@@ -47,17 +47,21 @@ const GoogleAnalytics = () => {
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
 
+            // Default fallback user ID until we inject the real one
             window.__hashedUserId = "anonymous_user";
 
+            // Expose custom event trigger
             window.trackGAEvent = (eventName, eventParams = {}) => {
               if (window.gtag) {
                 window.gtag("event", eventName, {
                   ...eventParams,
-                  user_id: window.__hashedUserId
+                  user_id: window.__hashedUserId,
+                  user_identifier: window.__hashedUserId
                 });
               }
             };
 
+            // Auto-track gallery photo clicks
             document.addEventListener('DOMContentLoaded', function () {
               document.body.addEventListener('click', function (e) {
                 const target = e.target;
@@ -81,7 +85,7 @@ const GoogleAnalytics = () => {
         }}
       />
 
-      {/* Inject user_id into GA4 config once available */}
+      {/* Inject hashed user_id + custom dimension value */}
       {hashedUserId !== "anonymous_user" && (
         <Script
           id="ga4-user-id"
@@ -91,7 +95,10 @@ const GoogleAnalytics = () => {
               window.__hashedUserId = "${hashedUserId}";
               gtag('config', '${gaId}', {
                 page_path: window.location.pathname,
-                user_id: "${hashedUserId}"
+                user_id: "${hashedUserId}",
+                user_properties: {
+                  user_identifier: "${hashedUserId}"
+                }
               });
             `,
           }}
