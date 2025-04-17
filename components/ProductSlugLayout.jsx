@@ -1,7 +1,7 @@
-// components/ProductSlugLayout.jsx
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useShopContext } from '@/contexts/shopContext';
 import Hero from '@/components/Hero';
 import TabSection from '@/components/TabSection';
@@ -35,8 +35,9 @@ export default function ProductSlugLayout({ product }) {
     defaultVariant.selectedOptions.find((opt) => opt.name.toLowerCase() === 'color')?.value
   );
   const [selectedVariant, setSelectedVariant] = useState(defaultVariant);
-  const [mainImage, setMainImage] = useState(defaultVariant.image?.src || product.images[0]?.src);
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
+
+  const mainImage = product.images[currentImageIdx]?.src;
 
   const variantsForColor = product.variants.filter((v) =>
     v.selectedOptions.some(
@@ -48,8 +49,9 @@ export default function ProductSlugLayout({ product }) {
     const variant = variantsForColor[0];
     if (variant) {
       setSelectedVariant(variant);
-      setMainImage(variant.image?.src || product.images[0]?.src);
-      setCurrentImageIdx(0);
+      setCurrentImageIdx(
+        product.images.findIndex((img) => img.src === variant.image?.src) || 0
+      );
     }
   }, [selectedColor]);
 
@@ -57,13 +59,22 @@ export default function ProductSlugLayout({ product }) {
     const variant = product.variants.find((v) => v.id === e.target.value);
     if (variant) {
       setSelectedVariant(variant);
-      setMainImage(variant.image?.src || product.images[0]?.src);
-
       const newColor = variant.selectedOptions.find((opt) => opt.name.toLowerCase() === 'color');
       if (newColor?.value) {
         setSelectedColor(newColor.value);
       }
+
+      const idx = product.images.findIndex((img) => img.src === variant.image?.src);
+      if (idx !== -1) setCurrentImageIdx(idx);
     }
+  };
+
+  const nextImage = () => {
+    setCurrentImageIdx((prev) => (prev + 1) % product.images.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIdx((prev) => (prev - 1 + product.images.length) % product.images.length);
   };
 
   const handleBuyNow = async () => {
@@ -92,6 +103,25 @@ export default function ProductSlugLayout({ product }) {
                 objectFit="cover"
                 className="rounded transition-transform duration-300 ease-in-out group-hover:scale-105"
               />
+
+              {/* Navigation Arrows */}
+              {product.images.length > 1 && (
+                <>
+                  <button
+                    onClick={prevImage}
+                    className="absolute top-1/2 left-2 -translate-y-1/2 bg-white bg-opacity-70 p-1 rounded-full shadow-md hover:scale-105"
+                  >
+                    <ChevronLeft />
+                  </button>
+                  <button
+                    onClick={nextImage}
+                    className="absolute top-1/2 right-2 -translate-y-1/2 bg-white bg-opacity-70 p-1 rounded-full shadow-md hover:scale-105"
+                  >
+                    <ChevronRight />
+                  </button>
+                </>
+              )}
+
               {!selectedVariant.availableForSale && (
                 <div className="absolute top-0 left-0 bg-red-600 text-white text-sm font-bold px-3 py-1">
                   Sold Out
@@ -99,15 +129,13 @@ export default function ProductSlugLayout({ product }) {
               )}
             </div>
 
+            {/* Thumbnails */}
             {product.images.length > 1 && (
               <div className="flex gap-3 mt-4 overflow-x-auto">
                 {product.images.map((img, idx) => (
                   <button
                     key={idx}
-                    onClick={() => {
-                      setMainImage(img.src);
-                      setCurrentImageIdx(idx);
-                    }}
+                    onClick={() => setCurrentImageIdx(idx)}
                     className={`border rounded-md overflow-hidden ${
                       currentImageIdx === idx ? 'border-black' : 'border-gray-300'
                     }`}
