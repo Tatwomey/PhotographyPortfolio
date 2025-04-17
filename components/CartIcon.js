@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { BsCart3 } from "react-icons/bs";
-import { useShopContext } from "/contexts/shopContext";
+import { useShopContext } from "@/contexts/shopContext";
 
-const CartIcon = () => {
+const CartIcon = ({ isDarkMode }) => {
   const { cart, toggleCart } = useShopContext();
   const [hydrated, setHydrated] = useState(false);
   const cartCount = cart?.lines?.edges?.length || 0;
@@ -12,8 +12,11 @@ const CartIcon = () => {
   }, []);
 
   return (
-    <div className="cart-icon-link cursor-pointer flex items-center relative" onClick={toggleCart}>
-      <BsCart3 size={28} className="text-white" />
+    <div
+      className="cart-icon-link cursor-pointer flex items-center relative"
+      onClick={toggleCart}
+    >
+      <BsCart3 size={28} className={isDarkMode ? "text-white" : "text-black"} />
       {hydrated && cartCount > 0 && (
         <span className="cart-icon-badge">{cartCount}</span>
       )}

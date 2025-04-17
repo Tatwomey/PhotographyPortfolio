@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useShopContext } from "@/contexts/shopContext";
@@ -17,7 +18,8 @@ export default function PopupProductQuickView({ product, onClose }) {
 
   const [selectedVariant, setSelectedVariant] = useState(variants[0]);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const { addToCart } = useShopContext();
+  const { handleAddToCart, toggleCart } = useShopContext();
+  const router = useRouter();
 
   const handleVariantChange = (e) => {
     const variant = variants.find((v) => v.id === e.target.value);
@@ -34,6 +36,17 @@ export default function PopupProductQuickView({ product, onClose }) {
 
   const prevImage = () => {
     setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const handleBuyNow = async () => {
+    await handleAddToCart(selectedVariant.id, 1);
+    router.push("/checkout");
+  };
+
+  const handleAddAndClose = async () => {
+    await handleAddToCart(selectedVariant.id, 1);
+    onClose();     // ✅ Close Quick View
+    toggleCart();  // ✅ Open Cart Drawer
   };
 
   return (
@@ -119,12 +132,15 @@ export default function PopupProductQuickView({ product, onClose }) {
             {/* CTA Buttons */}
             <div className="flex flex-col gap-2 mt-6">
               <button
-                onClick={() => addToCart(selectedVariant.id, 1)}
+                onClick={handleAddAndClose}
                 className="bg-black text-white py-2 px-4 rounded-md hover:opacity-90 transition"
               >
                 Add to Cart
               </button>
-              <button className="bg-yellow-400 text-black py-2 px-4 rounded-md hover:opacity-90 transition">
+              <button
+                onClick={handleBuyNow}
+                className="bg-yellow-400 text-black py-2 px-4 rounded-md hover:opacity-90 transition"
+              >
                 Buy It Now
               </button>
             </div>
@@ -133,9 +149,7 @@ export default function PopupProductQuickView({ product, onClose }) {
               Limited to 2 units per customer.
             </p>
 
-            {/* View Product Details Only */}
             <Link href={`/popup/${handle}#product-details`}>
-
               <span className="block text-center mt-4 text-black font-medium relative w-fit mx-auto cursor-pointer group">
                 VIEW PRODUCT DETAILS
                 <span className="absolute bottom-0 left-1/2 w-0 group-hover:w-full group-hover:left-0 h-[2px] bg-black transition-all duration-300 ease-out"></span>

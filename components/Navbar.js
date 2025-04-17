@@ -107,7 +107,8 @@ const Navbar = () => {
         </div>
 
         {/* Client-side Cart Icon */}
-        {typeof window !== 'undefined' && <CartIcon />}
+        {typeof window !== 'undefined' && <CartIcon isDarkMode={!isShopPage} />}
+
       </div>
 
       {/* Mobile Nav */}
