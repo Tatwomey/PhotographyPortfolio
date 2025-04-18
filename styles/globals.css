@@ -20,13 +20,9 @@ body {
   cursor: default;
 }
 
-
-
-
 main {
   background-color: transparent;
 }
-
 
 body.light-mode,
 body.light-mode main,
@@ -37,88 +33,192 @@ body.light-mode .shop-wrapper {
   color: black !important;
 }
 
-
 /* ✅ Quick View Modal Styles */
 .quickview-modal {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 50;
+  padding: 2rem;
+  animation: fadeInModal 0.3s ease-out;
 }
 
 .quickview-modal-content {
   background: white;
   position: relative;
-  max-width: 1024px;
-  width: 95%;
-  padding: 1rem;
-  border-radius: 8px;
+  height: auto;
+  width: 100%;
+  max-width: 960px;
+  max-height: 95vh;
   display: flex;
   flex-direction: column;
+  border-radius: 14px;
   overflow: hidden;
-  max-height: 90vh;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  animation: slideFadeUp 0.4s ease-out both;
 }
 
-@media (min-width: 768px) {
-  .quickview-modal-content {
-    flex-direction: row;
-    padding: 2rem;
+@keyframes fadeInModal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
 .quickview-image-section {
-  position: relative;
   flex: 1;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  min-width: 0;
+}
+
+.quickview-main-image-wrapper {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  position: relative;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.quickview-main-image-wrapper img {
+  object-fit: contain;
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.quickview-main-image-wrapper img:hover {
+  transform: scale(1.02);
+}
+
+.quickview-thumbnails {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.quickview-thumbnails img {
+  width: 70px;
+  height: 90px;
+  border-radius: 4px;
+  object-fit: cover;
+  cursor: pointer;
+  transition: border 0.2s ease;
+}
+
+.quickview-thumbnails img.active {
+  border: 2px solid black;
 }
 
 .quickview-details-section {
   flex: 1;
-  padding: 1rem;
+  padding: 1.5rem;
   overflow-y: auto;
 }
 
 .quickview-close-btn {
   position: absolute;
-  top: 10px;
-  right: 15px;
+  top: 12px;
+  right: 14px;
   font-size: 2rem;
   color: black;
-  cursor: pointer;
   background: none;
   border: none;
+  cursor: pointer;
+  z-index: 10;
 }
 
 .modal-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 9999px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  color: black;
   z-index: 10;
-  transition: background 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.modal-arrow.left {
+  left: 12px;
+}
+.modal-arrow.right {
+  right: 12px;
 }
 .modal-arrow:hover {
   background: rgba(255, 255, 255, 1);
 }
-.modal-arrow.left {
-  left: 10px;
+
+@media (min-width: 768px) {
+  .quickview-modal-content {
+    flex-direction: row;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
 }
-.modal-arrow.right {
-  right: 10px;
+
+@media (max-width: 640px) {
+  .quickview-modal {
+    padding: 1rem;
+  }
+
+  .quickview-modal-content {
+    padding: 0;
+    flex-direction: column;
+    height: auto;
+    max-height: 95vh;
+  }
+
+  .quickview-main-image-wrapper img {
+    height: auto;
+    max-height: 320px;
+  }
+
+  .quickview-details-section {
+    padding: 1rem;
+  }
+}
+
+/* ✅ Disable hover styles on mobile devices */
+@media (hover: none) and (pointer: coarse) {
+  .quickview-thumbnails img:hover {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 
 /* ✅ Consistent Image Sizing */
@@ -235,9 +335,9 @@ img {
   margin: 0 auto;
   padding: 20px;
   overflow-x: hidden;
-padding-bottom: 4rem;
-
+  padding-bottom: 4rem;
 }
+
 .grid-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -258,6 +358,7 @@ padding-bottom: 4rem;
     margin: 0 auto;
   }
 }
+
 .grid-item {
   position: relative;
   width: 100%;
@@ -273,6 +374,7 @@ padding-bottom: 4rem;
   aspect-ratio: 3 / 2;
   max-height: 600px;
 }
+
 .portfolio-image {
   width: 100%;
   height: 100%;
@@ -284,7 +386,6 @@ padding-bottom: 4rem;
   transition-timing-function: ease;
   will-change: transform;
 }
-
 
 /* ✅ Hover Overlay + Cursor Block */
 .grid-item:hover::after {
@@ -354,58 +455,7 @@ footer {
 }
 
 /* ✅ Buttons */
-.checkout-button,
-.continue-shopping-btn,
-.empty-cart-btn {
-  background-color: #fdb827;
-  color: black;
-  padding: 10px 20px;
-  text-decoration: none;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-right: 10px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-}
-.checkout-button:hover,
-.continue-shopping-btn:hover,
-.empty-cart-btn:hover {
-  background-color: #e0a800;
-}
-.remove-btn {
-  background-color: red;
-  color: white;
-  padding: 5px 10px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-top: 10px;
-}
-.remove-btn:hover {
-  background-color: darkred;
-}
-
-select {
-  color: black;
-}
-h1 {
-  color: black;
-}
-
-/* ✅ Mobile Buttons */
-@media (max-width: 640px) {
-  .checkout-button,
-  .continue-shopping-btn,
-  .empty-cart-btn {
-    font-size: 0.8rem;
-  }
-}
-
-/* ✅ Disabled Button */
+.checkout-button,/* ✅ Disabled Button */
 .product-btn {
   background-color: #A6A6A6;
   color: #F2F2F2;
@@ -469,7 +519,6 @@ h1 {
   height: 100%;
 }
 
-
 /* ✅ Image Container */
 .image-container {
   position: relative;
@@ -481,6 +530,7 @@ h1 {
   aspect-ratio: 4 / 5;
 }
 
+/* ✅ Fade Animations */
 @keyframes fade-in-up {
   0% {
     opacity: 0;
@@ -504,29 +554,27 @@ h1 {
 .animate-fade-in {
   animation: fade-in 0.5s ease-out forwards;
 }
-
 .animate-fade-in-up {
   animation: fade-in-up 0.6s ease-out;
 }
 
-
-
+/* ✅ App Wrapper */
 #__next {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
-
 main {
   flex: 1;
 }
-/* Backdrop overlay for Klaviyo popup */
+
+/* ✅ Backdrop overlay for Klaviyo popup */
 .klaviyo-form-overlay {
   backdrop-filter: blur(6px);
   background-color: rgba(0, 0, 0, 0.4);
 }
 
-/* Cleanup popup spacing for mobile */
+/* ✅ Cleanup popup spacing for mobile */
 .klaviyo-form {
   max-width: 95vw;
   margin: 5vh auto;
@@ -535,16 +583,18 @@ main {
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
 
-/* Optional: reduce the "Created with Klaviyo" branding size */
+/* ✅ Reduce Klaviyo badge size */
 .klaviyo-badge {
   font-size: 10px !important;
   opacity: 0.5;
 }
-/* Hide native Notify buttons when form is open */
+
+/* ✅ Hide native Notify buttons when form is open */
 .form-open .native-notify-button {
   display: none !important;
 }
 
+/* ✅ Color Swatches */
 .swatch {
   width: 40px;
   height: 40px;
@@ -552,15 +602,32 @@ main {
   border: 2px solid #ccc;
   cursor: pointer;
 }
-
 .swatch.selected {
   border-color: #000;
 }
-
 .swatch.monochrome {
   background-color: #000;
 }
-
 .swatch.regular {
   background-color: #fff;
+}
+
+/* ✅ Final Thumbnail Enhancements */
+.quickview-thumbnails {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.quickview-thumbnails img {
+  width: 70px;
+  height: 90px;
+  border-radius: 4px;
+  object-fit: cover;
+  cursor: pointer;
+  transition: border 0.2s ease;
+}
+.quickview-thumbnails img.active {
+  border: 2px solid black;
 }

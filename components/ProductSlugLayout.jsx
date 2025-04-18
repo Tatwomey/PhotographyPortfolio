@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useShopContext } from '@/contexts/shopContext';
-import Hero from '@/components/Hero';
-import TabSection from '@/components/TabSection';
+import React, { useEffect, useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useShopContext } from "@/contexts/shopContext";
+import Hero from "@/components/Hero";
+import TabSection from "@/components/TabSection";
 
 export default function ProductSlugLayout({ product }) {
   const { handleAddToCart } = useShopContext();
@@ -18,7 +18,7 @@ export default function ProductSlugLayout({ product }) {
     new Set(
       product.variants
         .map((v) =>
-          v.selectedOptions.find((opt) => opt.name.toLowerCase() === 'color')?.value
+          v.selectedOptions.find((opt) => opt.name.toLowerCase() === "color")?.value
         )
         .filter(Boolean)
     )
@@ -27,21 +27,20 @@ export default function ProductSlugLayout({ product }) {
   const defaultVariant =
     product.variants.find((v) =>
       v.selectedOptions.some(
-        (opt) => opt.name.toLowerCase() === 'color' && opt.value.toLowerCase() === 'regular'
+        (opt) => opt.name.toLowerCase() === "color" && opt.value.toLowerCase() === "regular"
       )
     ) || product.variants[0];
 
   const [selectedColor, setSelectedColor] = useState(
-    defaultVariant.selectedOptions.find((opt) => opt.name.toLowerCase() === 'color')?.value
+    defaultVariant.selectedOptions.find((opt) => opt.name.toLowerCase() === "color")?.value
   );
   const [selectedVariant, setSelectedVariant] = useState(defaultVariant);
+  const [mainImage, setMainImage] = useState(defaultVariant.image?.src || product.images[0]?.src);
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
-
-  const mainImage = product.images[currentImageIdx]?.src;
 
   const variantsForColor = product.variants.filter((v) =>
     v.selectedOptions.some(
-      (opt) => opt.name.toLowerCase() === 'color' && opt.value === selectedColor
+      (opt) => opt.name.toLowerCase() === "color" && opt.value === selectedColor
     )
   );
 
@@ -49,9 +48,8 @@ export default function ProductSlugLayout({ product }) {
     const variant = variantsForColor[0];
     if (variant) {
       setSelectedVariant(variant);
-      setCurrentImageIdx(
-        product.images.findIndex((img) => img.src === variant.image?.src) || 0
-      );
+      setMainImage(variant.image?.src || product.images[0]?.src);
+      setCurrentImageIdx(0);
     }
   }, [selectedColor]);
 
@@ -59,95 +57,102 @@ export default function ProductSlugLayout({ product }) {
     const variant = product.variants.find((v) => v.id === e.target.value);
     if (variant) {
       setSelectedVariant(variant);
-      const newColor = variant.selectedOptions.find((opt) => opt.name.toLowerCase() === 'color');
+      setMainImage(variant.image?.src || product.images[0]?.src);
+
+      const newColor = variant.selectedOptions.find(
+        (opt) => opt.name.toLowerCase() === "color"
+      );
       if (newColor?.value) {
         setSelectedColor(newColor.value);
       }
+    }
+  };
 
-      const idx = product.images.findIndex((img) => img.src === variant.image?.src);
-      if (idx !== -1) setCurrentImageIdx(idx);
+  const handleBuyNow = async () => {
+    await handleAddToCart(selectedVariant.id, 1);
+    router.push("/checkout");
+  };
+
+  const handleNotifyClick = () => {
+    if (window._klOnsite) {
+      window._klOnsite.push(["openForm", "RjNi3C"]);
     }
   };
 
   const nextImage = () => {
     setCurrentImageIdx((prev) => (prev + 1) % product.images.length);
+    setMainImage(product.images[(currentImageIdx + 1) % product.images.length].src);
   };
 
   const prevImage = () => {
     setCurrentImageIdx((prev) => (prev - 1 + product.images.length) % product.images.length);
-  };
-
-  const handleBuyNow = async () => {
-    await handleAddToCart(selectedVariant.id, 1);
-    router.push('/checkout');
-  };
-
-  const handleNotifyClick = () => {
-    if (window._klOnsite) {
-      window._klOnsite.push(['openForm', 'RjNi3C']);
-    }
+    setMainImage(
+      product.images[(currentImageIdx - 1 + product.images.length) % product.images.length].src
+    );
   };
 
   return (
     <>
       <Hero />
       <main className="bg-white text-black px-4 py-12 container mx-auto">
-        <div id="product-details" className="flex flex-col lg:flex-row gap-10 scroll-mt-20">
-          {/* Left: Image */}
-          <div className="w-full lg:max-w-[550px]">
-            <div className="relative aspect-[4/5] bg-gray-100 rounded overflow-hidden shadow group">
-              <Image
-                src={mainImage}
-                alt={product.title}
-                layout="fill"
-                objectFit="cover"
-                className="rounded transition-transform duration-300 ease-in-out group-hover:scale-105"
-              />
-
-              {/* Navigation Arrows */}
+        <div
+          id="product-details"
+          className="flex flex-col lg:flex-row gap-10 scroll-mt-20 items-start"
+        >
+          {/* Image Column */}
+          <div className="w-full lg:max-w-[550px] relative">
+            <div className="product-image-wrapper group shadow rounded overflow-hidden relative">
               {product.images.length > 1 && (
                 <>
-                  <button
-                    onClick={prevImage}
-                    className="absolute top-1/2 left-2 -translate-y-1/2 bg-white bg-opacity-70 p-1 rounded-full shadow-md hover:scale-105"
-                  >
+                  <button onClick={prevImage} className="modal-arrow left">
                     <ChevronLeft />
                   </button>
-                  <button
-                    onClick={nextImage}
-                    className="absolute top-1/2 right-2 -translate-y-1/2 bg-white bg-opacity-70 p-1 rounded-full shadow-md hover:scale-105"
-                  >
+                  <button onClick={nextImage} className="modal-arrow right">
                     <ChevronRight />
                   </button>
                 </>
               )}
 
+              <Image
+                src={mainImage}
+                alt={product.title}
+                width={800}
+                height={1000}
+                className="product-main-image"
+              />
+
               {!selectedVariant.availableForSale && (
-                <div className="absolute top-0 left-0 bg-red-600 text-white text-sm font-bold px-3 py-1">
-                  Sold Out
-                </div>
+                <div className="sold-out-badge">Sold Out</div>
               )}
             </div>
 
-            {/* Thumbnails */}
             {product.images.length > 1 && (
               <div className="flex gap-3 mt-4 overflow-x-auto">
                 {product.images.map((img, idx) => (
                   <button
                     key={idx}
-                    onClick={() => setCurrentImageIdx(idx)}
+                    onClick={() => {
+                      setMainImage(img.src);
+                      setCurrentImageIdx(idx);
+                    }}
                     className={`border rounded-md overflow-hidden ${
-                      currentImageIdx === idx ? 'border-black' : 'border-gray-300'
+                      currentImageIdx === idx ? "border-black" : "border-gray-300"
                     }`}
                   >
-                    <Image src={img.src} alt={`Thumb ${idx}`} width={80} height={100} />
+                    <Image
+                      src={img.src}
+                      alt={`Thumb ${idx}`}
+                      width={80}
+                      height={100}
+                      className="thumbnail-image"
+                    />
                   </button>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Right: Product Info */}
+          {/* Details Column */}
           <div className="w-full lg:max-w-md">
             <h1 className="text-3xl font-bold mb-2">{product.title}</h1>
             {product.description && (
@@ -157,14 +162,13 @@ export default function ProductSlugLayout({ product }) {
               ${parseFloat(selectedVariant?.priceV2?.amount || 0).toFixed(2)}
             </p>
 
-            {/* Low Inventory Notice */}
-            {selectedVariant.quantityAvailable <= 3 && selectedVariant.quantityAvailable > 0 && (
-              <p className="text-sm text-red-600 font-semibold mt-1">
-                Only {selectedVariant.quantityAvailable} left in stock!
-              </p>
-            )}
+            {selectedVariant.quantityAvailable <= 3 &&
+              selectedVariant.quantityAvailable > 0 && (
+                <p className="text-sm text-red-600 font-semibold mt-1">
+                  Only {selectedVariant.quantityAvailable} left in stock!
+                </p>
+              )}
 
-            {/* Swatches */}
             {colorOptions.length > 1 && (
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-1">Color</label>
@@ -175,12 +179,12 @@ export default function ProductSlugLayout({ product }) {
                       onClick={() => setSelectedColor(color)}
                       className={`w-6 h-6 rounded-full border-2 ${
                         selectedColor === color
-                          ? 'border-black ring-2 ring-black'
-                          : 'border-gray-300'
+                          ? "border-black ring-2 ring-black"
+                          : "border-gray-300"
                       }`}
                       style={{
                         backgroundColor:
-                          color.toLowerCase() === 'monochrome' ? '#000' : '#e5e5e5',
+                          color.toLowerCase() === "monochrome" ? "#000" : "#e5e5e5",
                       }}
                       aria-label={color}
                     />
@@ -189,7 +193,6 @@ export default function ProductSlugLayout({ product }) {
               </div>
             )}
 
-            {/* Edition / Size */}
             {variantsForColor.length > 1 && (
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-1">Edition / Size</label>
@@ -207,7 +210,7 @@ export default function ProductSlugLayout({ product }) {
               </div>
             )}
 
-            {/* CTA Buttons */}
+            {/* CTA */}
             <div className="space-y-3 mb-6">
               {selectedVariant.availableForSale ? (
                 <>
@@ -234,7 +237,6 @@ export default function ProductSlugLayout({ product }) {
               )}
             </div>
 
-            {/* Tabs Component */}
             <TabSection details={product.description} />
           </div>
         </div>
