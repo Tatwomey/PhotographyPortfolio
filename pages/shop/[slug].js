@@ -1,6 +1,4 @@
-// pages/shop/[slug].js
-
-import ProductSlugLayout from '@/components/ProductSlugLayout';
+import ProductWithScroll from '@/components/ProductWithScroll';
 
 export async function getStaticPaths() {
   const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
@@ -32,24 +30,37 @@ export async function getStaticPaths() {
       body: JSON.stringify(graphqlQuery),
     });
 
-    const responseJson = await res.json();
-    const paths = responseJson.data.collectionByHandle.products.edges.map(({ node }) => ({
+    const responseText = await res.text();
+    let responseJson;
+
+    try {
+      responseJson = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('❌ Failed to parse Shopify JSON response:', responseText);
+      return { paths: [], fallback: 'blocking' };
+    }
+
+    const productEdges = responseJson?.data?.collectionByHandle?.products?.edges;
+
+    if (!Array.isArray(productEdges)) {
+      console.error('❌ Unexpected Shopify structure:', responseJson);
+      return { paths: [], fallback: 'blocking' };
+    }
+
+    const paths = productEdges.map(({ node }) => ({
       params: { slug: node.handle },
     }));
 
     return { paths, fallback: 'blocking' };
   } catch (err) {
-    console.error('Error fetching static paths:', err);
+    console.error('❌ Error fetching static paths:', err);
     return { paths: [], fallback: 'blocking' };
   }
 }
 
 export async function getStaticProps({ params }) {
   const RESERVED_SLUGS = ['terms', 'privacy'];
-
-  if (RESERVED_SLUGS.includes(params.slug)) {
-    return { notFound: true };
-  }
+  if (RESERVED_SLUGS.includes(params.slug)) return { notFound: true };
 
   const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
   const token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN;
@@ -85,6 +96,7 @@ export async function getStaticProps({ params }) {
                   currencyCode
                 }
                 availableForSale
+                quantityAvailable
               }
             }
           }
@@ -105,13 +117,9 @@ export async function getStaticProps({ params }) {
     });
 
     const responseJson = await res.json();
+    const node = responseJson?.data?.productByHandle;
 
-    // ✅ Exit early if product not found
-    if (!responseJson?.data?.productByHandle) {
-      return { notFound: true };
-    }
-
-    const node = responseJson.data.productByHandle;
+    if (!node) return { notFound: true };
 
     const product = {
       ...node,
@@ -121,12 +129,11 @@ export async function getStaticProps({ params }) {
 
     return { props: { product } };
   } catch (error) {
-    console.error('Error in getStaticProps for slug:', error);
+    console.error('❌ Error in getStaticProps for slug:', error);
     return { notFound: true };
   }
 }
 
-
 export default function ShopSlug({ product }) {
-  return <ProductSlugLayout product={product} />;
+  return <ProductWithScroll product={product} />;
 }

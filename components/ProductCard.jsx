@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useShopContext } from '@/contexts/shopContext';
 import ProductQuickView from './ProductQuickView';
 
@@ -61,10 +60,12 @@ const ProductCard = ({ product }) => {
           </div>
         )}
 
-        {/* Image */}
-        <Link
-          href={`/shop/${product.handle}`}
+        {/* Force full page reload with hash preserved */}
+        <div
           className="block aspect-[4/5] w-full overflow-hidden relative"
+          onClick={() => {
+            window.location.assign(`/shop/${product.handle}#product-details`);
+          }}
         >
           <Image
             src={displayImage}
@@ -74,7 +75,7 @@ const ProductCard = ({ product }) => {
             className="object-cover rounded-md transition duration-300 ease-in-out"
             unoptimized
           />
-        </Link>
+        </div>
 
         {/* Color Swatches */}
         {uniqueColors.length > 1 && (
