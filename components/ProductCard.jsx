@@ -1,3 +1,4 @@
+// Final revised ProductCard component with Quick View debug patch for Shop section
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useShopContext } from '@/contexts/shopContext';
@@ -53,18 +54,19 @@ const ProductCard = ({ product }) => {
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        {/* Sold Out Badge */}
         {isSoldOut && (
           <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded z-20">
             Sold out
           </div>
         )}
 
-        {/* Force full page reload with hash preserved */}
+        {/* Clickable Image with hash navigation */}
         <div
           className="block aspect-[4/5] w-full overflow-hidden relative"
           onClick={() => {
-            window.location.assign(`/shop/${product.handle}#product-details`);
+            const destination = `/shop/${product.handle}#product-details`;
+            console.log('🧭 Navigating to:', destination);
+            window.location.assign(destination);
           }}
         >
           <Image
@@ -120,14 +122,12 @@ const ProductCard = ({ product }) => {
           <p className="text-xs">${parseFloat(selectedVariant?.price?.amount || 0).toFixed(2)}</p>
         </div>
 
-        {/* Hover Add-to-Cart + Variant Selector */}
+        {/* Hover Actions: Add to Cart + Quick View */}
         {!isSoldOut && hovered && (
           <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center space-x-2 z-10">
             <select
               onChange={(e) =>
-                setSelectedVariant(
-                  product.variantOptions.find((v) => v.id === e.target.value)
-                )
+                setSelectedVariant(product.variantOptions.find((v) => v.id === e.target.value))
               }
               value={selectedVariant?.id}
               onClick={(e) => e.stopPropagation()}
@@ -153,14 +153,16 @@ const ProductCard = ({ product }) => {
           </div>
         )}
 
-        {/* Quick View */}
+        {/* Quick View Debug Button */}
         {hovered && (
           <button
             onClick={(e) => {
               e.stopPropagation();
+              e.preventDefault();
+              console.log('👁 Quick View clicked for:', product.title);
               setQuickViewOpen(true);
             }}
-            className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded z-10"
+            className="absolute top-2 right-2 bg-green-600 hover:bg-green-800 text-white text-xs px-3 py-1 rounded z-20"
           >
             Quick View
           </button>

@@ -1,7 +1,7 @@
-
 import { useState, useEffect } from "react";
 
-const tabs = ["DETAILS", "SIZE & FIT", "SHIPPING & RETURNS"];
+// ✅ Only show "DETAILS"
+const tabs = ["DETAILS"];
 
 export default function TabSection({ details }) {
   const [activeTab, setActiveTab] = useState("DETAILS");
@@ -24,8 +24,9 @@ export default function TabSection({ details }) {
         <li>Print size: 16 × 20 inches</li>
       </ul>
     ),
-    "SIZE & FIT": <p>[Size & Fit content coming soon]</p>,
-    "SHIPPING & RETURNS": <p>[Shipping & Returns content coming soon]</p>
+    // ❌ Temporarily removed:
+    // "SIZE & FIT": <p>[Size & Fit content coming soon]</p>,
+    // "SHIPPING & RETURNS": <p>[Shipping & Returns content coming soon]</p>
   };
 
   return (

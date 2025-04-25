@@ -4,12 +4,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useShopContext } from '@/contexts/shopContext';
-import ProductQuickView from '@/components/ProductQuickView';
 import Hero from '@/components/Hero';
 
 export default function Shop({ products }) {
   const { handleAddToCart, loading } = useShopContext();
-  const [quickViewProduct, setQuickViewProduct] = useState(null);
+  // const [quickViewProduct, setQuickViewProduct] = useState(null); // 🔒 Disabled
   const router = useRouter();
 
   useEffect(() => {
@@ -41,24 +40,25 @@ export default function Shop({ products }) {
               product={product}
               loading={loading}
               handleAddToCart={handleAddToCart}
-              openQuickView={() => setQuickViewProduct(product)}
+              // openQuickView={() => setQuickViewProduct(product)} // 🔒 Disabled
             />
           ))}
         </div>
       </main>
 
-      {quickViewProduct && (
+      {/* 🔒 QuickView modal disabled */}
+      {/* {quickViewProduct && (
         <ProductQuickView
           product={quickViewProduct}
           selectedVariant={quickViewProduct.variantOptions[0]}
           onClose={() => setQuickViewProduct(null)}
         />
-      )}
+      )} */}
     </div>
   );
 }
 
-const ProductCard = ({ product, handleAddToCart, loading, openQuickView }) => {
+const ProductCard = ({ product, handleAddToCart, loading /* , openQuickView */ }) => {
   const [hovered, setHovered] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(
     product.variantOptions.find((v) =>
@@ -142,135 +142,46 @@ const ProductCard = ({ product, handleAddToCart, loading, openQuickView }) => {
       </div>
 
       {hovered && product.availableForSale && (
-        <>
-          <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center space-x-2 z-10">
-            <select
-              onChange={(e) =>
-                setSelectedVariant(product.variantOptions.find((v) => v.id === e.target.value))
-              }
-              value={selectedVariant?.id}
-              className="bg-white text-black text-xs px-2 py-1 rounded flex-1"
-            >
-              {product.variantOptions.map((variant) => (
-                <option key={variant.id} value={variant.id}>
-                  {variant.title}
-                </option>
-              ))}
-            </select>
-
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                handleAddToCart(selectedVariant.id, 1);
-              }}
-              disabled={loading}
-              className="bg-white text-black text-xs font-semibold px-4 py-1 rounded flex-1"
-            >
-              {loading ? 'Adding…' : 'Add to Cart'}
-            </button>
-          </div>
+        <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center space-x-2 z-10">
+          <select
+            onChange={(e) =>
+              setSelectedVariant(product.variantOptions.find((v) => v.id === e.target.value))
+            }
+            value={selectedVariant?.id}
+            className="bg-white text-black text-xs px-2 py-1 rounded flex-1"
+          >
+            {product.variantOptions.map((variant) => (
+              <option key={variant.id} value={variant.id}>
+                {variant.title}
+              </option>
+            ))}
+          </select>
 
           <button
             onClick={(e) => {
               e.preventDefault();
-              openQuickView();
+              handleAddToCart(selectedVariant.id, 1);
             }}
-            className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded z-10"
+            disabled={loading}
+            className="bg-white text-black text-xs font-semibold px-4 py-1 rounded flex-1"
           >
-            Quick View
+            {loading ? 'Adding…' : 'Add to Cart'}
           </button>
-        </>
+        </div>
       )}
+
+      {/* 🔒 Quick View button disabled */}
+      {/* {hovered && (
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            openQuickView();
+          }}
+          className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded z-10"
+        >
+          Quick View
+        </button>
+      )} */}
     </div>
   );
 };
-
-export async function getStaticProps() {
-  const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
-  const token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN;
-
-  const graphqlQuery = {
-    query: `
-    {
-      collectionByHandle(handle: "shop") {
-        products(first: 100) {
-          edges {
-            node {
-              id
-              title
-              handle
-              description
-              availableForSale
-              images(first: 10) {
-                edges {
-                  node {
-                    src
-                    altText
-                  }
-                }
-              }
-              variants(first: 10) {
-                edges {
-                  node {
-                    id
-                    title
-                    image { src }
-                    availableForSale
-                    selectedOptions {
-                      name
-                      value
-                    }
-                    priceV2 { amount currencyCode }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }`,
-  };
-
-  try {
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Shopify-Storefront-Access-Token': token,
-      },
-      body: JSON.stringify(graphqlQuery),
-    });
-
-    if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-
-    const json = await res.json();
-    const products = json.data.collectionByHandle.products.edges.map(({ node }) => {
-      const variants = node.variants.edges.map((v) => v.node);
-
-      return {
-        id: node.id,
-        title: node.title,
-        handle: node.handle,
-        description: node.description,
-        availableForSale: node.availableForSale,
-        imageSrc: node.images.edges[0]?.node.src || '/fallback-image.jpg',
-        altImageSrc: node.images.edges[1]?.node.src || null,
-        imageAlt: node.images.edges[0]?.node.altText || 'Product Image',
-        allImages: node.images.edges.map((e) => e.node.src),
-        variantOptions: variants.map((v) => ({
-          id: v.id,
-          title: v.title,
-          price: v.priceV2,
-          image: v.image,
-          availableForSale: v.availableForSale,
-          selectedOptions: v.selectedOptions,
-        })),
-      };
-    });
-
-    return { props: { products } };
-  } catch (error) {
-    console.error('Error fetching shop products:', error);
-    return { props: { products: [] } };
-  }
-}

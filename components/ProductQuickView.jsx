@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { X } from 'lucide-react';
 
 const ProductQuickView = ({ product, selectedVariant: initialVariant, onClose, onAddToCart }) => {
-  const [mainImage, setMainImage] = useState(
-    initialVariant?.image?.src || product.imageSrc
-  );
+  const [mainImage, setMainImage] = useState(initialVariant?.image?.src || product.imageSrc);
   const [selectedVariant, setSelectedVariant] = useState(initialVariant || product.variantOptions[0]);
 
   useEffect(() => {
@@ -17,17 +16,6 @@ const ProductQuickView = ({ product, selectedVariant: initialVariant, onClose, o
 
   const isSoldOut = !selectedVariant?.availableForSale;
 
-  const handleBackgroundClick = (e) => {
-    if (e.target.id === 'quick-view-backdrop') {
-      closeQuickView();
-    }
-  };
-
-  const closeQuickView = () => {
-    document.body.classList.remove('form-open');
-    onClose();
-  };
-
   const handleVariantChange = (e) => {
     const variant = product.variantOptions.find((v) => v.id === e.target.value);
     if (variant) {
@@ -36,7 +24,7 @@ const ProductQuickView = ({ product, selectedVariant: initialVariant, onClose, o
     }
   };
 
-  const handleNotifyMeClick = () => {
+  const handleNotifyClick = () => {
     if (typeof window !== 'undefined') {
       window._klOnsite = window._klOnsite || [];
       window._klOnsite.push(['openForm', 'RjNi3C']);
@@ -44,77 +32,83 @@ const ProductQuickView = ({ product, selectedVariant: initialVariant, onClose, o
     }
   };
 
-  const price = selectedVariant?.price?.amount;
-  const currency = selectedVariant?.price?.currencyCode || 'USD';
-  const formattedPrice = price ? `$${parseFloat(price).toFixed(2)} ${currency}` : 'Unavailable';
+  const handleClose = () => {
+    document.body.classList.remove('form-open');
+    onClose();
+  };
 
   return (
-    <div
-      id="quick-view-backdrop"
-      className="fixed inset-0 z-50 bg-black bg-opacity-70 flex items-center justify-center p-4"
-      onClick={handleBackgroundClick}
-    >
-      <div className="bg-white text-black max-w-4xl w-full rounded-lg shadow-lg overflow-hidden flex flex-col md:flex-row">
-        {/* LEFT: Image */}
-        <div className="md:w-1/2 relative h-96 md:h-auto">
-          <Image
-            src={mainImage}
-            alt={product.title}
-            layout="fill"
-            objectFit="cover"
-            className="rounded-l-lg"
-            unoptimized
-          />
-        </div>
+    <div className="quickview-modal" onClick={(e) => e.target.classList.contains('quickview-modal') && handleClose()}>
+      <div className="quickview-modal-content">
+        {/* Left - Image section */}
+        <div className="quickview-image-section">
+          <button onClick={handleClose} className="quickview-close-btn" aria-label="Close quick view">
+            <X size={28} />
+          </button>
 
-        {/* RIGHT: Info */}
-        <div className="md:w-1/2 p-6 flex flex-col justify-between">
-          <div>
-            <h2 className="text-2xl font-bold mb-2">{product.title}</h2>
-            <p className="text-lg font-semibold mb-4">{formattedPrice}</p>
-
-            {/* Edition / Size Dropdown */}
-            {product.variantOptions.length > 1 && (
-              <div className="mb-4">
-                <label htmlFor="variant-select" className="block text-sm font-medium mb-1">
-                  Edition / Size
-                </label>
-                <select
-                  id="variant-select"
-                  value={selectedVariant?.id}
-                  onChange={handleVariantChange}
-                  className="w-full border border-gray-300 rounded p-2"
-                >
-                  {product.variantOptions.map((variant) => (
-                    <option key={variant.id} value={variant.id}>
-                      {variant.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
+          <div className="quickview-main-image-wrapper">
+            <img src={mainImage} alt={product.title} />
           </div>
 
-          <div className="flex flex-col gap-3 mt-4">
+          {product.allImages?.length > 1 && (
+            <div className="quickview-thumbnails">
+              {product.allImages.map((img, idx) => (
+                <img
+                  key={idx}
+                  src={img}
+                  alt={`Thumbnail ${idx}`}
+                  className={img === mainImage ? 'active' : ''}
+                  onClick={() => setMainImage(img)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Right - Details */}
+        <div className="quickview-details-section">
+          <h2 className="text-2xl font-bold mb-2">{product.title}</h2>
+          <p className="text-lg font-semibold mb-4">
+            ${parseFloat(selectedVariant?.price?.amount || 0).toFixed(2)}
+          </p>
+
+          {/* Variant selector */}
+          {product.variantOptions.length > 1 && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Edition / Size</label>
+              <select
+                value={selectedVariant?.id}
+                onChange={handleVariantChange}
+                className="w-full border rounded p-2"
+              >
+                {product.variantOptions.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div className="space-y-3">
             {isSoldOut ? (
               <button
-                onClick={handleNotifyMeClick}
-                className="w-full bg-black text-white px-4 py-2 rounded hover:bg-gray-800 native-notify-button"
+                onClick={handleNotifyClick}
+                className="w-full bg-black text-white py-3 rounded native-notify-button"
               >
                 Notify Me When Available
               </button>
             ) : (
               <button
                 onClick={() => onAddToCart(selectedVariant)}
-                className="w-full bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+                className="w-full bg-black text-white py-3 rounded"
               >
                 Add to Cart
               </button>
             )}
-
             <button
-              onClick={closeQuickView}
-              className="w-full border border-black px-4 py-2 rounded hover:bg-gray-100"
+              onClick={handleClose}
+              className="w-full border border-black py-3 rounded text-black bg-white hover:bg-gray-100"
             >
               Close
             </button>
