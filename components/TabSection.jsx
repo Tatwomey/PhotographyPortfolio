@@ -20,7 +20,7 @@ export default function TabSection({ details }) {
         <li>Printed on museum-grade archival Hahnemühle Baryta paper</li>
         <li>Hand-signed, hand-numbered, and embossed</li>
         <li>From the original RAW file — ultra high-resolution fidelity</li>
-        <li>Limited to 10 editions</li>
+        <li>Limited to just 10 copies produced</li>
         <li>Print size: 16 × 20 inches</li>
       </ul>
     ),
