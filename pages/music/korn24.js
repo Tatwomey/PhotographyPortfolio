@@ -60,25 +60,30 @@ const photos = [
 
 const Korn24 = () => {
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      // ✅ Scroll to photo section on mount
-      setTimeout(() => {
-        const section = document.getElementById("korn-photos");
-        if (section) {
-          section.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 250);
+    if (typeof window === "undefined") return;
 
-      // ✅ Init Lenis smooth scroll
-      const lenis = new Lenis();
-      const raf = (time) => {
-        lenis.raf(time);
-        requestAnimationFrame(raf);
-      };
-      requestAnimationFrame(raf);
+    const hasScrolled = sessionStorage.getItem("korn24-scrolled");
 
-      return () => lenis.destroy();
+    if (!hasScrolled) {
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          const section = document.getElementById("korn-photos");
+          if (section) {
+            section.scrollIntoView({ behavior: "smooth" });
+            sessionStorage.setItem("korn24-scrolled", "true");
+          }
+        }, 300);
+      });
     }
+
+    const lenis = new Lenis();
+    const raf = (time) => {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    };
+    requestAnimationFrame(raf);
+
+    return () => lenis.destroy();
   }, []);
 
   return (
