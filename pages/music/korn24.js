@@ -62,26 +62,19 @@ const Korn24 = () => {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const hasScrolled = sessionStorage.getItem("korn24-scrolled");
-
-    if (!hasScrolled) {
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          const section = document.getElementById("korn-photos");
-          if (section) {
-            section.scrollIntoView({ behavior: "smooth" });
-            sessionStorage.setItem("korn24-scrolled", "true");
-          }
-        }, 300);
-      });
-    }
-
     const lenis = new Lenis();
     const raf = (time) => {
       lenis.raf(time);
       requestAnimationFrame(raf);
     };
     requestAnimationFrame(raf);
+
+    setTimeout(() => {
+      const section = document.getElementById("korn-photos");
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 500); // Allow time for layout + DOM paint
 
     return () => lenis.destroy();
   }, []);
