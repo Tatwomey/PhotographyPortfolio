@@ -33,6 +33,12 @@ body.light-mode .shop-wrapper {
   color: black !important;
 }
 
+/* ✅ Lookbook (Supreme-style) Mode */
+.lookbook-mode {
+  background-color: white;
+  color: black;
+}
+
 /* ✅ Quick View Modal Styles */
 .quickview-modal {
   position: fixed;
@@ -157,6 +163,20 @@ body.light-mode .shop-wrapper {
   z-index: 10;
 }
 
+img.clickable {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* ✅ Custom cursors for Lookbook Zoom */
+.cursor-zoom-in {
+  cursor: zoom-in;
+}
+
+.cursor-zoom-out {
+  cursor: zoom-out;
+}
+
 .modal-arrow {
   position: absolute;
   top: 50%;
@@ -220,6 +240,7 @@ body.light-mode .shop-wrapper {
     transform: none !important;
   }
 }
+
 
 /* ✅ Consistent Image Sizing */
 .product-main-image {
