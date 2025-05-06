@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
@@ -11,6 +11,10 @@ export default function PopupProductQuickView({ product, onClose }) {
   const { title, description, images, variants, handle } = product;
   const [selectedVariant, setSelectedVariant] = useState(variants[0]);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [zoomed, setZoomed] = useState(false);
+  const [startY, setStartY] = useState(null);
+  const [swiping, setSwiping] = useState(false);
+  const modalRef = useRef();
   const { handleAddToCart, toggleCart } = useShopContext();
   const router = useRouter();
 
@@ -46,130 +50,149 @@ export default function PopupProductQuickView({ product, onClose }) {
   const prevImage = () =>
     setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length);
 
+  // 👉 Swipe Down to Close on Mobile
+  const handleTouchStart = (e) => setStartY(e.touches[0].clientY);
+  const handleTouchMove = (e) => {
+    if (!startY) return;
+    const currentY = e.touches[0].clientY;
+    if (currentY - startY > 60) {
+      setSwiping(true);
+    }
+  };
+  const handleTouchEnd = () => {
+    if (swiping) {
+      onClose();
+    }
+    setStartY(null);
+    setSwiping(false);
+  };
+
   return (
-    <div className="fixed inset-0 z-50 bg-white text-black overflow-y-auto flex flex-col md:flex-row">
-      {/* ❌ Close Button - Always Visible */}
-      <button
-        onClick={onClose}
-        className="absolute top-4 right-4 z-50 bg-black text-white p-2 rounded-full"
-        aria-label="Close"
+    <div
+      className="quickview-modal"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      <div
+        ref={modalRef}
+        className={`quickview-modal-content ${swiping ? "swiping-down" : ""}`}
       >
-        <X size={20} />
-      </button>
+        {/* ❌ Close Button */}
+        <button
+          onClick={onClose}
+          className="quickview-close-btn"
+          aria-label="Close"
+        >
+          <X size={24} />
+        </button>
 
-      {/* 🖼️ Image Section */}
-      <div className="w-full md:w-1/2 relative p-4 flex flex-col items-center justify-start">
-        {/* Navigation Arrows */}
-        {images.length > 1 && (
-          <>
-            <button
-              onClick={prevImage}
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white p-1 rounded-full shadow md:left-4"
-              aria-label="Previous image"
-            >
-              <ChevronLeft />
-            </button>
-            <button
-              onClick={nextImage}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white p-1 rounded-full shadow md:right-4"
-              aria-label="Next image"
-            >
-              <ChevronRight />
-            </button>
-          </>
-        )}
+        {/* 🖼️ Image Section */}
+        <div className="quickview-image-section">
+          {images.length > 1 && (
+            <>
+              <button
+                onClick={prevImage}
+                className="modal-arrow left"
+                aria-label="Previous image"
+              >
+                <ChevronLeft />
+              </button>
+              <button
+                onClick={nextImage}
+                className="modal-arrow right"
+                aria-label="Next image"
+              >
+                <ChevronRight />
+              </button>
+            </>
+          )}
 
-        {/* Main Image */}
-        <div className="relative w-full h-[60vh] max-h-[70vh] bg-gray-100 rounded overflow-hidden">
-          <Image
-            src={images[selectedImageIndex]?.src}
-            alt={title}
-            fill
-            className="object-contain"
-            priority
-          />
-        </div>
+          <div
+            className="quickview-main-image-wrapper zoom-wrapper"
+            onClick={() => setZoomed((z) => !z)}
+          >
+            <Image
+              src={images[selectedImageIndex]?.src}
+              alt={title}
+              fill
+              className={zoomed ? "zoomed-in" : ""}
+            />
+          </div>
 
-        {/* Thumbnails */}
-        {images.length > 1 && (
-          <div className="flex gap-2 mt-4 overflow-x-auto max-w-full px-1">
+          <div className="quickview-thumbnails">
             {images.map((img, idx) => (
               <Image
                 key={idx}
                 src={img.src}
                 alt={`thumb-${idx}`}
-                width={60}
-                height={80}
+                width={70}
+                height={90}
                 onClick={() => setSelectedImageIndex(idx)}
-                className={`cursor-pointer border ${
-                  selectedImageIndex === idx
-                    ? "border-black"
-                    : "border-transparent"
-                }`}
+                className={selectedImageIndex === idx ? "active" : ""}
               />
             ))}
           </div>
-        )}
-      </div>
-
-      {/* 📋 Product Info Section */}
-      <div className="w-full md:w-1/2 px-6 py-6 flex flex-col justify-start">
-        <h2 className="text-2xl font-bold">{title}</h2>
-
-        {description && (
-          <p className="text-gray-600 italic mt-2">{description}</p>
-        )}
-
-        <p className="text-xl font-bold mt-4">
-          ${parseFloat(selectedVariant?.price || 0).toFixed(2)}
-        </p>
-
-        {/* 🔄 Variant Selector */}
-        <div className="mt-4">
-          <label htmlFor="variant" className="block mb-1 font-medium">
-            Edition / Size
-          </label>
-          <select
-            id="variant"
-            value={selectedVariant.id}
-            onChange={handleVariantChange}
-            className="w-full border px-3 py-2 rounded-md"
-          >
-            {variants.map((variant) => (
-              <option key={variant.id} value={variant.id}>
-                {variant.title}
-              </option>
-            ))}
-          </select>
         </div>
 
-        {/* 🛒 Buttons */}
-        <div className="flex flex-col gap-3 mt-6">
-          <button
-            onClick={handleAddAndClose}
-            className="bg-black text-white py-2 px-4 rounded-md hover:opacity-90 transition"
-          >
-            Add to Cart
-          </button>
-          <button
-            onClick={handleBuyNow}
-            className="bg-yellow-400 text-black py-2 px-4 rounded-md hover:opacity-90 transition"
-          >
-            Buy It Now
-          </button>
+        {/* 📋 Product Info Section */}
+        <div className="quickview-details-section">
+          <h2 className="text-xl font-semibold">{title}</h2>
+
+          {description && (
+            <p className="italic text-gray-600 mt-1">{description}</p>
+          )}
+
+          <p className="text-xl font-bold mt-4">
+            ${parseFloat(selectedVariant?.price || 0).toFixed(2)}
+          </p>
+
+          {/* 🔄 Variant Selector */}
+          <div className="mt-4">
+            <label htmlFor="variant" className="block mb-1 font-medium">
+              Edition / Size
+            </label>
+            <select
+              id="variant"
+              value={selectedVariant.id}
+              onChange={handleVariantChange}
+              className="w-full border px-3 py-2 rounded-md"
+            >
+              {variants.map((variant) => (
+                <option key={variant.id} value={variant.id}>
+                  {variant.title}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* 🛒 Buttons */}
+          <div className="flex flex-col gap-3 mt-6">
+            <button
+              onClick={handleAddAndClose}
+              className="bg-black text-white py-2 px-4 rounded-md hover:opacity-90 transition"
+            >
+              Add to Cart
+            </button>
+            <button
+              onClick={handleBuyNow}
+              className="bg-yellow-400 text-black py-2 px-4 rounded-md hover:opacity-90 transition"
+            >
+              Buy It Now
+            </button>
+          </div>
+
+          <p className="text-sm mt-3 text-gray-700">
+            Limited to 2 units per customer.
+          </p>
+
+          <Link href={`/popup/${handle}#product-details`}>
+            <span className="block text-center mt-5 text-black font-medium relative w-fit mx-auto cursor-pointer group">
+              VIEW PRODUCT DETAILS
+              <span className="absolute bottom-0 left-1/2 w-0 group-hover:w-full group-hover:left-0 h-[2px] bg-black transition-all duration-300 ease-out" />
+            </span>
+          </Link>
         </div>
-
-        <p className="text-sm mt-3 text-gray-700">
-          Limited to 2 units per customer.
-        </p>
-
-        {/* 🔗 View Details */}
-        <Link href={`/popup/${handle}#product-details`}>
-          <span className="block text-center mt-5 text-black font-medium relative w-fit mx-auto cursor-pointer group">
-            VIEW PRODUCT DETAILS
-            <span className="absolute bottom-0 left-1/2 w-0 group-hover:w-full group-hover:left-0 h-[2px] bg-black transition-all duration-300 ease-out" />
-          </span>
-        </Link>
       </div>
     </div>
   );

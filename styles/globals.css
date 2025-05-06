@@ -69,6 +69,16 @@ body.light-mode .shop-wrapper {
   animation: slideFadeUp 0.4s ease-out both;
 }
 
+.quickview-modal-content.gesture-close {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.quickview-modal-content.swiping-down {
+  transform: translateY(40%);
+  opacity: 0.6;
+}
+
+
 @keyframes fadeInModal {
   from {
     opacity: 0;
@@ -651,4 +661,24 @@ main {
 }
 .quickview-thumbnails img.active {
   border: 2px solid black;
+}
+
+.zoom-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.zoom-wrapper img.zoomed-in {
+  transform: scale(2);
+  cursor: zoom-out;
+}
+
+.zoom-wrapper img:not(.zoomed-in) {
+  cursor: zoom-in;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .zoom-wrapper img.zoomed-in {
+    transform: scale(2) translate(-25%, -25%);
+  }
 }
