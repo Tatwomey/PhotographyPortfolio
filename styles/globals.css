@@ -39,7 +39,7 @@ body.light-mode .shop-wrapper {
   color: black;
 }
 
-/* ✅ Quick View Modal Styles */
+/* ✅ Quick View Modal */
 .quickview-modal {
   position: fixed;
   inset: 0;
@@ -62,22 +62,12 @@ body.light-mode .shop-wrapper {
   max-width: 960px;
   max-height: 95vh;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
   animation: slideFadeUp 0.4s ease-out both;
 }
-
-.quickview-modal-content.gesture-close {
-  transition: transform 0.3s ease, opacity 0.3s ease;
-}
-
-.quickview-modal-content.swiping-down {
-  transform: translateY(40%);
-  opacity: 0.6;
-}
-
 
 @keyframes fadeInModal {
   from {
@@ -119,6 +109,7 @@ body.light-mode .shop-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
 }
 
 .quickview-main-image-wrapper img {
@@ -129,9 +120,8 @@ body.light-mode .shop-wrapper {
   border-radius: 8px;
   transition: transform 0.3s ease;
 }
-
 .quickview-main-image-wrapper img:hover {
-  transform: scale(1.02);
+  transform: none; /* Zoom hover removed */
 }
 
 .quickview-thumbnails {
@@ -140,6 +130,7 @@ body.light-mode .shop-wrapper {
   gap: 0.5rem;
   justify-content: center;
   flex-wrap: wrap;
+  padding: 0 1rem;
 }
 
 .quickview-thumbnails img {
@@ -149,6 +140,7 @@ body.light-mode .shop-wrapper {
   object-fit: cover;
   cursor: pointer;
   transition: border 0.2s ease;
+  pointer-events: auto;
 }
 
 .quickview-thumbnails img.active {
@@ -173,130 +165,72 @@ body.light-mode .shop-wrapper {
   z-index: 10;
 }
 
-img.clickable {
-  pointer-events: auto;
-  cursor: pointer;
-}
-
-/* ✅ Custom cursors for Lookbook Zoom */
-.cursor-zoom-in {
-  cursor: zoom-in;
-}
-
-.cursor-zoom-out {
-  cursor: zoom-out;
-}
-
 .modal-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.75);
-  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
   width: 36px;
   height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
+  z-index: 20;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .modal-arrow.left {
-  left: 12px;
+  left: 10px;
 }
+
 .modal-arrow.right {
-  right: 12px;
+  right: 10px;
 }
+
 .modal-arrow:hover {
-  background: rgba(255, 255, 255, 1);
+  background: white;
 }
 
-@media (min-width: 768px) {
-  .quickview-modal-content {
-    flex-direction: row;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-}
-
-@media (max-width: 640px) {
+/* ✅ Responsive Modal Tweaks */
+@media (max-width: 768px) {
   .quickview-modal {
     padding: 1rem;
   }
 
   .quickview-modal-content {
-    padding: 0;
     flex-direction: column;
-    height: auto;
+    padding: 0;
     max-height: 95vh;
+    height: auto;
+  }
+
+  .quickview-main-image-wrapper {
+    aspect-ratio: auto;
   }
 
   .quickview-main-image-wrapper img {
-    height: auto;
-    max-height: 320px;
+    max-height: 300px;
   }
 
-  .quickview-details-section {
-    padding: 1rem;
+  .quickview-thumbnails {
+    margin-bottom: 1rem;
+  }
+
+  .modal-arrow {
+    top: 45%;
+    width: 32px;
+    height: 32px;
   }
 }
 
-/* ✅ Disable hover styles on mobile devices */
 @media (hover: none) and (pointer: coarse) {
   .quickview-thumbnails img:hover {
-    opacity: 1 !important;
     transform: none !important;
   }
 }
-
-
-/* ✅ Consistent Image Sizing */
-.product-main-image {
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
-  width: 100%;
-  height: auto;
-  max-height: 100%;
-}
-
-.product-image-wrapper {
-  aspect-ratio: 4 / 5;
-  position: relative;
-  overflow: hidden;
-}
-
-.product-container {
-  aspect-ratio: 4 / 5;
-  background-color: white;
-  border-radius: 8px;
-  overflow: hidden;
-  position: relative;
-}
-
-.sold-out-badge {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  background: red;
-  color: white;
-  font-weight: bold;
-  font-size: 0.75rem;
-  padding: 4px 8px;
-  border-radius: 4px;
-  z-index: 10;
-}
-
-.thumbnail-image {
-  width: 80px;
-  height: 100px;
-  object-fit: cover;
-  aspect-ratio: 4 / 5;
-  border-radius: 4px;
-}
-
-/* ✅ Prevent Right-Click Save (for casual users) */
+/* ✅ Prevent Right-Click Save */
 img {
   -webkit-user-drag: none;
   -webkit-touch-callout: none;
@@ -304,10 +238,16 @@ img {
   pointer-events: none;
 }
 
+img.clickable {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
 /* ✅ HERO SECTION */
 .hero-text {
   font-family: 'Playfair Display', serif;
 }
+
 .font-playfair {
   font-family: 'Playfair Display', serif;
 }
@@ -351,10 +291,12 @@ img {
   width: 125px;
   height: auto;
 }
+
 @media (max-width: 768px) {
   .navbar {
     height: 50px;
   }
+
   .navbar-logo {
     width: 75px;
   }
@@ -377,11 +319,13 @@ img {
   align-items: center;
   cursor: zoom-in;
 }
+
 @media (min-width: 769px) and (max-width: 1200px) {
   .grid-container {
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
 @media (min-width: 1201px) {
   .grid-container {
     grid-template-columns: repeat(4, 1fr);
@@ -396,10 +340,12 @@ img {
   height: auto;
   overflow: hidden;
 }
+
 .grid-item.portrait {
   aspect-ratio: 2 / 3;
   max-height: 800px;
 }
+
 .grid-item.landscape {
   grid-column: span 2;
   aspect-ratio: 3 / 2;
@@ -418,7 +364,6 @@ img {
   will-change: transform;
 }
 
-/* ✅ Hover Overlay + Cursor Block */
 .grid-item:hover::after {
   content: "";
   position: absolute;
@@ -430,7 +375,7 @@ img {
   pointer-events: none;
 }
 
-/* ✅ Watermark Overlay */
+/* ✅ Watermark */
 .watermark {
   position: absolute;
   bottom: 10px;
@@ -451,117 +396,30 @@ footer {
   margin-top: auto;
 }
 
-/* ✅ Cart Icon */
-.cart-icon-link {
-  position: relative;
-  display: inline-block;
-}
-.cart-icon-badge {
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  background-color: red;
-  color: white;
-  font-size: 0.8em;
-  border-radius: 50%;
-  padding: 2px 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 20px;
-  min-height: 20px;
-  font-weight: bold;
-}
-
-/* ✅ Cart Page */
-.cart-page {
-  padding: 20px;
-}
-.cart-items-column {
+/* ✅ App Wrapper */
+#__next {
   flex: 1;
-}
-.cart-summary-column {
-  margin-top: 20px;
-  text-align: center;
-}
-
-/* ✅ Buttons */
-.checkout-button,/* ✅ Disabled Button */
-.product-btn {
-  background-color: #A6A6A6;
-  color: #F2F2F2;
-  padding: 10px 20px;
-  text-decoration: none;
-  border: none;
-  cursor: not-allowed;
-  transition: background-color 0.3s ease;
-  margin-top: 10px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-}
-.product-btn:hover {
-  background-color: #A6A6A6;
-}
-
-/* ✅ Add to Cart */
-.add-to-cart-btn {
-  background-color: #007BFF;
-  color: white;
-  cursor: pointer;
-}
-.add-to-cart-btn:hover {
-  background-color: #0056b3;
-}
-
-/* ✅ Product Styles */
-.product-item {
-  margin-bottom: 1.5rem;
-}
-.product-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  background-color: white;
-  border: 1px solid #e5e5e5;
-  border-radius: 8px;
-  padding: 16px;
-  overflow: hidden;
-}
-.product-container img {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  border-radius: 8px;
 }
 
-.product-image-wrapper {
-  aspect-ratio: 4 / 5;
-  width: 100%;
-  overflow: hidden;
-  position: relative;
+main {
+  flex: 1;
 }
 
-.product-image-wrapper img {
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-}
-
-/* ✅ Image Container */
-.image-container {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  border-radius: 8px;
-}
+/* ✅ Misc Utility Fixes */
 .aspect-4-5 {
   aspect-ratio: 4 / 5;
 }
 
-/* ✅ Fade Animations */
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out;
+}
+
 @keyframes fade-in-up {
   0% {
     opacity: 0;
@@ -572,6 +430,7 @@ footer {
     transform: translateY(0);
   }
 }
+
 @keyframes fade-in {
   0% {
     opacity: 0;
@@ -580,105 +439,5 @@ footer {
   100% {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-.animate-fade-in {
-  animation: fade-in 0.5s ease-out forwards;
-}
-.animate-fade-in-up {
-  animation: fade-in-up 0.6s ease-out;
-}
-
-/* ✅ App Wrapper */
-#__next {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-main {
-  flex: 1;
-}
-
-/* ✅ Backdrop overlay for Klaviyo popup */
-.klaviyo-form-overlay {
-  backdrop-filter: blur(6px);
-  background-color: rgba(0, 0, 0, 0.4);
-}
-
-/* ✅ Cleanup popup spacing for mobile */
-.klaviyo-form {
-  max-width: 95vw;
-  margin: 5vh auto;
-  padding: 1.5rem;
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-}
-
-/* ✅ Reduce Klaviyo badge size */
-.klaviyo-badge {
-  font-size: 10px !important;
-  opacity: 0.5;
-}
-
-/* ✅ Hide native Notify buttons when form is open */
-.form-open .native-notify-button {
-  display: none !important;
-}
-
-/* ✅ Color Swatches */
-.swatch {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid #ccc;
-  cursor: pointer;
-}
-.swatch.selected {
-  border-color: #000;
-}
-.swatch.monochrome {
-  background-color: #000;
-}
-.swatch.regular {
-  background-color: #fff;
-}
-
-/* ✅ Final Thumbnail Enhancements */
-.quickview-thumbnails {
-  margin-top: 1rem;
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-.quickview-thumbnails img {
-  width: 70px;
-  height: 90px;
-  border-radius: 4px;
-  object-fit: cover;
-  cursor: pointer;
-  transition: border 0.2s ease;
-}
-.quickview-thumbnails img.active {
-  border: 2px solid black;
-}
-
-.zoom-wrapper {
-  position: relative;
-  overflow: hidden;
-}
-
-.zoom-wrapper img.zoomed-in {
-  transform: scale(2);
-  cursor: zoom-out;
-}
-
-.zoom-wrapper img:not(.zoomed-in) {
-  cursor: zoom-in;
-}
-
-@media (hover: none) and (pointer: coarse) {
-  .zoom-wrapper img.zoomed-in {
-    transform: scale(2) translate(-25%, -25%);
   }
 }

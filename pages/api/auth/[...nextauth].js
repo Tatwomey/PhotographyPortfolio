@@ -44,6 +44,7 @@ export default NextAuth({
           { id: "10", username: "Colleen@sopaproductions.com", password: "see_hennessy", allowedPages: ["/music/korn24"] },
           { id: "11", username: "ttwomey", password: "ttwomey", allowedPages: ["/music/korn25"] },
           { id: "12", username: "troutybean@aol.com", password: "troutytanz", allowedPages: ["/music/korn24"] },
+          { id: "13", username: "sleepywonder@hotmail.com", password: "misterwonder", allowedPages: ["/music/thievery13"] },
 
         ];
 
