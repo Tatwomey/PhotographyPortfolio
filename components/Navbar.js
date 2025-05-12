@@ -14,10 +14,13 @@ const Navbar = () => {
   });
 
   const router = useRouter();
-  const isShopPage = router.pathname.startsWith('/shop') || router.pathname.startsWith('/popup');
+  const isLightModePage =
+    router.pathname.startsWith('/shop') ||
+    router.pathname.startsWith('/popup') ||
+    router.pathname.startsWith('/capsule-01');
 
   useEffect(() => {
-    if (isShopPage) {
+    if (isLightModePage) {
       setNavbarStyle({ backgroundColor: 'white', color: 'black' });
       return;
     }
@@ -32,7 +35,7 @@ const Navbar = () => {
 
     window.addEventListener('scroll', changeColor);
     return () => window.removeEventListener('scroll', changeColor);
-  }, [isShopPage]);
+  }, [isLightModePage]);
 
   const handleNav = () => setNav(!nav);
   const closeNav = () => setNav(false);
@@ -48,7 +51,7 @@ const Navbar = () => {
       <div className="max-w-[1280px] m-auto flex justify-between items-center py-4 px-4">
         <Link href="/#home" onClick={closeNav}>
           <Image
-            src={isShopPage ? '/Watermarklogo_bw.png' : '/Watermarklogo_2025.png'}
+            src={isLightModePage ? '/Watermarklogo_bw.png' : '/Watermarklogo_2025.png'}
             alt="Logo"
             width={374}
             height={374}
@@ -67,7 +70,7 @@ const Navbar = () => {
             { href: '/shop#shop', label: 'Shop' },
           ].map(({ href, label }) => (
             <Link key={label} href={href} onClick={closeNav}>
-              <span className={`text-sm font-medium ${isShopPage ? 'text-black' : 'text-white'}`}>
+              <span className={`text-sm font-medium ${isLightModePage ? 'text-black' : 'text-white'}`}>
                 {label}
               </span>
             </Link>
@@ -81,7 +84,7 @@ const Navbar = () => {
             >
               <FaInstagram
                 size={20}
-                className={`cursor-pointer ${isShopPage ? 'text-black' : 'text-white'}`}
+                className={`cursor-pointer ${isLightModePage ? 'text-black' : 'text-white'}`}
               />
             </a>
             <a
@@ -91,7 +94,7 @@ const Navbar = () => {
             >
               <FaLinkedin
                 size={20}
-                className={`cursor-pointer ${isShopPage ? 'text-black' : 'text-white'}`}
+                className={`cursor-pointer ${isLightModePage ? 'text-black' : 'text-white'}`}
               />
             </a>
           </div>
@@ -100,23 +103,22 @@ const Navbar = () => {
         {/* Mobile Menu Toggle */}
         <div onClick={handleNav} className="block md:hidden z-50 cursor-pointer">
           {nav ? (
-            <AiOutlineClose size={30} className={isShopPage ? 'text-black' : 'text-white'} />
+            <AiOutlineClose size={30} className={isLightModePage ? 'text-black' : 'text-white'} />
           ) : (
-            <AiOutlineMenu size={30} className={isShopPage ? 'text-black' : 'text-white'} />
+            <AiOutlineMenu size={30} className={isLightModePage ? 'text-black' : 'text-white'} />
           )}
         </div>
 
         {/* Client-side Cart Icon */}
-        {typeof window !== 'undefined' && <CartIcon isDarkMode={!isShopPage} />}
-
+        {typeof window !== 'undefined' && <CartIcon isDarkMode={!isLightModePage} />}
       </div>
 
       {/* Mobile Nav */}
       {nav && (
-        <div className={`md:hidden py-4 ${isShopPage ? 'bg-white' : 'bg-black'}`}>
+        <div className={`md:hidden py-4 ${isLightModePage ? 'bg-white' : 'bg-black'}`}>
           <ul
             className={`flex flex-col space-y-4 px-6 text-lg ${
-              isShopPage ? 'text-black' : 'text-white'
+              isLightModePage ? 'text-black' : 'text-white'
             }`}
           >
             <li onClick={closeNav}>
