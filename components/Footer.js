@@ -6,7 +6,10 @@ const Footer = () => {
   const router = useRouter();
 
   // Light mode pages
-  const isEcommercePage = router.pathname.startsWith("/shop") || router.pathname.startsWith("/popup");
+  const isEcommercePage =
+    router.pathname.startsWith("/shop") ||
+    router.pathname.startsWith("/popup") ||
+    router.pathname.startsWith("/capsule-01/");
 
   return (
     <footer
@@ -17,7 +20,9 @@ const Footer = () => {
       &copy; 2025 Trevor Twomey Photography. All Rights Reserved. | Site Design by{" "}
       <a
         href="mailto:trevor.a.twomey@gmail.com"
-        className={isEcommercePage ? "text-black hover:text-gray-600" : "text-white hover:text-gray-300"}
+        className={
+          isEcommercePage ? "text-black hover:text-gray-600" : "text-white hover:text-gray-300"
+        }
       >
         Trevor Twomey
       </a>
@@ -30,6 +35,10 @@ const Footer = () => {
           |
           <Link href="/shop/privacy" className="mx-2 hover:underline">
             Privacy Policy
+          </Link>
+          |
+          <Link href="/returns-policy" className="mx-2 hover:underline">
+            Returns & Exchanges
           </Link>
         </div>
       )}
