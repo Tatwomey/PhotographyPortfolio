@@ -5,10 +5,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useShopContext } from '@/contexts/shopContext';
 import Hero from '@/components/Hero';
+import ProductQuickView from '@/components/ProductQuickView';
 
 export default function Shop({ products }) {
   const { handleAddToCart, loading } = useShopContext();
-  // const [quickViewProduct, setQuickViewProduct] = useState(null); // 🔒 Disabled
+  const [quickViewProduct, setQuickViewProduct] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -40,25 +41,24 @@ export default function Shop({ products }) {
               product={product}
               loading={loading}
               handleAddToCart={handleAddToCart}
-              // openQuickView={() => setQuickViewProduct(product)} // 🔒 Disabled
+              openQuickView={() => setQuickViewProduct(product)}
             />
           ))}
         </div>
       </main>
 
-      {/* 🔒 QuickView modal disabled */}
-      {/* {quickViewProduct && (
+      {quickViewProduct && (
         <ProductQuickView
           product={quickViewProduct}
           selectedVariant={quickViewProduct.variantOptions[0]}
           onClose={() => setQuickViewProduct(null)}
         />
-      )} */}
+      )}
     </div>
   );
 }
 
-const ProductCard = ({ product, handleAddToCart, loading /* , openQuickView */ }) => {
+const ProductCard = ({ product, handleAddToCart, loading, openQuickView }) => {
   const [hovered, setHovered] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(
     product.variantOptions.find((v) =>
@@ -170,8 +170,7 @@ const ProductCard = ({ product, handleAddToCart, loading /* , openQuickView */ }
         </div>
       )}
 
-      {/* 🔒 Quick View button disabled */}
-      {/* {hovered && (
+      {hovered && (
         <button
           onClick={(e) => {
             e.preventDefault();
@@ -181,7 +180,7 @@ const ProductCard = ({ product, handleAddToCart, loading /* , openQuickView */ }
         >
           Quick View
         </button>
-      )} */}
+      )}
     </div>
   );
 };
