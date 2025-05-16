@@ -26,6 +26,7 @@ const allPhotos = [
     { src: "/Drab_majesty_trevor_twomey-1.jpg", type: "portrait", alt: "Drab Majesty performing live on the Bodies Tour NYC 2022", title: "Drab Majesty - Bodies Tour NYC 2022" },
     { src: "/ray-luzier-korn-2021-glitch-trevor-twomey.jpg", type: "portrait", alt: "Ray Luzier of Korn performing live in 2021", title: "Ray Luzier - Korn 2021" },
     { src: "/†††(Crosses)_022024_nyc_trevor_twomey-5.jpg", type: "portrait", alt: "††† (Crosses) live performance in NYC 2024", title: "††† (Crosses) - NYC 2024" },
+    { src: "/frank_thievery_corporation_trevor_twomey-1.jpg", type: "landscape", alt: "Thievery Corporation - Frank on Percussion", title: "Frank / Thievery Corporation" },
     { src: "/munky_korn_trevor_twomey-1.jpg", type: "portrait", alt: "James 'Munky' Shaffer of Korn performing live at FTL20 in 2018", title: "Munky - Korn FTL20 2018" },
     { src: "/Q_unique_nyc_trevor_twomey-1.jpg", type: "portrait", alt: "Q-Unique performing live at Bowery Ballroom", title: "Q-Unique - Bowery Ballroom" },
     { src: "/voxmana-nublu-natalia-clavier-trevor-twomey-1.JPG", type: "portrait", alt: "Voxmana performing live at Nublu with Natalia Clavier", title: "Voxmana - Nublu with Natalia Clavier" },
