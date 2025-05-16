@@ -11,7 +11,7 @@ const allPhotos = [
     { src: "/†††(Crosses)_chino_022024_nyc_trevor_twomey.jpg", type: "portrait", alt: "Chino Moreno of ††† (Crosses) performing live in NYC 2024", title: "Chino Moreno - ††† (Crosses) NYC 2024" },
     { src: "/rob_myers_thievery_trevor_twomey-1.jpg", type: "portrait", alt: "Chino Moreno of ††† (Crosses) performing live in NYC 2024", title: "Chino Moreno - ††† (Crosses) NYC 2024" },
     { src: "/thievery-corporation-capitol-theatre-trevor-twomey.jpg", type: "landscape", alt: "Thievery Corporation live at the Capitol Theatre", title: "Thievery Corporation - Capitol Theatre" },
-    { src: "/korn-eagles-ballroom-2017-trevor-twomey-1jpg.jpg", type: "landscape", alt: "Korn live performance at Eagles Ballroom 2017", title: "Korn - Eagles Ballroom 2017" },
+    { src: "/rob_myers_thievery_trevor_twomey-2.jpg", type: "landscape", alt: "Thievery" },
     { src: "/ray-luzier-korn-2020-trevor-twomey.jpg", type: "landscape", alt: "Ray Luzier of Korn performing live in 2020", title: "Ray Luzier - Korn Live 2020" },
     { src: "/Natalia-clavier-nublu-trevor-twomey.jpg", type: "landscape", alt: "Natalia Clavier performing live at Nublu", title: "Natalia Clavier - Live at Nublu" },
     { src: "/head-korn-2015-la-forum-trevor-twomey-1.jpg", type: "landscape", alt: "Brian 'Head' Welch of Korn performing at LA Forum 2015", title: "Brian 'Head' Welch - Korn LA Forum 2015" },
