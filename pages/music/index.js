@@ -15,7 +15,7 @@ const allPhotos = [
     { src: "/rob_myers_thievery_trevor_twomey-2.jpg", type: "landscape", alt: "Thievery" },
     { src: "/ray-luzier-korn-2020-trevor-twomey.jpg", type: "landscape", alt: "Ray Luzier of Korn performing live in 2020", title: "Ray Luzier - Korn Live 2020" },
     { src: "/Natalia-clavier-nublu-trevor-twomey.jpg", type: "landscape", alt: "Natalia Clavier performing live at Nublu", title: "Natalia Clavier - Live at Nublu" },
-    { src: "/thievery_hash_jeff-1.jpg", type: "landscape", alt: "James Munky Shaffer of Korn performing at PNC", title: "James Munky Shaffer of Korn performing at PNC" },
+    
 
     { src: "/munky-fieldy-korn-eagles-ballroom-2017-trevor-twomey.jpg", type: "landscape", alt: "James 'Munky' Shaffer and Fieldy of Korn at Eagles Ballroom 2017", title: "Munky and Fieldy - Korn Eagles Ballroom 2017" },
     { src: "/jonathan-davis-solo-tour-2018-trevor-twomey.jpg.jpg", type: "landscape", alt: "Jonathan Davis performing solo tour in 2018", title: "Jonathan Davis - Solo Tour 2018" },
@@ -40,7 +40,7 @@ const allPhotos = [
     { src: "/gojira-west-palm-beach-24-trevor-twomey-1.jpg", type: "portrait", alt: "Gojira Performing in West Palm Beach 2024", title: "Gojira Performing in West Palm Beach 2024" },
     { src: "/thievery_corporation_terminal5-28.jpg", type: "portrait", alt: "Puma performing live with Thievery Corporation in 2025", title: "Puma performing live with Thievery Corporation in 2025" },
     { src: "/q-unique-kings-bounty-denial-video-trevor-twomey-1.jpg", type: "portrait", alt: "Q-Unique performing with Kings Bounty during Denial video shoot", title: "Q-Unique - Kings Bounty Denial Video Shoot" },
-    ];
+   { src: "/brazilian_girls_fairfield_ct_trevor_twomey-1.jpg", type: "landscape", alt: "Brazilian Girls - 2016 Fairfield, CT", title: "Brazilian Girls - 2016 Fairfield, CT" }, ];
 
     const Music = () => {
       const router = useRouter();
