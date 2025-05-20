@@ -10,6 +10,7 @@ const allPhotos = [
     { src: "/hidden.png", type: "portrait", alt: "Q-Unique performing with Kings Bounty during Denial video shoot", title: "Q-Unique - Kings Bounty Denial Video Shoot" },
     { src: "/†††(Crosses)_chino_022024_nyc_trevor_twomey.jpg", type: "portrait", alt: "Chino Moreno of ††† (Crosses) performing live in NYC 2024", title: "Chino Moreno - ††† (Crosses) NYC 2024" },
     { src: "/rob_myers_thievery_trevor_twomey-1.jpg", type: "portrait", alt: "Chino Moreno of ††† (Crosses) performing live in NYC 2024", title: "Chino Moreno - ††† (Crosses) NYC 2024" },
+     { src: "/fieldy_korn_2020_trevor_twomey-1.jpg", type: "landscape", alt: "Thievery Corporation live at the Capitol Theatre", title: "Thievery Corporation - Capitol Theatre" },
     { src: "/thievery_corporation_nat_leif.jpg", type: "landscape", alt: "Thievery Corporation live at the Capitol Theatre", title: "Thievery Corporation - Capitol Theatre" },
     { src: "/rob_myers_thievery_trevor_twomey-2.jpg", type: "landscape", alt: "Thievery" },
     { src: "/ray-luzier-korn-2020-trevor-twomey.jpg", type: "landscape", alt: "Ray Luzier of Korn performing live in 2020", title: "Ray Luzier - Korn Live 2020" },
