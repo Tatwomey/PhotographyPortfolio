@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useShopContext } from "@/contexts/shopContext";
 import Hero from "@/components/Hero";
-import Link from "next/link";
 import TabSection from "@/components/TabSection";
 
 export default function ProductSlugLayout({ product }) {
@@ -59,10 +59,7 @@ const variant = product.variants.find((v) => v.id === e.target.value);
 if (variant) {
 setSelectedVariant(variant);
 setMainImage(variant.image?.src || product.images[0]?.src);
-
-const newColor = variant.selectedOptions.find(
-(opt) => opt.name.toLowerCase() === "color"
-);
+const newColor = variant.selectedOptions.find((opt) => opt.name.toLowerCase() === "color");
 if (newColor?.value) {
 setSelectedColor(newColor.value);
 }
@@ -96,13 +93,11 @@ return (
 <>
 <Hero />
 <main className="bg-white text-black px-4 py-12 container mx-auto">
-<div
-id="product-details"
-className="flex flex-col lg:flex-row gap-10 scroll-mt-20 items-start"
->
+<div id="product-details" className="flex flex-col lg:flex-row gap-10 scroll-mt-20 items-start">
+
 {/* Image Column */}
 <div className="w-full lg:max-w-[550px] relative">
-<div className="product-image-wrapper group shadow rounded overflow-hidden relative">
+<div className="relative aspect-[4/5] w-full overflow-hidden rounded shadow group">
 {product.images.length > 1 && (
 <>
 <button onClick={prevImage} className="modal-arrow left" aria-label="Prev Image">
@@ -113,15 +108,13 @@ className="flex flex-col lg:flex-row gap-10 scroll-mt-20 items-start"
 </button>
 </>
 )}
-
 <Image
 src={mainImage}
 alt={product.title}
-width={800}
-height={1000}
-className="product-main-image"
+fill
+className="object-contain"
+priority
 />
-
 {!selectedVariant.availableForSale && (
 <div className="sold-out-badge">Sold Out</div>
 )}
@@ -143,7 +136,7 @@ aria-label={`Thumbnail ${idx + 1}`}
 >
 <Image
 src={img.src}
-alt={`Thumb ${idx}`}
+alt={`Thumbnail ${idx}`}
 width={80}
 height={100}
 className="thumbnail-image"
@@ -156,7 +149,7 @@ className="thumbnail-image"
 
 {/* Details Column */}
 <div className="w-full lg:max-w-md">
-  <nav className="text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
+<nav className="text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
 <ol className="flex space-x-2">
 <li>
 <Link href="/popup" className="hover:underline">
@@ -167,6 +160,7 @@ Popup Shop
 <li className="text-black font-medium truncate">{product.title}</li>
 </ol>
 </nav>
+
 <h1 className="text-3xl font-bold mb-2">{product.title}</h1>
 {product.description && (
 <p className="text-sm italic text-gray-600 mb-4">{product.description}</p>
@@ -250,7 +244,6 @@ Notify Me When Back in Stock
 )}
 </div>
 
-{/* Tabbed Info */}
 <TabSection details={product.description} />
 </div>
 </div>
