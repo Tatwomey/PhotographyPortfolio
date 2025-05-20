@@ -10,8 +10,13 @@ const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 const [selectedVariant, setSelectedVariant] = useState(product.variants?.[0]?.id || '');
 
 useEffect(() => {
+document.body.classList.add('modal-open');
 setSelectedImageIndex(0);
 setSelectedVariant(product.variants?.[0]?.id || '');
+
+return () => {
+document.body.classList.remove('modal-open');
+};
 }, [product]);
 
 if (!product || !product.images?.length) return null;
@@ -28,7 +33,8 @@ id="overlay"
 onClick={handleClose}
 className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm p-4"
 >
-<div className="bg-white w-full max-w-4xl max-h-[95vh] overflow-y-auto rounded-lg shadow-xl flex flex-col md:flex-row relative">
+<div className="bg-white w-full max-w-3xl max-h-[95vh] overflow-y-auto rounded-lg shadow-xl flex flex-col md:flex-row relative">
+
 {/* Close */}
 <button
 onClick={onClose}
@@ -97,7 +103,7 @@ selectedImageIndex === i ? 'border-black' : 'border-transparent'
 {/* Info Section */}
 <div className="w-full md:w-1/2 p-6 flex flex-col justify-between">
 <div>
-<h1 className="text-lg sm:text-xl font-semibold leading-tight mb-2 truncate">
+<h1 className="text-lg sm:text-xl font-semibold leading-tight mb-2 truncate max-w-full">
 {product.title}
 </h1>
 <p className="text-lg text-gray-700 mb-4">${parseFloat(price).toFixed(2)}</p>
@@ -146,13 +152,14 @@ Limited to 2 units per customer.
 </p>
 </div>
 
-{/* View Details - Better Placement + Animation */}
-<div className="mt-6 text-center">
-<Link href={`/popup/${product.handle}`} legacyBehavior>
-<a className="relative inline-block text-sm font-medium text-black group">
+{/* View Details */}
+<div className="mt-5 text-center">
+<Link
+href={`/popup/${product.handle}#product-details`}
+scroll={false}
+className="view-details-link text-sm inline-block"
+>
 VIEW PRODUCT DETAILS
-<span className="absolute left-0 -bottom-1 w-full h-[2px] bg-black transform scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out"></span>
-</a>
 </Link>
 </div>
 </div>

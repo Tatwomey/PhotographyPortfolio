@@ -40,6 +40,36 @@ background-color: white !important;
 color: black !important;
 }
 
+body.modal-open {
+  overflow: hidden;
+  padding-right: 16px; /* Approximate scrollbar width */
+}
+.view-details-link {
+  display: inline-block;
+  position: relative;
+  color: black;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.view-details-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background-color: black;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease-out;
+}
+
+.view-details-link:hover::after {
+  transform: scaleX(1);
+}
+
 .hero-wrapper {
   position: relative;
   width: 100%;
@@ -358,6 +388,8 @@ width: 32px;
 height: 32px;
 }
 }
+
+
 
 /* ✅ Prevent Right-Click Save */
 img {
