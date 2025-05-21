@@ -16,8 +16,8 @@ const allPhotos = [
     { src: "/ray-luzier-korn-2020-trevor-twomey.jpg", type: "landscape", alt: "Ray Luzier of Korn performing live in 2020", title: "Ray Luzier - Korn Live 2020" },
     { src: "/Natalia-clavier-nublu-trevor-twomey.jpg", type: "landscape", alt: "Natalia Clavier performing live at Nublu", title: "Natalia Clavier - Live at Nublu" },
     
-
-    { src: "/munky-fieldy-korn-eagles-ballroom-2017-trevor-twomey.jpg", type: "landscape", alt: "James 'Munky' Shaffer and Fieldy of Korn at Eagles Ballroom 2017", title: "Munky and Fieldy - Korn Eagles Ballroom 2017" },
+{ src: "/Jonathan_davis_korn_2022_trevor_twomey-1.jpg", type: "portrait", alt: "Davey Havok - Bodies Tour 2022", title: "Davey Havok - Bodies Tour 2022" },
+    { src: "/raqueljones-thievery-1.jpg", type: "portrait", alt: "Raquel Jones performing with Thievery Corporation | Pier 17 October 12, 2019" },
     { src: "/jonathan-davis-solo-tour-2018-trevor-twomey.jpg.jpg", type: "landscape", alt: "Jonathan Davis performing solo tour in 2018", title: "Jonathan Davis - Solo Tour 2018" },
     { src: "/amy-lee-evanescence-jones-beach-2022-trevor-twomey.jpg", type: "portrait", alt: "Amy Lee of Evanescence performing live at Jones Beach 2022", title: "Amy Lee - Evanescence Jones Beach 2022" },
     { src: "/afi-davey-havok-bodies-tour-2022-nyc-trevor-twomey-1.jpg", type: "portrait", alt: "Davey Havok - Bodies Tour 2022", title: "Davey Havok - Bodies Tour 2022" },
