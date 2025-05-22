@@ -30,7 +30,7 @@ const allPhotos = [
     { src: "/frank_thievery_corporation_trevor_twomey-1.jpg", type: "landscape", alt: "Thievery Corporation - Frank on Percussion", title: "Frank / Thievery Corporation" },
     { src: "/munky_korn_trevor_twomey-1.jpg", type: "portrait", alt: "James 'Munky' Shaffer of Korn performing live at FTL20 in 2018", title: "Munky - Korn FTL20 2018" },
     { src: "/Q_unique_nyc_trevor_twomey-1.jpg", type: "portrait", alt: "Q-Unique performing live at Bowery Ballroom", title: "Q-Unique - Bowery Ballroom" },
-    { src: "/voxmana-nublu-natalia-clavier-trevor-twomey-1.JPG", type: "portrait", alt: "Voxmana performing live at Nublu with Natalia Clavier", title: "Voxmana - Nublu with Natalia Clavier" },
+    { src: "/voxmana-nublu-natalia-clavier-trevor-twomey-.jpg", type: "portrait", alt: "Voxmana performing live at Nublu with Natalia Clavier", title: "Voxmana - Nublu with Natalia Clavier" },
     { src: "/Thievery25/thievery_corporation_terminal5-41.jpg", type: "portrait", alt: "Chris Corner of IAMX performing live at LPR 2023", title: "IAMX - Chris Corner LPR 2023" },
     { src: "/ray_luzier_korn_2022_trevor_twomey-1.jpg", type: "landscape", alt: "Ray Luzier - performing with Korn 2022 at Jones Beach" },
     { src: "/q-unique-mic-kings-bounty-band-trevor-twomey-1.JPG", type: "landscape", alt: "Q-Unique with microphone performing live with Kings Bounty", title: "Q-Unique - Kings Bounty Live" },
