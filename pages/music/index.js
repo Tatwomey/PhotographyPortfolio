@@ -14,6 +14,7 @@ const allPhotos = [
      { src: "/thievery_corporation_nat_leif.jpg", type: "landscape", alt: "Thievery Corporation live at the Capitol Theatre", title: "Thievery Corporation - Capitol Theatre" },
       { src: "/aaron_lewis_staind_trevortwomey_2022-1.jpg", type: "portrait", alt: "Jonathan Davis performing live with Korn at Jones Beach 2022", title: "Jonathan Davis - Korn Live at Jones Beach 2022" },
        { src: "/head_automatica_nyc_2024_trevortwomey-1.jpg", type: "portrait", alt: "Jonathan Davis performing live with Korn at Jones Beach 2022", title: "Jonathan Davis - Korn Live at Jones Beach 2022" },
+        { src: "/korn_eagles_ballroom_trevortwomey-1.jpg", type: "landscape", alt: "Ray Luzier of Korn performing live in 2020", title: "Ray Luzier - Korn Live 2020" },
         { src: "/thoughtcrimes_nyc_trevortwomey-1.jpg", type: "portrait", alt: "Jonathan Davis performing live with Korn at Jones Beach 2022", title: "Jonathan Davis - Korn Live at Jones Beach 2022" },
          { src: "/munk_korn_2024_trevortwomey.jpg", type: "portrait", alt: "Jonathan Davis performing live with Korn at Jones Beach 2022", title: "Jonathan Davis - Korn Live at Jones Beach 2022" },
     { src: "/rob_myers_thievery_trevor_twomey-2.jpg", type: "landscape", alt: "Thievery" },
