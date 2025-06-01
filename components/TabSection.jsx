@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 
-// ✅ Only show "DETAILS"
-const tabs = ["DETAILS"];
+const tabs = [
+  { title: "DETAILS", key: "details" },
+  { title: "SIZE & FIT", key: "sizeFit" },
+  { title: "SHIPPING & RETURNS", key: "shippingReturns" },
+];
 
-export default function TabSection({ details }) {
-  const [activeTab, setActiveTab] = useState("DETAILS");
+export default function TabSection() {
+  const [activeTab, setActiveTab] = useState("details");
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -15,7 +18,7 @@ export default function TabSection({ details }) {
   }, []);
 
   const contentMap = {
-    "DETAILS": (
+    details: (
       <ul className="grid gap-2 list-inside list-disc">
         <li>Printed on museum-grade archival Hahnemühle Baryta paper</li>
         <li>Hand-signed, hand-numbered, and embossed</li>
@@ -24,55 +27,60 @@ export default function TabSection({ details }) {
         <li>Print size: 16 × 20 inches</li>
       </ul>
     ),
-    // ❌ Temporarily removed:
-    // "SIZE & FIT": <p>[Size & Fit content coming soon]</p>,
-    // "SHIPPING & RETURNS": <p>[Shipping & Returns content coming soon]</p>
+    sizeFit: (
+      <p>
+        This edition is printed true to size at 16 × 20 inches — ideal for framing and
+        gallery presentation. For optimal display, use archival framing materials and UV-protective glass.
+      </p>
+    ),
+    shippingReturns: (
+      <p>
+        Smaller prints ship flat in archival-safe packaging. 16 × 20 inch prints are
+        carefully rolled and shipped in reinforced protective tubes. U.S. orders are
+        shipped via USPS or UPS based on location and method selected at checkout.
+        International shipments may be subject to customs duties. All sales final unless
+        prints are damaged in transit.
+      </p>
+    ),
   };
 
   return (
     <div className="mt-10 border-t pt-6">
       {!isMobile ? (
-        <div className="flex gap-6 border-b border-gray-200">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className="relative pb-3 text-sm font-semibold text-gray-600 hover:text-black transition group"
-            >
-              {tab}
-              <span
-                className={`absolute bottom-0 left-1/2 h-[2px] bg-black transition-all duration-300 ease-out ${
-                  activeTab === tab
-                    ? "w-full left-0"
-                    : "w-0 group-hover:w-full group-hover:left-0"
-                }`}
-              />
-            </button>
-          ))}
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {tabs.map((tab) => (
-            <div key={tab} className="border-b pb-4">
+        <>
+          <div className="flex gap-6 border-b border-gray-200">
+            {tabs.map((tab) => (
               <button
-                onClick={() => setActiveTab(tab)}
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`tab-button ${activeTab === tab.key ? "active" : ""}`}
+              >
+                {tab.title}
+                <span />
+              </button>
+            ))}
+          </div>
+          <div className="mt-6 text-sm text-gray-800 leading-relaxed">
+            {contentMap[activeTab]}
+          </div>
+        </>
+      ) : (
+        <div className="space-y-6">
+          {tabs.map((tab) => (
+            <div key={tab.key} className="border-b pb-4">
+              <button
+                onClick={() => setActiveTab(tab.key)}
                 className="w-full text-left font-semibold text-black"
               >
-                {tab}
+                {tab.title}
               </button>
-              {activeTab === tab && (
+              {activeTab === tab.key && (
                 <div className="mt-2 text-sm text-gray-800">
-                  {contentMap[tab]}
+                  {contentMap[tab.key]}
                 </div>
               )}
             </div>
           ))}
-        </div>
-      )}
-
-      {!isMobile && (
-        <div className="mt-6 text-sm text-gray-800 leading-relaxed">
-          {contentMap[activeTab]}
         </div>
       )}
     </div>

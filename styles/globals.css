@@ -20,6 +20,48 @@ flex-direction: column;
 cursor: default;
 }
 
+/* ✅ Tab underline reset */
+.tab-button {
+  position: relative;
+  text-decoration: none !important;
+  background: none;
+  border: none;
+  padding-bottom: 0.75rem;
+  font-weight: 600;
+  color: #4B5563; /* Tailwind's text-gray-600 */
+  transition: color 0.3s ease;
+}
+
+.tab-button:hover {
+  color: #000; /* Hover to black */
+}
+
+.tab-button.active {
+  color: #000; /* Active tab stays black */
+}
+
+.tab-button span {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  height: 2px;
+  width: 0;
+  background-color: black;
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+.tab-button.active span {
+  width: 100%;
+  left: 0;
+}
+
+.tab-button:hover span {
+  width: 100%;
+  left: 0;
+}
+
+
 main {
 flex: 1;
 background-color: transparent;
@@ -62,13 +104,14 @@ body.modal-open {
   height: 1px;
   background-color: black;
   transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.25s ease-out;
+  transform-origin: center; /* ✅ center-based underline */
+  transition: transform 0.3s ease;
 }
 
 .view-details-link:hover::after {
   transform: scaleX(1);
 }
+
 
 .hero-wrapper {
   position: relative;
