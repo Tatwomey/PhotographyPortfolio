@@ -35,15 +35,7 @@ export default NextAuth({
           { id: "2", username: "jcshaffer@me.com", password: "Jcshaffer70", allowedPages: ["/music/korn24"] },
           { id: "3", username: "jefffranca", password: "Thievery25", allowedPages: ["/music/thievery25"] },
           { id: "4", username: "sunyaboy", password: "sunyaboy", allowedPages: ["/music/thievery25"] },
-          { id: "5", username: "munkshaffer", password: "korntour2024", allowedPages: ["/music/korn24"] },
-          { id: "6", username: "toddytodd", password: "thankstodd!", allowedPages: ["/music/korn24"] },
-          { id: "7", username: "trevor.a.twomey@gmail.com", password: "tatwomey", allowedPages: ["/music/korn24"] },
           { id: "8", username: "robgarzamusic@gmail.com", password: "terminal5", allowedPages: ["/music/thievery25"] },
-          { id: "8", username: "mikemazzeo94", password: "mikemazzeo94", allowedPages: ["/music/korn24"] },
-          { id: "9", username: "ashtonmichael", password: "ashtonlogin", allowedPages: ["/music/korn24"] },
-          { id: "10", username: "Colleen@sopaproductions.com", password: "see_hennessy", allowedPages: ["/music/korn24"] },
-          { id: "11", username: "ttwomey", password: "ttwomey", allowedPages: ["/music/korn25"] },
-          { id: "12", username: "troutybean@aol.com", password: "troutytanz", allowedPages: ["/music/korn24"] },
           { id: "13", username: "sleepywonder@hotmail.com", password: "misterwonder", allowedPages: ["/music/thievery13"] },
 
         ];
