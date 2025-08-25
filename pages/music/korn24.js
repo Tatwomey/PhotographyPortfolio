@@ -1,6 +1,5 @@
 // pages/music/korn24.jsx
 import React, { useEffect } from "react";
-import withAuth from "@/utils/withAuth";
 import Hero from "@/components/Hero";
 import Portfolio from "@/components/Portfolio";
 import Lenis from "@studio-freight/lenis";
@@ -87,4 +86,4 @@ const Korn24 = () => {
   );
 };
 
-export default withAuth(Korn24, ["/music/korn24"]);
+export default Korn24;
