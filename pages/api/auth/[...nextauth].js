@@ -31,8 +31,7 @@ export default NextAuth({
       },
       async authorize(credentials) {
         const users = [
-          { id: "1", username: "loseear@gmail.com", password: "korntour2025", allowedPages: ["/music/korn24"] },
-          { id: "2", username: "jcshaffer@me.com", password: "Jcshaffer70", allowedPages: ["/music/korn24"] },
+       
           { id: "3", username: "jefffranca", password: "Thievery25", allowedPages: ["/music/thievery25"] },
           { id: "4", username: "sunyaboy", password: "sunyaboy", allowedPages: ["/music/thievery25"] },
           { id: "8", username: "robgarzamusic@gmail.com", password: "terminal5", allowedPages: ["/music/thievery25"] },
