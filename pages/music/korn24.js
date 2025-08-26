@@ -57,9 +57,16 @@ const photos = [
   { src: "/korn24/korn_2024_trevortwomey-48.jpg", type: "landscape" },
 ];
 
-const Korn24 = () => {
+export default function Korn24() {
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    // Fire a custom GA event
+    if (window.gtag) {
+      window.gtag("event", "visit_korn24", {
+        page_path: "/music/korn24",
+      });
+    }
 
     const lenis = new Lenis();
     const raf = (time) => {
@@ -68,14 +75,15 @@ const Korn24 = () => {
     };
     requestAnimationFrame(raf);
 
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       const section = document.getElementById("korn-photos");
-      if (section) {
-        section.scrollIntoView({ behavior: "smooth" });
-      }
-    }, 500); // Allow time for layout + DOM paint
+      if (section) section.scrollIntoView({ behavior: "smooth" });
+    }, 500);
 
-    return () => lenis.destroy();
+    return () => {
+      clearTimeout(timeout);
+      lenis.destroy();
+    };
   }, []);
 
   return (
@@ -84,6 +92,4 @@ const Korn24 = () => {
       <Portfolio photos={photos} sectionId="korn-photos" />
     </div>
   );
-};
-
-export default Korn24;
+}
