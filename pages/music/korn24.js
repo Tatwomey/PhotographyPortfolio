@@ -1,5 +1,6 @@
 // pages/music/korn24.jsx
 import React, { useEffect } from "react";
+import withAuth from "@/utils/withAuth";
 import Hero from "@/components/Hero";
 import Portfolio from "@/components/Portfolio";
 import Lenis from "@studio-freight/lenis";
@@ -57,16 +58,9 @@ const photos = [
   { src: "/korn24/korn_2024_trevortwomey-48.jpg", type: "landscape" },
 ];
 
-export default function Korn24() {
+const Korn24 = () => {
   useEffect(() => {
     if (typeof window === "undefined") return;
-
-    // Fire a custom GA event
-    if (window.gtag) {
-      window.gtag("event", "visit_korn24", {
-        page_path: "/music/korn24",
-      });
-    }
 
     const lenis = new Lenis();
     const raf = (time) => {
@@ -75,15 +69,14 @@ export default function Korn24() {
     };
     requestAnimationFrame(raf);
 
-    const timeout = setTimeout(() => {
+    setTimeout(() => {
       const section = document.getElementById("korn-photos");
-      if (section) section.scrollIntoView({ behavior: "smooth" });
-    }, 500);
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 500); // Allow time for layout + DOM paint
 
-    return () => {
-      clearTimeout(timeout);
-      lenis.destroy();
-    };
+    return () => lenis.destroy();
   }, []);
 
   return (
@@ -92,4 +85,6 @@ export default function Korn24() {
       <Portfolio photos={photos} sectionId="korn-photos" />
     </div>
   );
-}
+};
+
+export default withAuth(Korn24, ["/music/korn24"]);

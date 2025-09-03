@@ -1,10 +1,11 @@
-// pages/music/korn2025.js
+// pages/music/korn2025.jsx
 import React, { useEffect } from "react";
+import withAuth from "@/utils/withAuth";
 import Hero from "@/components/Hero";
 import Portfolio from "@/components/Portfolio";
 import Lenis from "@studio-freight/lenis";
 
-// Korn MetLife photo set (sequential order, 1–26; only 26 is landscape)
+// Korn MetLife 2025 — sequential order 1–28 (only 26 is landscape)
 const photos = [
   { src: "/korn2025/korn_metlife_trevortwomey-1.jpg", type: "portrait" },
   { src: "/korn2025/korn_metlife_trevortwomey-2.jpg", type: "portrait" },
@@ -32,20 +33,14 @@ const photos = [
   { src: "/korn2025/korn_metlife_trevortwomey-24.jpg", type: "portrait" },
   { src: "/korn2025/korn_metlife_trevortwomey-25.jpg", type: "portrait" },
   { src: "/korn2025/korn_metlife_trevortwomey-26.jpg", type: "landscape" },
+  { src: "/korn2025/korn_metlife_trevortwomey-27.jpg", type: "portrait" },
+  { src: "/korn2025/korn_metlife_trevortwomey-28.jpg", type: "portrait" },
 ];
 
-export default function Korn2025() {
+const Korn2025 = () => {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // Fire a custom GA event for Korn 2025 page
-    if (window.gtag) {
-      window.gtag("event", "visit_korn2025", {
-        page_path: "/music/korn2025",
-      });
-    }
-
-    // Smooth scrolling with Lenis
     const lenis = new Lenis();
     const raf = (time) => {
       lenis.raf(time);
@@ -53,16 +48,14 @@ export default function Korn2025() {
     };
     requestAnimationFrame(raf);
 
-    // Auto-scroll to gallery after hero settles
-    const timeout = setTimeout(() => {
+    setTimeout(() => {
       const section = document.getElementById("korn-photos-2025");
-      if (section) section.scrollIntoView({ behavior: "smooth" });
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth" });
+      }
     }, 500);
 
-    return () => {
-      clearTimeout(timeout);
-      lenis.destroy();
-    };
+    return () => lenis.destroy();
   }, []);
 
   return (
@@ -71,4 +64,6 @@ export default function Korn2025() {
       <Portfolio photos={photos} sectionId="korn-photos-2025" />
     </div>
   );
-}
+};
+
+export default withAuth(Korn2025, ["/music/korn2025"]);
