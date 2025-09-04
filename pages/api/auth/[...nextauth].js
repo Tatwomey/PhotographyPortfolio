@@ -61,6 +61,12 @@ export default NextAuth({
             password: "terminal5",
             allowedPages: ["/music/thievery25"],
           },
+          {
+            id: "9",
+            username: "Taryn@velvethammer.net",
+            password: "metlifekornday1",
+            allowedPages: ["/music/korn2025"],
+          },
         ];
 
         const user = users.find(

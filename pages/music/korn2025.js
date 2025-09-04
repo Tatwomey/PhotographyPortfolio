@@ -5,7 +5,8 @@ import Hero from "@/components/Hero";
 import Portfolio from "@/components/Portfolio";
 import Lenis from "@studio-freight/lenis";
 
-// Korn MetLife 2025 — sequential order 1–28 (only 26 is landscape)
+// Korn MetLife 2025 — sequential order
+// cache-bust the two files whose orientation changed
 const photos = [
   { src: "/korn2025/korn_metlife_trevortwomey-1.jpg", type: "portrait" },
   { src: "/korn2025/korn_metlife_trevortwomey-2.jpg", type: "portrait" },
@@ -30,11 +31,13 @@ const photos = [
   { src: "/korn2025/korn_metlife_trevortwomey-21.jpg", type: "portrait" },
   { src: "/korn2025/korn_metlife_trevortwomey-22.jpg", type: "portrait" },
   { src: "/korn2025/korn_metlife_trevortwomey-23.jpg", type: "portrait" },
-  { src: "/korn2025/korn_metlife_trevortwomey-24.jpg", type: "portrait" },
+  // 24 changed to landscape — add ?v=2 to bust Next/Image cache
+  { src: "/korn2025/korn_metlife_trevortwomey-24.jpg?v=2", type: "landscape" },
   { src: "/korn2025/korn_metlife_trevortwomey-25.jpg", type: "portrait" },
-  { src: "/korn2025/korn_metlife_trevortwomey-26.jpg", type: "landscape" },
+  // 26 changed to portrait — add ?v=2 to bust cache
+  { src: "/korn2025/korn_metlife_trevortwomey-26.jpg?v=2", type: "portrait" },
   { src: "/korn2025/korn_metlife_trevortwomey-27.jpg", type: "portrait" },
-  { src: "/korn2025/korn_metlife_trevortwomey-28.jpg", type: "portrait" },
+  // add more here if/when you extend the set
 ];
 
 const Korn2025 = () => {
@@ -48,14 +51,15 @@ const Korn2025 = () => {
     };
     requestAnimationFrame(raf);
 
-    setTimeout(() => {
+    const t = setTimeout(() => {
       const section = document.getElementById("korn-photos-2025");
-      if (section) {
-        section.scrollIntoView({ behavior: "smooth" });
-      }
+      if (section) section.scrollIntoView({ behavior: "smooth" });
     }, 500);
 
-    return () => lenis.destroy();
+    return () => {
+      clearTimeout(t);
+      lenis.destroy();
+    };
   }, []);
 
   return (
