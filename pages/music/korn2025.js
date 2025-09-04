@@ -5,8 +5,8 @@ import Hero from "@/components/Hero";
 import Portfolio from "@/components/Portfolio";
 import Lenis from "lenis";
 
-// Korn MetLife 2025 — sequential order
-// cache-bust the two files whose orientation changed
+// Korn MetLife 2025 — 24 is PORTRAIT, 25 is LANDSCAPE, 26 PORTRAIT.
+// ?v=fix1 appended to 24 & 25 to bust Next/Image cache after orientation swap.
 const photos = [
   { src: "/korn2025/korn_metlife_trevortwomey-1.jpg", type: "portrait" },
   { src: "/korn2025/korn_metlife_trevortwomey-2.jpg", type: "portrait" },
@@ -31,19 +31,30 @@ const photos = [
   { src: "/korn2025/korn_metlife_trevortwomey-21.jpg", type: "portrait" },
   { src: "/korn2025/korn_metlife_trevortwomey-22.jpg", type: "portrait" },
   { src: "/korn2025/korn_metlife_trevortwomey-23.jpg", type: "portrait" },
-  // 24 changed to landscape — add ?v=2 to bust Next/Image cache
-  { src: "/korn2025/korn_metlife_trevortwomey-24.jpg?v=2", type: "landscape" },
-  { src: "/korn2025/korn_metlife_trevortwomey-25.jpg", type: "portrait" },
-  // 26 changed to portrait — add ?v=2 to bust cache
-  { src: "/korn2025/korn_metlife_trevortwomey-26.jpg?v=2", type: "portrait" },
-  { src: "/korn2025/korn_metlife_trevortwomey-27.jpg", type: "portrait" },
-  // add more here if/when you extend the set
+
+  // 24 = portrait (cache-busted)
+  {
+    src: "/korn2025/korn_metlife_trevortwomey-24.jpg?v=fix1",
+    type: "portrait",
+  },
+
+  // 25 = landscape (cache-busted)
+  {
+    src: "/korn2025/korn_metlife_trevortwomey-25.jpg?v=fix1",
+    type: "landscape",
+  },
+
+  // 26 = portrait
+  { src: "/korn2025/korn_metlife_trevortwomey-26.jpg", type: "portrait" },
+
+  // continue as needed…
 ];
 
 const Korn2025 = () => {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    // smooth scrolling loop (kept here so page has same feel)
     const lenis = new Lenis();
     const raf = (time) => {
       lenis.raf(time);
@@ -51,9 +62,10 @@ const Korn2025 = () => {
     };
     requestAnimationFrame(raf);
 
+    // small nudge to bring gallery into view
     const t = setTimeout(() => {
-      const section = document.getElementById("korn-photos-2025");
-      if (section) section.scrollIntoView({ behavior: "smooth" });
+      const el = document.getElementById("korn-photos-2025");
+      if (el) el.scrollIntoView({ behavior: "smooth" });
     }, 500);
 
     return () => {

@@ -10,25 +10,22 @@ const Portfolio = ({ photos, sectionId }) => {
   const lightboxRef = useRef(null);
   const [imagesLoaded, setImagesLoaded] = useState(false);
 
+  // Preload so we can animate in once everything is ready
   useEffect(() => {
-    if (typeof window !== "undefined" && photos.length > 0) {
-      let loadedImages = 0;
-      photos.forEach((photo) => {
-        const img = new window.Image();
-        img.src = photo.src;
-        img.onload = () => {
-          loadedImages++;
-          if (loadedImages === photos.length) setImagesLoaded(true);
-        };
-        img.onerror = () => {
-          console.error("❌ Failed to load:", photo.src);
-          loadedImages++;
-          if (loadedImages === photos.length) setImagesLoaded(true);
-        };
-      });
-    }
+    if (typeof window === "undefined" || photos.length === 0) return;
+
+    let loaded = 0;
+    photos.forEach((p) => {
+      const img = new window.Image();
+      img.src = p.src;
+      img.onload = img.onerror = () => {
+        loaded += 1;
+        if (loaded === photos.length) setImagesLoaded(true);
+      };
+    });
   }, [photos]);
 
+  // Smooth scrolling
   useEffect(() => {
     const lenis = new Lenis();
     const raf = (time) => {
@@ -50,7 +47,8 @@ const Portfolio = ({ photos, sectionId }) => {
           <div className="grid-container">
             {photos.map((photo, index) => (
               <div
-                key={photo.src}
+                // key includes type to force a true remount if type changes
+                key={`${photo.src}-${photo.type}`}
                 className={`grid-item ${
                   photo.type === "landscape" ? "landscape" : "portrait"
                 } group cursor-pointer overflow-hidden opacity-0 translate-y-4 animate-fade-in-up`}
@@ -61,17 +59,13 @@ const Portfolio = ({ photos, sectionId }) => {
                 onClick={() => handlePhotoClick(index)}>
                 <Image
                   src={photo.src}
-                  alt={`Photo ${index + 1}`}
+                  alt={photo.alt || `Photo ${index + 1}`}
                   width={photo.type === "landscape" ? 1200 : 800}
                   height={photo.type === "landscape" ? 800 : 1200}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="portfolio-image transition-all duration-300 group-hover:scale-[1.03] group-hover:brightness-105 group-hover:shadow-xl"
                   priority={index < 4}
                   loading={index < 4 ? "eager" : "lazy"}
-                  onError={() =>
-                    console.error("❌ Image failed to load:", photo.src)
-                  }
-                  onLoad={() => console.log("✅ Image loaded:", photo.src)}
                 />
               </div>
             ))}
@@ -88,10 +82,10 @@ const Portfolio = ({ photos, sectionId }) => {
             speed={500}
             plugins={[lgThumbnail]}
             dynamic
-            dynamicEl={photos.map((photo) => ({
-              src: photo.src,
-              thumb: photo.src,
-              downloadUrl: photo.src,
+            dynamicEl={photos.map((p) => ({
+              src: p.src,
+              thumb: p.src,
+              downloadUrl: p.src,
             }))}
           />
         </>
