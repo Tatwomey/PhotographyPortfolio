@@ -46,6 +46,7 @@ const photos = [
 
   // 26 = portrait
   { src: "/korn2025/korn_metlife_trevortwomey-26.jpg", type: "portrait" },
+  { src: "/korn2025/korn_metlife_trevortwomey-27.jpg", type: "portrait" },
 
   // continue as needed…
 ];
