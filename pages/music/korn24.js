@@ -87,4 +87,4 @@ const Korn24 = () => {
   );
 };
 
-export default withAuth(Korn24, ["/music/korn24"]);
+export default withAuth(Korn24);

@@ -1,37 +1,71 @@
+// pages/_app.js
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { SessionProvider } from "next-auth/react";
-import Navbar from "@/components/Navbar";
 import Head from "next/head";
-import Footer from "@/components/Footer";
-import "@/styles/globals.css";
-import { NavigationProvider } from "@/contexts/NavigationContext";
-import { ShopProvider } from "/contexts/shopContext";
-import Cart from "@/components/Cart";
 import dynamic from "next/dynamic";
 
-const GoogleAnalytics = dynamic(() => import("@/components/GoogleAnalytics"), { ssr: false });
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import Cart from "@/components/Cart";
+import { NavigationProvider } from "@/contexts/NavigationContext";
+import { ShopProvider } from "/contexts/shopContext";
+import "@/styles/globals.css";
+
+const GoogleAnalytics = dynamic(() => import("@/components/GoogleAnalytics"), {
+  ssr: false,
+});
 
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 const GA_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID;
+const KLAVIYO_KEY = process.env.NEXT_PUBLIC_KLAVIYO_API_KEY;
 
-const MyApp = ({ Component, pageProps: { session, ...pageProps } }) => {
+function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const router = useRouter();
+  useEffect(() => {
+    const originalPush = router.push;
+
+    router.push = (...args) => {
+      console.log("🔥 ROUTER.PUSH CALLED:", args);
+      return originalPush.apply(router, args);
+    };
+  }, []);
+useEffect(() => {
+const handleStart = (url) => {
+console.log(
+"[ROUTE CHANGE START]",
+"from:", router.pathname,
+"to:", url,
+"\nstack:",
+new Error().stack
+);
+};
+
+router.events.on("routeChangeStart", handleStart);
+return () => {
+router.events.off("routeChangeStart", handleStart);
+};
+}, [router]);
   const [hydrated, setHydrated] = useState(false);
 
+  // Klaviyo script
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = `https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=${process.env.NEXT_PUBLIC_KLAVIYO_API_KEY}`;
+    if (!KLAVIYO_KEY) return;
+
+    const script = document.createElement("script");
+    script.src = `https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=${KLAVIYO_KEY}`;
     script.async = true;
     document.body.appendChild(script);
-  
+
     return () => {
       document.body.removeChild(script);
     };
   }, []);
-  
-  // ✅ Google Analytics Setup
+
+  // Google Analytics base setup
   useEffect(() => {
+    if (!GA_ID) return;
+
     if (!window.dataLayer) window.dataLayer = [];
 
     if (!window.gtag) {
@@ -42,7 +76,11 @@ const MyApp = ({ Component, pageProps: { session, ...pageProps } }) => {
       window.gtag("config", GA_ID, { send_page_view: true });
     }
 
-    if (!document.querySelector(`script[src*="googletagmanager.com/gtag"]`)) {
+    if (
+      !document.querySelector(
+        `script[src*="googletagmanager.com/gtag/js?id=${GA_ID}"]`
+      )
+    ) {
       const script = document.createElement("script");
       script.async = true;
       script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
@@ -50,28 +88,34 @@ const MyApp = ({ Component, pageProps: { session, ...pageProps } }) => {
     }
   }, []);
 
-  // ✅ GA pageview tracking on route change
+  // GA pageview tracking on route change
   useEffect(() => {
+    if (!GA_ID) return;
+
     const handleRouteChange = (url) => {
       if (window.gtag) {
         window.gtag("config", GA_ID, { page_path: url });
       }
     };
+
     router.events.on("routeChangeComplete", handleRouteChange);
-    return () => router.events.off("routeChangeComplete", handleRouteChange);
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
   }, [router.events]);
 
-  // ✅ Hydration safety check
+  // Hydration safety check
   useEffect(() => {
     setHydrated(true);
   }, []);
 
-  // ✅ Scoped light-mode toggle (for /shop, /popup, and their slugs)
+  // Scoped light-mode toggle (for /shop, /popup, and their slugs)
   useEffect(() => {
-    const lightModeRoutes = ['/shop', '/popup'];
-    const isLightMode = lightModeRoutes.some((path) => router.pathname.startsWith(path));
-
-    document.body.classList.toggle('light-mode', isLightMode);
+    const lightModeRoutes = ["/shop", "/popup"];
+    const isLightMode = lightModeRoutes.some((path) =>
+      router.pathname.startsWith(path)
+    );
+    document.body.classList.toggle("light-mode", isLightMode);
   }, [router.pathname]);
 
   if (!hydrated) return null;
@@ -90,11 +134,14 @@ const MyApp = ({ Component, pageProps: { session, ...pageProps } }) => {
                   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                   'https://www.googletagmanager.com/gtm.js?id=${GTM_ID}';f.parentNode.insertBefore(j,f);
                 })(window,document,'script','dataLayer','${GTM_ID}');
-              `,
+                `,
               }}
             />
           )}
         </Head>
+
+        {/* Optional GA component if you use it elsewhere */}
+        {GA_ID && <GoogleAnalytics GA_ID={GA_ID} />}
 
         <NavigationProvider>
           <Navbar />
@@ -109,13 +156,12 @@ const MyApp = ({ Component, pageProps: { session, ...pageProps } }) => {
               src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
               height="0"
               width="0"
-              style={{ display: "none", visibility: "hidden" }}
-            ></iframe>
+              style={{ display: "none", visibility: "hidden" }}></iframe>
           </noscript>
         )}
       </ShopProvider>
     </SessionProvider>
   );
-};
+}
 
 export default MyApp;

@@ -1,8 +1,8 @@
-// pages/music/korn2025.jsx
+// pages/music/dion25unionpool.jsx
 import React, { useEffect } from "react";
 import withAuth from "@/utils/withAuth";
-import Hero from "@/components/Hero";
-import Portfolio from "@/components/Portfolio";
+import Hero from Hero
+import Portfolio from "Portfolio"
 import Lenis from "lenis";
 
 // Korn MetLife 2025 — 24 is PORTRAIT, 25 is LANDSCAPE, 26 PORTRAIT.
@@ -51,7 +51,7 @@ const photos = [
   // continue as needed…
 ];
 
-const Korn2025 = () => {
+const Dion25unionpool = () => {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -76,11 +76,11 @@ const Korn2025 = () => {
   }, []);
 
   return (
-    <div>
+    
       <Hero />
-      <Portfolio photos={photos} sectionId="korn-photos-2025" />
+      <Portfolio photos={photos} sectionId="dion-photos-25" />
     </div>
   );
 };
 
-export default withAuth(Korn2025);
+export default withAuth(Dion25unionpool);

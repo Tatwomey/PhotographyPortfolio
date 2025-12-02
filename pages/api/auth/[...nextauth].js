@@ -1,3 +1,4 @@
+// pages/api/auth/[...nextauth].js
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import nodemailer from "nodemailer";
@@ -53,7 +54,12 @@ export default NextAuth({
             id: "7",
             username: "trevor.a.twomey@gmail.com",
             password: "tatwomey",
-            allowedPages: ["/music/korn24", "/music/korn2025"],
+            allowedPages: [
+              "/music/iamx25",
+              "/music/korn24",
+              "/music/korn2025",
+              
+            ],
           },
           {
             id: "8",
@@ -75,15 +81,15 @@ export default NextAuth({
             u.password === credentials.password
         );
 
-        if (user) {
-          return {
-            id: user.id,
-            username: user.username,
-            allowedPages: user.allowedPages,
-          };
-        } else {
+        if (!user) {
           throw new Error("I think you fucked up.");
         }
+
+        return {
+          id: user.id,
+          username: user.username,
+          allowedPages: user.allowedPages,
+        };
       },
     }),
   ],
@@ -91,20 +97,22 @@ export default NextAuth({
     signIn: "/login",
   },
   callbacks: {
+    async jwt({ token, user }) {
+      // On first login, copy allowedPages into token
+      if (user) {
+        token.username = user.username;
+        token.allowedPages = user.allowedPages || [];
+      }
+      return token;
+    },
     async session({ session, token }) {
+      // Make sure session.user has allowedPages
       session.user = {
         id: token.sub,
         username: token.username,
         allowedPages: token.allowedPages || [],
       };
       return session;
-    },
-    async jwt({ token, user }) {
-      if (user) {
-        token.username = user.username;
-        token.allowedPages = user.allowedPages;
-      }
-      return token;
     },
   },
   events: {
@@ -115,7 +123,6 @@ export default NextAuth({
         }
       } catch (err) {
         console.warn("Login email failed (non-blocking):", err?.message || err);
-        // don't throw here
       }
     },
   },
