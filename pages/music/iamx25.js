@@ -29,6 +29,8 @@ const photos = [
   { src: "/iamx25/iamx_2025_trevortwomey-21.jpg", type: "portrait" },
   { src: "/iamx25/iamx_2025_trevortwomey-22.jpg", type: "portrait" },
   { src: "/iamx25/iamx_2025_trevortwomey-23.jpg", type: "portrait" },
+  { src: "/iamx25/iamx_2025_trevortwomey-24.jpg", type: "portrait" },
+  { src: "/iamx25/iamx_2025_trevortwomey-25.jpg", type: "portrait" },
 ];
 
 export default function IAMX25() {
