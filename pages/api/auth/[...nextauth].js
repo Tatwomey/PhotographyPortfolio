@@ -64,9 +64,9 @@ export default NextAuth({
           },
           {
             id: "8",
-            username: "robgarzamusic@gmail.com",
-            password: "terminal5",
-            allowedPages: ["/music/thievery25"],
+            username: "we@iamxmusic.com",
+            password: "iamxlprnyc",
+            allowedPages: ["/music/iamx25"],
           },
           {
             id: "9",
