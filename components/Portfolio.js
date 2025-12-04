@@ -1,3 +1,4 @@
+// components/Portfolio.jsx
 import React, { useRef, useEffect, useState } from "react";
 import LightGallery from "lightgallery/react";
 import "lightgallery/css/lightgallery.css";
@@ -6,7 +7,7 @@ import lgThumbnail from "lightgallery/plugins/thumbnail";
 import Image from "next/image";
 import Lenis from "lenis";
 
-const Portfolio = ({ photos, sectionId }) => {
+const Portfolio = ({ photos, sectionId, enableDownload = false }) => {
   const lightboxRef = useRef(null);
   const [imagesLoaded, setImagesLoaded] = useState(false);
 
@@ -47,7 +48,6 @@ const Portfolio = ({ photos, sectionId }) => {
           <div className="grid-container">
             {photos.map((photo, index) => (
               <div
-                // key includes type to force a true remount if type changes
                 key={`${photo.src}-${photo.type}`}
                 className={`grid-item ${
                   photo.type === "landscape" ? "landscape" : "portrait"
@@ -77,7 +77,7 @@ const Portfolio = ({ photos, sectionId }) => {
               if (ref) lightboxRef.current = ref.instance;
             }}
             id="lightGallery"
-            download={false}
+            download={enableDownload}
             zoom={false}
             speed={500}
             plugins={[lgThumbnail]}
@@ -85,6 +85,7 @@ const Portfolio = ({ photos, sectionId }) => {
             dynamicEl={photos.map((p) => ({
               src: p.src,
               thumb: p.src,
+              // LightGallery uses this for its download button
               downloadUrl: p.src,
             }))}
           />

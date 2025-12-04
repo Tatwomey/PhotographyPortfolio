@@ -34,9 +34,9 @@ export default NextAuth({
         const users = [
           {
             id: "1",
-            username: "loseear@gmail.com",
-            password: "korntour2025",
-            allowedPages: ["/music/korn24"],
+            username: "braziliangirls",
+            password: "sultanroom",
+            allowedPages: ["/music/bgbk25"],
           },
           {
             id: "2",
@@ -46,9 +46,9 @@ export default NextAuth({
           },
           {
             id: "3",
-            username: "jefffranca",
-            password: "Thievery25",
-            allowedPages: ["/music/thievery25"],
+            username: "sophiabg",
+            password: "sultanroom",
+            allowedPages: ["/music/bgbk25"],
           },
           {
             id: "7",
@@ -59,6 +59,7 @@ export default NextAuth({
               "/music/korn24",
               "/music/korn2025",
               "/music/dionbk25",
+              "/music/bgbk25",
             ],
           },
           {

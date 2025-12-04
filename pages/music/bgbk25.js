@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import Hero from "@/components/Hero";
 import Portfolio from "@/components/Portfolio";
 import Lenis from "lenis";
+import withAuth from "@/utils/withAuth";
 
 const photos = [
   { src: "/bgbk25/bgbk_25_trevortwomey-1.jpg", type: "portrait" },
@@ -57,8 +58,7 @@ const photos = [
   { src: "/bgbk25/bgbk_25_trevortwomey-46.jpg", type: "portrait" },
   { src: "/bgbk25/bgbk_25_trevortwomey-47.jpg", type: "landscape" },
 ];
-
-export default function Bgbk25() {
+function Bgbk25() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -83,7 +83,13 @@ export default function Bgbk25() {
   return (
     <div>
       <Hero />
-      <Portfolio photos={photos} sectionId="bgbk-photos-25" />
+      <Portfolio
+        photos={photos}
+        sectionId="bgbk-photos-25"
+        enableDownload // 🔐 this gallery shows the download button
+      />
     </div>
   );
 }
+
+export default withAuth(Bgbk25);
