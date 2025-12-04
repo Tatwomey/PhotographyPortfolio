@@ -58,7 +58,7 @@ export default NextAuth({
               "/music/iamx25",
               "/music/korn24",
               "/music/korn2025",
-              
+              "/music/dionbk25",
             ],
           },
           {
