@@ -1,5 +1,6 @@
 // pages/music/iamx25.js
 import React, { useEffect } from "react";
+import withAuth from "@/utils/withAuth";
 import Hero from "@/components/Hero";
 import Portfolio from "@/components/Portfolio";
 import Lenis from "lenis";
@@ -36,25 +37,26 @@ const photos = [
   { src: "/iamx25/iamx_2025_trevortwomey-28.jpg", type: "portrait" },
 ];
 
-export default function IAMX25() {
+function IAMX25() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     const lenis = new Lenis();
-
     const raf = (time) => {
       lenis.raf(time);
       requestAnimationFrame(raf);
     };
     requestAnimationFrame(raf);
 
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       const el = document.getElementById("iamx-photos-25");
-      if (el) el.scrollIntoView({ behavior: "smooth" });
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
     }, 500);
 
     return () => {
-      clearTimeout(t);
+      clearTimeout(timer);
       lenis.destroy();
     };
   }, []);
@@ -62,7 +64,14 @@ export default function IAMX25() {
   return (
     <div>
       <Hero />
-      <Portfolio photos={photos} sectionId="iamx-photos-25" />
+      <Portfolio
+        photos={photos}
+        sectionId="iamx-photos-25"
+        enableDownload={true} // ✅ iamx25 gallery: downloads ON
+      />
     </div>
   );
 }
+
+// ✅ Page is now credential-gated (requires a valid NextAuth session)
+export default withAuth(IAMX25);
