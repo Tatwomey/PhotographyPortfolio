@@ -70,7 +70,7 @@ export default NextAuth({
           },
           {
             id: "9",
-            username: "Ha!dionlunadon@gmail.com",
+            username: "dionlunadon@gmail.com",
             password: "dionunionpool",
             allowedPages: ["/music/dionbk25"],
           },
@@ -83,7 +83,7 @@ export default NextAuth({
         );
 
         if (!user) {
-          throw new Error("I think you fucked up.");
+          throw new Error("I think you fuct up.");
         }
 
         return {

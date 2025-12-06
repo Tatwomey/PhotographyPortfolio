@@ -58,7 +58,7 @@ export async function getServerSideProps(context) {
   }
 
   return {
-    props: {}, // no page-level props needed; auth gate only
+    props: {},
   };
 }
 
@@ -75,7 +75,9 @@ export default function Dionbk25() {
 
     const timer = setTimeout(() => {
       const anchor = document.getElementById("dionbk-photos-25");
-      if (anchor) anchor.scrollIntoView({ behavior: "smooth" });
+      if (anchor) {
+        anchor.scrollIntoView({ behavior: "smooth" });
+      }
     }, 500);
 
     return () => {
@@ -87,7 +89,11 @@ export default function Dionbk25() {
   return (
     <div>
       <Hero />
-      <Portfolio photos={photos} sectionId="dionbk-photos-25" />
+      <Portfolio
+        photos={photos}
+        sectionId="dionbk-photos-25"
+        downloadsEnabled
+      />
     </div>
   );
 }
