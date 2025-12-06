@@ -1,9 +1,9 @@
 // pages/music/dionbk25.js
 import React, { useEffect } from "react";
+import withAuth from "@/utils/withAuth";
 import Hero from "@/components/Hero";
 import Portfolio from "@/components/Portfolio";
 import Lenis from "lenis";
-import { getSession } from "next-auth/react";
 
 const photos = [
   { src: "/dionbk25/dion_2025_trevortwomey-1.jpg", type: "portrait" },
@@ -43,26 +43,7 @@ const photos = [
   { src: "/dionbk25/dion_2025_trevortwomey-33.jpg", type: "landscape" },
 ];
 
-export async function getServerSideProps(context) {
-  const session = await getSession(context);
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: `/login?callbackUrl=${encodeURIComponent(
-          context.resolvedUrl
-        )}`,
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {},
-  };
-}
-
-export default function Dionbk25() {
+function Dionbk25() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -92,8 +73,11 @@ export default function Dionbk25() {
       <Portfolio
         photos={photos}
         sectionId="dionbk-photos-25"
-        downloadsEnabled
+        enableDownload={true} // ✅ allow downloads for this gallery
       />
     </div>
   );
 }
+
+// 🔒 Protect with the same HOC style as bgbk25
+export default withAuth(Dionbk25);
