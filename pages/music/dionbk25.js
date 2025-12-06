@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import Hero from "@/components/Hero";
 import Portfolio from "@/components/Portfolio";
 import Lenis from "lenis";
+import { getSession } from "next-auth/react";
 
 const photos = [
   { src: "/dionbk25/dion_2025_trevortwomey-1.jpg", type: "portrait" },
@@ -41,6 +42,25 @@ const photos = [
   { src: "/dionbk25/dion_2025_trevortwomey-32.jpg", type: "portrait" },
   { src: "/dionbk25/dion_2025_trevortwomey-33.jpg", type: "landscape" },
 ];
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: `/login?callbackUrl=${encodeURIComponent(
+          context.resolvedUrl
+        )}`,
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {}, // no page-level props needed; auth gate only
+  };
+}
 
 export default function Dionbk25() {
   useEffect(() => {

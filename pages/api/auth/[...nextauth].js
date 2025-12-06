@@ -70,9 +70,9 @@ export default NextAuth({
           },
           {
             id: "9",
-            username: "Taryn@velvethammer.net",
-            password: "metlifekornday1",
-            allowedPages: ["/music/korn2025"],
+            username: "Ha!dionlunadon@gmail.com",
+            password: "dionunionpool",
+            allowedPages: ["/music/dionbk25"],
           },
         ];
 
