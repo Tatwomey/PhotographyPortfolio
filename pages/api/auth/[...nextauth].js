@@ -70,8 +70,8 @@ export default NextAuth({
           },
           {
             id: "9",
-            username: "dionlunadon@gmail.com",
-            password: "dionunionpool",
+            username: "dion",
+            password: "unionpool25",
             allowedPages: ["/music/dionbk25"],
           },
         ];
