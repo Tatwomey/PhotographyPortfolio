@@ -7,7 +7,7 @@ const PopUpHero = () => {
       {/* Desktop Image */}
       <div className="hero-img-desktop">
         <Image
-          src="/3pack-4.jpg"
+          src="/hero_test_dec25.png"
           alt="Popup Hero Desktop"
           fill
           priority
@@ -18,7 +18,7 @@ const PopUpHero = () => {
       {/* Mobile Image */}
       <div className="hero-img-mobile">
         <Image
-          src="/3pack-4.jpg"
+          src="/hero_test_dec25.png"
           alt="Popup Hero Mobile"
           fill
           priority
