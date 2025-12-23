@@ -2,7 +2,41 @@
 import { useState } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import sha256 from "crypto-js/sha256";
+
+const GA_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID;
+const ANALYTICS_SALT = process.env.NEXT_PUBLIC_ANALYTICS_SALT;
+
+async function sha256Hex(input) {
+  // Browser-only. This runs inside handleLogin (client-side).
+  const enc = new TextEncoder().encode(input);
+  const buf = await crypto.subtle.digest("SHA-256", enc);
+  return Array.from(new Uint8Array(buf))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function inferUserTypeFromAllowedPages(allowedPages) {
+  const hasGatedMusic = allowedPages.some(
+    (p) => typeof p === "string" && p.startsWith("/music/")
+  );
+  return hasGatedMusic ? "band" : "public";
+}
+
+function setGAUserContext({ userId, userType }) {
+  if (!GA_ID || typeof window === "undefined" || !window.gtag) return;
+
+  window.gtag("config", GA_ID, {
+    user_id: userId,
+    user_properties: {
+      user_type: userType,
+    },
+  });
+}
+
+function trackGAEvent(name, params = {}) {
+  if (!GA_ID || typeof window === "undefined" || !window.gtag) return;
+  window.gtag("event", name, params);
+}
 
 // SSR: if already logged in and you hit /login, redirect away
 export async function getServerSideProps(context) {
@@ -21,7 +55,6 @@ export async function getServerSideProps(context) {
     const preferred = "/music/iamx25";
     let target = preferred;
 
-    // If there's a callbackUrl and the user is allowed to see it, go there
     if (
       callbackUrl &&
       typeof callbackUrl === "string" &&
@@ -29,7 +62,6 @@ export async function getServerSideProps(context) {
     ) {
       target = callbackUrl;
     } else if (!allowedPages.includes(preferred) && allowedPages.length > 0) {
-      // Otherwise fall back to first allowed page if preferred not allowed
       target = allowedPages[0];
     }
 
@@ -41,38 +73,7 @@ export async function getServerSideProps(context) {
     };
   }
 
-  return {
-    props: {},
-  };
-}
-
-const GA_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID;
-const ANALYTICS_SALT = process.env.NEXT_PUBLIC_ANALYTICS_SALT;
-
-function setGAUserContext({ userId, userType }) {
-  if (!GA_ID || typeof window === "undefined" || !window.gtag) return;
-
-  // Set user_id + persistent user_properties
-  window.gtag("config", GA_ID, {
-    user_id: userId,
-    user_properties: {
-      user_type: userType,
-    },
-  });
-}
-
-function trackGAEvent(name, params = {}) {
-  if (!GA_ID || typeof window === "undefined" || !window.gtag) return;
-  window.gtag("event", name, params);
-}
-
-function inferUserTypeFromAllowedPages(allowedPages) {
-  // You can refine this later.
-  // For now, if they can see any /music/* gated page, treat as band/client.
-  const hasGatedMusic = allowedPages.some(
-    (p) => typeof p === "string" && p.startsWith("/music/")
-  );
-  return hasGatedMusic ? "band" : "public";
+  return { props: {} };
 }
 
 export default function Login() {
@@ -99,36 +100,28 @@ export default function Login() {
       return;
     }
 
-    // Get fresh session after successful login
     const session = await getSession();
     console.log("🔐 Session after login:", session);
 
     const rawPages = session?.user?.allowedPages ?? [];
-
     const allowedPages = rawPages
       .filter((p) => typeof p === "string")
       .map((p) => p.trim())
       .filter(Boolean);
 
-    console.log("✅ Sanitized allowedPages:", allowedPages);
-
-    // ---- Analytics: set user context
-    // Hash the username with a salt so GA doesn't get PII.
-    // IMPORTANT: set NEXT_PUBLIC_ANALYTICS_SALT in Vercel + local .env
-    const salt = ANALYTICS_SALT || "default_salt_change_me";
-    const hashedUserId = sha256(`${username}:${salt}`).toString();
     const userType = inferUserTypeFromAllowedPages(allowedPages);
 
-    setGAUserContext({
-      userId: hashedUserId,
-      userType,
-    });
+    // ---- Analytics: set user context (no dependency)
+    const salt = ANALYTICS_SALT || "CHANGE_ME_SET_NEXT_PUBLIC_ANALYTICS_SALT";
+    const hashedUserId = await sha256Hex(`${username}:${salt}`);
 
+    setGAUserContext({ userId: hashedUserId, userType });
     trackGAEvent("login_success", {
       user_type: userType,
-      gated: true,
+      gated: userType === "band",
     });
 
+    // Redirect
     const preferred = "/music/iamx25";
     let target = preferred;
 
@@ -142,7 +135,6 @@ export default function Login() {
       target = allowedPages[0];
     }
 
-    console.log("➡️ Redirecting to:", target);
     router.push(target);
   };
 

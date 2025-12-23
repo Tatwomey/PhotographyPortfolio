@@ -11,8 +11,9 @@ import { NavigationProvider } from "@/contexts/NavigationContext";
 import { ShopProvider } from "/contexts/shopContext";
 import "@/styles/globals.css";
 
+import AnalyticsSessionBridge from "@/components/AnalyticsSessionBridge";
+
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
-const GA_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID;
 const KLAVIYO_KEY = process.env.NEXT_PUBLIC_KLAVIYO_API_KEY;
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
@@ -22,12 +23,10 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   // --- Debug router.push stack traces (optional)
   useEffect(() => {
     const originalPush = router.push;
-
     router.push = (...args) => {
       console.log("🔥 ROUTER.PUSH CALLED:", args);
       return originalPush.apply(router, args);
     };
-    // no cleanup; restoring router.push is usually unnecessary in app lifetime
   }, []);
 
   // --- Debug routeChangeStart stack traces (optional)
@@ -64,62 +63,27 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
     };
   }, []);
 
-  // --- GA4 base setup (gtag.js) — single source of truth
+  // --- Next.js SPA Pageviews via dataLayer (GTM-owned GA4)
   useEffect(() => {
-    if (!GA_ID) return;
+    if (typeof window === "undefined") return;
 
-    // Ensure dataLayer exists
     window.dataLayer = window.dataLayer || [];
 
-    // Define gtag once
-    if (!window.gtag) {
-      window.gtag = function () {
-        window.dataLayer.push(arguments);
-      };
-    }
-
-    // Load gtag.js if not already present
-    const existing = document.querySelector(
-      `script[src="https://www.googletagmanager.com/gtag/js?id=${GA_ID}"]`
-    );
-
-    if (!existing) {
-      const script = document.createElement("script");
-      script.async = true;
-      script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
-      document.head.appendChild(script);
-    }
-
-    // Initialize GA once
-    // SPA best practice: disable automatic page_view and manually send on route change
-    window.gtag("js", new Date());
-    window.gtag("config", GA_ID, {
-      send_page_view: false,
-      // optional: you can set allow_google_signals/allow_ad_personalization_signals if you want tighter privacy
-      // allow_google_signals: false,
-      // allow_ad_personalization_signals: false,
-    });
-  }, []);
-
-  // --- Manual pageview tracking on route change (SPA best practice)
-  useEffect(() => {
-    if (!GA_ID) return;
-
-    const handleRouteChange = (url) => {
-      if (!window.gtag) return;
-
-      window.gtag("event", "page_view", {
+    const pushPageView = (url) => {
+      window.dataLayer.push({
+        event: "page_view",
         page_path: url,
+        page_location: window.location.href,
+        page_title: document.title,
       });
     };
 
-    // Fire once for initial load after hydration
-    // (GA initializes before hydration; this ensures first page_view is sent)
-    handleRouteChange(router.asPath);
+    // Initial page view after hydration
+    pushPageView(router.asPath);
 
-    router.events.on("routeChangeComplete", handleRouteChange);
+    router.events.on("routeChangeComplete", pushPageView);
     return () => {
-      router.events.off("routeChangeComplete", handleRouteChange);
+      router.events.off("routeChangeComplete", pushPageView);
     };
   }, [router.events]);
 
@@ -141,26 +105,29 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
 
   return (
     <SessionProvider session={session}>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        {/* GTM snippet ONLY (GA4 configured inside GTM) */}
+        {GTM_ID && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id=${GTM_ID}'+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','${GTM_ID}');
+`,
+            }}
+          />
+        )}
+      </Head>
+
+      {/* Push user context into dataLayer (after GTM snippet is present) */}
+      <AnalyticsSessionBridge />
+
       <ShopProvider>
-        <Head>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-          {/* GTM — keep for other tags (but do NOT also install GA4 inside GTM unless you remove gtag setup) */}
-          {GTM_ID && (
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-                  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-                  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                  'https://www.googletagmanager.com/gtm.js?id=${GTM_ID}'+dl;f.parentNode.insertBefore(j,f);
-                })(window,document,'script','dataLayer','${GTM_ID}');
-                `,
-              }}
-            />
-          )}
-        </Head>
-
         <NavigationProvider>
           <Navbar />
           <Component {...pageProps} />
