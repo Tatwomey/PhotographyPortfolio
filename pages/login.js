@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import sha256 from "crypto-js/sha256";
 
 // SSR: if already logged in and you hit /login, redirect away
 export async function getServerSideProps(context) {
@@ -45,6 +46,35 @@ export async function getServerSideProps(context) {
   };
 }
 
+const GA_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID;
+const ANALYTICS_SALT = process.env.NEXT_PUBLIC_ANALYTICS_SALT;
+
+function setGAUserContext({ userId, userType }) {
+  if (!GA_ID || typeof window === "undefined" || !window.gtag) return;
+
+  // Set user_id + persistent user_properties
+  window.gtag("config", GA_ID, {
+    user_id: userId,
+    user_properties: {
+      user_type: userType,
+    },
+  });
+}
+
+function trackGAEvent(name, params = {}) {
+  if (!GA_ID || typeof window === "undefined" || !window.gtag) return;
+  window.gtag("event", name, params);
+}
+
+function inferUserTypeFromAllowedPages(allowedPages) {
+  // You can refine this later.
+  // For now, if they can see any /music/* gated page, treat as band/client.
+  const hasGatedMusic = allowedPages.some(
+    (p) => typeof p === "string" && p.startsWith("/music/")
+  );
+  return hasGatedMusic ? "band" : "public";
+}
+
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -61,7 +91,6 @@ export default function Login() {
       redirect: false,
       username,
       password,
-      // pass through callbackUrl so NextAuth knows about it
       ...(callbackUrl ? { callbackUrl } : {}),
     });
 
@@ -83,10 +112,26 @@ export default function Login() {
 
     console.log("✅ Sanitized allowedPages:", allowedPages);
 
+    // ---- Analytics: set user context
+    // Hash the username with a salt so GA doesn't get PII.
+    // IMPORTANT: set NEXT_PUBLIC_ANALYTICS_SALT in Vercel + local .env
+    const salt = ANALYTICS_SALT || "default_salt_change_me";
+    const hashedUserId = sha256(`${username}:${salt}`).toString();
+    const userType = inferUserTypeFromAllowedPages(allowedPages);
+
+    setGAUserContext({
+      userId: hashedUserId,
+      userType,
+    });
+
+    trackGAEvent("login_success", {
+      user_type: userType,
+      gated: true,
+    });
+
     const preferred = "/music/iamx25";
     let target = preferred;
 
-    // If there was a callbackUrl and the user is allowed to see it, honor it
     if (
       callbackUrl &&
       typeof callbackUrl === "string" &&
@@ -94,7 +139,6 @@ export default function Login() {
     ) {
       target = callbackUrl;
     } else if (!allowedPages.includes(preferred) && allowedPages.length > 0) {
-      // Otherwise fall back to first allowed page if preferred not allowed
       target = allowedPages[0];
     }
 
@@ -104,12 +148,13 @@ export default function Login() {
 
   return (
     <div className="flex justify-center items-center h-screen bg-black">
-      {/* Black Container */}
       <div className="bg-black p-6 rounded-lg shadow-lg w-96 border border-gray-700">
         <h2 className="text-xl font-bold text-white text-center mb-4 bg-black p-2 rounded">
           Client Login
         </h2>
+
         {error && <p className="text-red-500 text-center">{error}</p>}
+
         <form onSubmit={handleLogin}>
           <input
             type="text"
@@ -127,11 +172,6 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full p-2 mb-4 border border-gray-600 bg-white text-black rounded"
           />
-
-          {/* optional: inspect what callbackUrl is in dev */}
-          {/* <p className="text-xs text-gray-400 mb-2 break-all">
-callbackUrl: {callbackUrl || "none"}
-</p> */}
 
           <button
             type="submit"
