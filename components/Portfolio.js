@@ -8,41 +8,63 @@ import Image from "next/image";
 import Lenis from "lenis";
 import { useRouter } from "next/router";
 
-function pushDataLayer(eventPayload) {
+function pushDataLayer(payload) {
   if (typeof window === "undefined") return;
   window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push(eventPayload);
+  window.dataLayer.push(payload);
+}
+
+function basename(path = "") {
+  try {
+    const clean = path.split("?")[0];
+    const parts = clean.split("/");
+    return parts[parts.length - 1] || clean;
+  } catch {
+    return path;
+  }
 }
 
 function getPhotoId(photo, portfolioId, index) {
   if (photo?.id && typeof photo.id === "string") return photo.id;
+
+  // Prefer filename — it's meaningful in GA4 exports and explorations
+  const file = basename(photo?.src || "");
+  if (file) return `${portfolioId}:${file}`;
+
+  // Fallback
   const n = String(index + 1).padStart(3, "0");
   return `${portfolioId}_${n}`;
 }
 
-const Portfolio = ({ photos, sectionId, enableDownload = false }) => {
+export default function Portfolio({
+  photos,
+  sectionId,
+  enableDownload = false,
+}) {
   const router = useRouter();
   const lightboxRef = useRef(null);
   const [imagesLoaded, setImagesLoaded] = useState(false);
 
-  // --- Analytics state
+  // Analytics refs
   const isGalleryOpenRef = useRef(false);
   const activeIndexRef = useRef(null);
   const activeStartMsRef = useRef(null);
-  const openedOnceRef = useRef(false);
 
   const portfolioId = useMemo(() => {
-    return (sectionId && String(sectionId).trim()) || "portfolio";
-  }, [sectionId]);
+    // Make it unique per page + section
+    const path = router?.pathname || "page";
+    const section = (sectionId && String(sectionId).trim()) || "portfolio";
+    return `${path}:${section}`;
+  }, [router?.pathname, sectionId]);
 
   const gated = useMemo(() => {
     const path = router?.pathname || "";
     return path.startsWith("/music/");
   }, [router?.pathname]);
 
-  // Preload
+  // Preload images
   useEffect(() => {
-    if (typeof window === "undefined" || !photos || photos.length === 0) return;
+    if (typeof window === "undefined" || !photos?.length) return;
 
     let loaded = 0;
     let cancelled = false;
@@ -62,7 +84,7 @@ const Portfolio = ({ photos, sectionId, enableDownload = false }) => {
     };
   }, [photos]);
 
-  // Smooth scrolling
+  // Lenis
   useEffect(() => {
     const lenis = new Lenis();
     const raf = (time) => {
@@ -80,15 +102,14 @@ const Portfolio = ({ photos, sectionId, enableDownload = false }) => {
     if (idx === null || startMs === null) return;
 
     const durationMs = Math.round(performance.now() - startMs);
+    activeIndexRef.current = null;
+    activeStartMsRef.current = null;
 
-    if (durationMs < 250) {
-      activeIndexRef.current = null;
-      activeStartMsRef.current = null;
-      return;
-    }
+    // ignore ultra-short
+    if (durationMs < 250) return;
 
     const capped = Math.min(durationMs, 10 * 60 * 1000);
-    const photo = photos[idx];
+    const photo = photos?.[idx];
     if (!photo) return;
 
     const photoId = getPhotoId(photo, portfolioId, idx);
@@ -101,13 +122,10 @@ const Portfolio = ({ photos, sectionId, enableDownload = false }) => {
       gated,
       exit_reason: reason,
     });
-
-    activeIndexRef.current = null;
-    activeStartMsRef.current = null;
   };
 
   const startPhotoView = (idx) => {
-    const photo = photos[idx];
+    const photo = photos?.[idx];
     if (!photo) return;
 
     const photoId = getPhotoId(photo, portfolioId, idx);
@@ -125,31 +143,29 @@ const Portfolio = ({ photos, sectionId, enableDownload = false }) => {
   };
 
   const handlePhotoClick = (index) => {
-    const photo = photos[index];
+    const photo = photos?.[index];
     if (!photo) return;
 
     const photoId = getPhotoId(photo, portfolioId, index);
 
-    // Click event that matches your dwell/view IDs
+    // Track click (grid)
     pushDataLayer({
       event: "photo_click",
       photo_id: photoId,
       portfolio_id: portfolioId,
       gated,
+      click_source: "grid",
     });
 
+    // Open modal
     if (lightboxRef.current) {
-      openedOnceRef.current = false; // reset open guard for this session
       lightboxRef.current.openGallery(index);
     }
   };
 
+  // LightGallery events
   const onAfterOpen = () => {
     isGalleryOpenRef.current = true;
-
-    // Prevent double-fire on some LG init edge cases
-    if (openedOnceRef.current) return;
-    openedOnceRef.current = true;
 
     const idx =
       typeof lightboxRef.current?.index === "number"
@@ -159,7 +175,10 @@ const Portfolio = ({ photos, sectionId, enableDownload = false }) => {
     startPhotoView(idx);
   };
 
-  const onAfterSlide = (detail) => {
+  // LightGallery passes (event, detail) in some builds; in others just detail.
+  const onAfterSlide = (_evt, detailMaybe) => {
+    const detail =
+      detailMaybe && typeof detailMaybe === "object" ? detailMaybe : _evt;
     if (!isGalleryOpenRef.current) return;
 
     const nextIndex =
@@ -178,28 +197,27 @@ const Portfolio = ({ photos, sectionId, enableDownload = false }) => {
   const onBeforeClose = () => {
     emitDwellIfNeeded("modal_close");
     isGalleryOpenRef.current = false;
-    openedOnceRef.current = false;
   };
 
+  // Route away
   useEffect(() => {
     const handleRouteStart = () => {
       if (isGalleryOpenRef.current) {
         emitDwellIfNeeded("route_change");
         isGalleryOpenRef.current = false;
-        openedOnceRef.current = false;
       }
     };
 
     router.events.on("routeChangeStart", handleRouteStart);
     return () => router.events.off("routeChangeStart", handleRouteStart);
-  }, [router.events]);
+  }, [router]);
 
+  // Tab hidden
   useEffect(() => {
     const handleVisibility = () => {
       if (document.visibilityState === "hidden" && isGalleryOpenRef.current) {
         emitDwellIfNeeded("tab_blur");
         isGalleryOpenRef.current = false;
-        openedOnceRef.current = false;
       }
     };
 
@@ -264,6 +282,4 @@ const Portfolio = ({ photos, sectionId, enableDownload = false }) => {
       )}
     </div>
   );
-};
-
-export default Portfolio;
+}

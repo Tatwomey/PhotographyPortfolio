@@ -20,36 +20,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const router = useRouter();
   const [hydrated, setHydrated] = useState(false);
 
-  // --- Debug router.push stack traces (optional)
-  useEffect(() => {
-    const originalPush = router.push;
-    router.push = (...args) => {
-      console.log("🔥 ROUTER.PUSH CALLED:", args);
-      return originalPush.apply(router, args);
-    };
-  }, []);
-
-  // --- Debug routeChangeStart stack traces (optional)
-  useEffect(() => {
-    const handleStart = (url) => {
-      console.log(
-        "[ROUTE CHANGE START]",
-        "from:",
-        router.pathname,
-        "to:",
-        url,
-        "\nstack:",
-        new Error().stack
-      );
-    };
-
-    router.events.on("routeChangeStart", handleStart);
-    return () => {
-      router.events.off("routeChangeStart", handleStart);
-    };
-  }, [router]);
-
-  // --- Klaviyo script
+  // Klaviyo
   useEffect(() => {
     if (!KLAVIYO_KEY) return;
 
@@ -63,7 +34,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
     };
   }, []);
 
-  // --- Next.js SPA Pageviews via dataLayer (GTM-owned GA4)
+  // SPA Pageviews -> dataLayer (GTM forwards to GA4)
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -78,21 +49,22 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
       });
     };
 
-    // Initial page view after hydration
+    // initial
     pushPageView(router.asPath);
 
+    // route changes
     router.events.on("routeChangeComplete", pushPageView);
     return () => {
       router.events.off("routeChangeComplete", pushPageView);
     };
-  }, [router.events]);
+  }, [router]);
 
-  // --- Hydration safety check
+  // Hydration
   useEffect(() => {
     setHydrated(true);
   }, []);
 
-  // --- Scoped light-mode toggle (for /shop, /popup, and their slugs)
+  // Light mode for /shop + /popup (and their slugs)
   useEffect(() => {
     const lightModeRoutes = ["/shop", "/popup"];
     const isLightMode = lightModeRoutes.some((path) =>
@@ -105,29 +77,29 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
 
   return (
     <SessionProvider session={session}>
-      <Head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      {/* user_context -> dataLayer */}
+      <AnalyticsSessionBridge />
 
-        {/* GTM snippet ONLY (GA4 configured inside GTM) */}
-        {GTM_ID && (
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
+      <ShopProvider>
+        <Head>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+          {/* GTM only */}
+          {GTM_ID && (
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id=${GTM_ID}'+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','${GTM_ID}');
 `,
-            }}
-          />
-        )}
-      </Head>
+              }}
+            />
+          )}
+        </Head>
 
-      {/* Push user context into dataLayer (after GTM snippet is present) */}
-      <AnalyticsSessionBridge />
-
-      <ShopProvider>
         <NavigationProvider>
           <Navbar />
           <Component {...pageProps} />
