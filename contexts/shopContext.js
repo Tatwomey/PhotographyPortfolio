@@ -1,5 +1,11 @@
 // contexts/shopContext.js
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import {
   createCart,
   fetchCart,
@@ -17,16 +23,28 @@ export const ShopProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [cartId, setCartId] = useState(null);
   const [initialized, setInitialized] = useState(false);
+
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const toggleCart = () => setIsCartOpen(prev => !prev);
+  // ✅ Explicit controls (best for modals / Buy Now flows)
+  const openCart = useCallback(() => setIsCartOpen(true), []);
+  const closeCart = useCallback(() => setIsCartOpen(false), []);
+  const toggleCart = useCallback(() => setIsCartOpen((prev) => !prev), []);
 
+  /**
+   * Create a new cart and immediately fetch full cart data
+   * so checkoutUrl/lines shape is consistent.
+   */
   const createNewCart = useCallback(async () => {
     try {
-      const newCart = await createCart();
+      const newCart = await createCart(); // returns { id } from your lib
       window.localStorage.setItem("shopify_cart_id", newCart.id);
-      setCart(newCart);
       setCartId(newCart.id);
+
+      // ✅ fetch full cart details (checkoutUrl, lines, etc.)
+      const fullCart = await fetchCart(newCart.id);
+      setCart(fullCart);
+
       return newCart.id;
     } catch (error) {
       console.error("Error creating new cart:", error);
@@ -36,6 +54,7 @@ export const ShopProvider = ({ children }) => {
 
   const initializeCart = useCallback(async () => {
     const storedCartId = window.localStorage.getItem("shopify_cart_id");
+
     if (storedCartId) {
       try {
         const cartData = await fetchCart(storedCartId);
@@ -52,6 +71,7 @@ export const ShopProvider = ({ children }) => {
     } else {
       await createNewCart();
     }
+
     setLoading(false);
   }, [createNewCart]);
 
@@ -62,56 +82,82 @@ export const ShopProvider = ({ children }) => {
     }
   }, [initialized, initializeCart]);
 
+  /**
+   * ✅ IMPORTANT: return the fetched cart so callers (QuickView Buy Now)
+   * can immediately use the freshest checkoutUrl.
+   */
   const refreshCart = useCallback(async () => {
-    if (!cartId) return;
+    if (!cartId) return null;
     try {
       const cartData = await fetchCart(cartId);
       setCart(cartData);
+      return cartData; // ✅ critical
     } catch (error) {
       console.error("Error refreshing cart:", error);
+      return null;
     }
   }, [cartId]);
 
-  const handleAddToCart = async (variantId, quantity) => {
-    setLoading(true);
-    try {
-      const currentCartId = cartId || await createNewCart();
-      await addItemToCart({ cartId: currentCartId, variantId, quantity });
-      await refreshCart();
-    } catch (error) {
-      console.error("Failed to add item to cart:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handleAddToCart = useCallback(
+    async (variantId, quantity) => {
+      setLoading(true);
+      try {
+        const currentCartId = cartId || (await createNewCart());
+        if (!currentCartId) return;
 
-  const handleRemoveFromCart = async (item) => {
-    setLoading(true);
-    try {
-      if (item.quantity > 1) {
-        const updatedCart = await updateCartItemQuantity(cartId, item.id, item.quantity - 1);
-        setCart(updatedCart);
-      } else {
-        await removeItemFromCart(cartId, item.id);
+        await addItemToCart({ cartId: currentCartId, variantId, quantity });
+
+        // refresh and return it (even if you don't use it everywhere)
         await refreshCart();
+      } catch (error) {
+        console.error("Failed to add item to cart:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Failed to remove item from cart:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [cartId, createNewCart, refreshCart]
+  );
+
+  const handleRemoveFromCart = useCallback(
+    async (item) => {
+      setLoading(true);
+      try {
+        if (!cartId) return;
+
+        if (item.quantity > 1) {
+          const updatedCart = await updateCartItemQuantity(
+            cartId,
+            item.id,
+            item.quantity - 1
+          );
+          setCart(updatedCart);
+        } else {
+          await removeItemFromCart(cartId, item.id);
+          await refreshCart();
+        }
+      } catch (error) {
+        console.error("Failed to remove item from cart:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [cartId, refreshCart]
+  );
 
   return (
-    <ShopContext.Provider value={{
-      cart,
-      loading,
-      handleAddToCart,
-      handleRemoveFromCart,
-      refreshCart,
-      isCartOpen,
-      toggleCart
-    }}>
+    <ShopContext.Provider
+      value={{
+        cart,
+        loading,
+        handleAddToCart,
+        handleRemoveFromCart,
+        refreshCart,
+
+        isCartOpen,
+        toggleCart,
+        openCart,
+        closeCart,
+      }}>
       {children}
     </ShopContext.Provider>
   );

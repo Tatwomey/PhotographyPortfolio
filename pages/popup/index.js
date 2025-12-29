@@ -1,113 +1,49 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+// pages/popup/index.js
+import React, { useRef, useState, useMemo } from "react";
 import Head from "next/head";
 import PopupHero from "@/components/PopupHero";
 import PopupProductCard from "@/components/PopupProductCard";
 import PopupProductQuickView from "@/components/PopupProductQuickView";
 import { useSmoothScroll } from "@/hooks/useSmoothScroll";
-import { useShopContext } from "@/contexts/shopContext";
 
-function pushDataLayer(payload) {
-  if (typeof window === "undefined") return;
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push(payload);
+function normalizeForQuickView(p) {
+  const images =
+    Array.isArray(p?.allImages) && p.allImages.length
+      ? p.allImages.map((src) => ({ src }))
+      : [p?.imageSrc].filter(Boolean).map((src) => ({ src }));
+
+  const variants = Array.isArray(p?.variantOptions)
+    ? p.variantOptions.map((v) => ({
+        id: v.id,
+        title: v.title,
+        price: v?.price?.amount ?? "0.00",
+        availableForSale: v?.available ?? true,
+        selectedOptions: v?.options ?? [],
+        image: v?.image ?? null,
+      }))
+    : [];
+
+  return {
+    title: p?.title,
+    handle: p?.handle,
+    description: p?.description,
+    images,
+    variants,
+  };
 }
 
 export default function PopupShop({ products }) {
-  const safeProducts = products || [];
+  const safeProducts = Array.isArray(products) ? products : [];
   const shopPageRef = useRef(null);
-  const { cart, loading, addItemToCart, openCart } = useShopContext();
 
   const [quickViewProduct, setQuickViewProduct] = useState(null);
-  const quickViewStartMsRef = useRef(null);
 
   useSmoothScroll("#popup", shopPageRef);
 
-  // Stable portfolio_id for this page (used across events)
-  const portfolioId = useMemo(() => "popup_index", []);
-
-  // Optional: log a product impression batch when list loads
-  useEffect(() => {
-    if (!safeProducts.length) return;
-    pushDataLayer({
-      event: "product_impression",
-      portfolio_id: portfolioId,
-      count: safeProducts.length,
-    });
-  }, [safeProducts.length, portfolioId]);
-
-  const handleAddToCartClick = async (product, quantity = 1) => {
-    if (loading || !cart) {
-      console.error("Cart is still loading or not available. Please wait.");
-      return;
-    }
-
-    try {
-      await addItemToCart(product.variantId, quantity);
-      openCart();
-
-      pushDataLayer({
-        event: "add_to_cart",
-        portfolio_id: portfolioId,
-        product_id: product.handle,
-        product_title: product.title,
-        variant_id: product.variantId || null,
-        quantity,
-        sold_out: !product.availableForSale,
-      });
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      pushDataLayer({
-        event: "add_to_cart_error",
-        portfolio_id: portfolioId,
-        product_id: product.handle,
-        error_message: String(error?.message || error),
-      });
-    }
-  };
-
-  const openQuickView = (product) => {
-    quickViewStartMsRef.current = performance.now();
-    setQuickViewProduct(product);
-
-    pushDataLayer({
-      event: "quick_view_open",
-      portfolio_id: portfolioId,
-      product_id: product.handle,
-      product_title: product.title,
-      sold_out: !product.availableForSale,
-    });
-  };
-
-  const closeQuickView = () => {
-    const product = quickViewProduct;
-    setQuickViewProduct(null);
-
-    const start = quickViewStartMsRef.current;
-    if (product && typeof start === "number") {
-      const durationMs = Math.round(performance.now() - start);
-      const capped = Math.min(Math.max(durationMs, 0), 10 * 60 * 1000);
-
-      pushDataLayer({
-        event: "quick_view_close",
-        portfolio_id: portfolioId,
-        product_id: product.handle,
-        duration_ms: capped,
-      });
-    }
-
-    quickViewStartMsRef.current = null;
-  };
-
-  const trackProductClick = (product) => {
-    pushDataLayer({
-      event: "product_click",
-      portfolio_id: portfolioId,
-      product_id: product.handle,
-      product_title: product.title,
-      sold_out: !product.availableForSale,
-      click_source: "popup_grid",
-    });
-  };
+  const normalizedQuickViewProduct = useMemo(() => {
+    if (!quickViewProduct) return null;
+    return normalizeForQuickView(quickViewProduct);
+  }, [quickViewProduct]);
 
   return (
     <div className="bg-white text-black w-full min-h-screen transition-colors duration-300">
@@ -127,19 +63,18 @@ export default function PopupShop({ products }) {
             <PopupProductCard
               key={product.id}
               product={product}
-              portfolioId={portfolioId}
-              onProductClick={() => trackProductClick(product)}
-              onQuickView={() => openQuickView(product)}
+              portfolioId="popup_index"
+              // ✅ accept the product argument from the card
+              onQuickView={(p) => setQuickViewProduct(p)}
             />
           ))}
         </div>
       </main>
 
-      {quickViewProduct && (
+      {normalizedQuickViewProduct && (
         <PopupProductQuickView
-          product={quickViewProduct}
-          onClose={closeQuickView}
-          onAddToCart={(p) => handleAddToCartClick(p, 1)}
+          product={normalizedQuickViewProduct}
+          onClose={() => setQuickViewProduct(null)}
         />
       )}
     </div>
@@ -153,44 +88,44 @@ export async function getStaticProps() {
   const graphqlQuery = {
     query: `
 query getPopupProducts {
-  collectionByHandle(handle: "popup-shop") {
-    products(first: 100) {
-      edges {
-        node {
-          id
-          title
-          handle
-          description
-          availableForSale
-          images(first: 10) {
-            edges {
-              node {
-                src
-                altText
-              }
-            }
-          }
-          variants(first: 10) {
-            edges {
-              node {
-                id
-                title
-                availableForSale
-                selectedOptions {
-                  name
-                  value
-                }
-                priceV2 {
-                  amount
-                  currencyCode
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+collectionByHandle(handle: "popup-shop") {
+products(first: 100) {
+edges {
+node {
+id
+title
+handle
+description
+availableForSale
+images(first: 10) {
+edges {
+node {
+src
+altText
+}
+}
+}
+variants(first: 10) {
+edges {
+node {
+id
+title
+availableForSale
+selectedOptions {
+name
+value
+}
+priceV2 {
+amount
+currencyCode
+}
+}
+}
+}
+}
+}
+}
+}
 }
 `,
   };
@@ -211,7 +146,8 @@ query getPopupProducts {
     const edges = responseJson?.data?.collectionByHandle?.products?.edges || [];
 
     const products = edges.map(({ node }) => {
-      const variants = node.variants.edges.map((v) => v.node);
+      const variants = node?.variants?.edges?.map((v) => v.node) || [];
+      const images = node?.images?.edges?.map((e) => e.node) || [];
 
       return {
         id: node.id,
@@ -219,24 +155,27 @@ query getPopupProducts {
         handle: node.handle,
         description: node.description,
         availableForSale: node.availableForSale,
-        imageSrc: node.images.edges[0]?.node.src || "/fallback-image.jpg",
-        altImageSrc: node.images.edges[1]?.node.src || null,
-        imageAlt: node.images.edges[0]?.node.altText || "Product Image",
-        allImages: node.images.edges.map((edge) => edge.node.src),
-        variantId: variants[0]?.id || null, // used by your cart context
+
+        imageSrc: images[0]?.src || "/fallback-image.jpg",
+        altImageSrc: images[1]?.src || null,
+        imageAlt: images[0]?.altText || node.title,
+
+        allImages: images.map((img) => img.src),
+
+        variantId: variants[0]?.id || null,
         variantOptions: variants.map((v) => ({
           id: v.id,
           title: v.title,
-          price: v.priceV2,
+          price: v.priceV2, // { amount, currencyCode }
           available: v.availableForSale,
           options: v.selectedOptions,
         })),
       };
     });
 
-    return { props: { products } };
+    return { props: { products }, revalidate: 60 };
   } catch (error) {
     console.error("Error fetching popup products:", error);
-    return { props: { products: [] } };
+    return { props: { products: [] }, revalidate: 60 };
   }
 }
