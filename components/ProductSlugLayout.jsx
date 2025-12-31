@@ -48,18 +48,38 @@ export default function ProductSlugLayout({
     return Array.from(new Set(vals));
   }, [product.variants]);
 
-  // --- Default Variant prefers "Regular"
+  // --- Default Variant: slug-aware (Monochrome/BW slugs pick Monochrome; otherwise Regular; fallback to first)
   const defaultVariant = useMemo(() => {
-    return (
-      product.variants.find((v) =>
-        v.selectedOptions?.some(
-          (opt) =>
-            opt.name?.toLowerCase() === "color" &&
-            String(opt.value).toLowerCase() === "regular"
-        )
-      ) || product.variants[0]
+    const handle = String(product?.handle || "").toLowerCase();
+
+    const wantsMono =
+      handle.includes("mono") ||
+      handle.includes("monochrome") ||
+      handle.includes("monochromatic") ||
+      handle.includes("bw") ||
+      handle.includes("black-and-white") ||
+      handle.includes("blackwhite");
+
+    const targetColor = wantsMono ? "monochrome" : "regular";
+
+    const matchByColor = product.variants.find((v) =>
+      v.selectedOptions?.some(
+        (opt) =>
+          opt.name?.toLowerCase() === "color" &&
+          String(opt.value).toLowerCase() === targetColor
+      )
     );
-  }, [product.variants]);
+
+    const matchRegular = product.variants.find((v) =>
+      v.selectedOptions?.some(
+        (opt) =>
+          opt.name?.toLowerCase() === "color" &&
+          String(opt.value).toLowerCase() === "regular"
+      )
+    );
+
+    return matchByColor || matchRegular || product.variants[0];
+  }, [product?.handle, product.variants]);
 
   const defaultColor = useMemo(() => {
     return defaultVariant.selectedOptions?.find(
@@ -103,9 +123,19 @@ export default function ProductSlugLayout({
   }, [selectedVariant]);
 
   const currency = useMemo(() => {
-    // If your data includes currencyCode elsewhere, wire it here.
     return "USD";
   }, []);
+
+  // ✅ SOLD OUT logic aligned with index (fallback to product-level)
+  const isSoldOut = useMemo(() => {
+    if (typeof selectedVariant?.availableForSale === "boolean") {
+      return !selectedVariant.availableForSale;
+    }
+    if (typeof product?.availableForSale === "boolean") {
+      return !product.availableForSale;
+    }
+    return false;
+  }, [selectedVariant?.availableForSale, product?.availableForSale]);
 
   // Variant dropdown change
   const handleVariantChange = (e) => {
@@ -203,8 +233,6 @@ export default function ProductSlugLayout({
     if (window._klOnsite) window._klOnsite.push(["openForm", "RjNi3C"]);
   };
 
-  const isSoldOut = selectedVariant?.availableForSale === false;
-
   // Fire product_view on slug render (once per product)
   useEffect(() => {
     if (!product?.handle) return;
@@ -255,7 +283,12 @@ export default function ProductSlugLayout({
               priority
             />
 
-            {isSoldOut && <div className="sold-out-badge">Sold Out</div>}
+            {/* ✅ EXACT SAME SOLD OUT BADGE AS PopupProductCard */}
+            {isSoldOut && (
+              <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded z-20">
+                Sold Out
+              </div>
+            )}
           </div>
 
           {product.images.length > 1 && (
@@ -436,7 +469,7 @@ export default function ProductSlugLayout({
           {/* Tabs */}
           <TabSection details={product.description} />
 
-          {/* ✅ Back link sits directly under the tabs (your request) */}
+          {/* Back link */}
           <div className="mt-6">
             <Link
               href={backHref}
