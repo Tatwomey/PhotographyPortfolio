@@ -6,6 +6,10 @@ import {
   getPopupProductByHandle,
 } from "@/lib/popupSlugUtils";
 
+/* ------------------------------------------------------
+   NEXT.JS STATIC GENERATION
+------------------------------------------------------ */
+
 export async function getStaticPaths() {
   return await getPopupProductPaths();
 }
@@ -18,7 +22,12 @@ export async function getStaticProps({ params }) {
   return { props: { product } };
 }
 
+/* ------------------------------------------------------
+   POPUP SLUG PAGE COMPONENT
+------------------------------------------------------ */
+
 export default function PopupSlug({ product }) {
+  // Build a unique portfolio analytics ID
   const portfolioId = useMemo(() => {
     const handle = product?.handle || "unknown";
     return `popup_slug:${handle}`;
@@ -27,10 +36,11 @@ export default function PopupSlug({ product }) {
   return (
     <>
       <PopupHero />
+
       <ProductSlugLayout
         product={product}
         portfolioId={portfolioId}
-        storeSection="popup"
+        storeSection="popup" // 👈 Required so ProductSlugLayout enables Swiper + Zoom
         breadcrumbLabel="Popup Shop"
         breadcrumbHref="/popup"
         backHref="/popup"

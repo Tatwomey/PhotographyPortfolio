@@ -2,11 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+/* SWIPER REQUIRED CSS */
+@import "swiper/css";
+@import "swiper/css/effect-fade";
+
+/* Custom zoom for popup slug */
+.popup-zoom-wrapper {
+  overflow: hidden;
+  position: relative;
+}
+
+.popup-zoom-image {
+  transition: transform 0.45s ease-out;
+  transform-origin: center center;
+}
+
+.popup-zoom-wrapper:hover .popup-zoom-image {
+  transform: scale(2); /* ZH-1: 2× zoom */
+}
+
 /* ✅ General Styles */
 html,
 body {
   scroll-behavior: smooth;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
   font-family: "Montserrat", sans-serif;
   font-size: 18px;
   margin: 0;
@@ -48,7 +69,9 @@ body {
   height: 2px;
   width: 0;
   background-color: black;
-  transition: width 0.3s ease, left 0.3s ease;
+  transition:
+    width 0.3s ease,
+    left 0.3s ease;
 }
 
 .tab-button.active span {
@@ -434,7 +457,9 @@ p.hover-underline {
   margin-top: 2px;
   left: 50%;
   background: currentColor;
-  transition: width 0.3s ease, left 0.3s ease;
+  transition:
+    width 0.3s ease,
+    left 0.3s ease;
 }
 
 .hover-underline:hover::after {
@@ -549,4 +574,112 @@ button.checkout-button {
   padding: 12px;
   border-radius: 6px;
   width: 100%;
+}
+
+/* -------------------------------------------------------
+H1-A-Smooth — Desktop-Only Zoom Lens
+------------------------------------------------------- */
+.zoom-lens {
+  position: absolute;
+  width: 225px; /* Medium lens */
+  height: 225px;
+  border-radius: 50%;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background-repeat: no-repeat;
+  background-size: cover;
+  mix-blend-mode: normal;
+  display: none;
+  transition: opacity 0.12s ease-out;
+  opacity: 0.95;
+  z-index: 40;
+}
+
+@media (max-width: 1024px) {
+  .zoom-lens {
+    display: none !important;
+  }
+}
+
+/* -------------------------------------------------------
+A2 / Hybrid Swiper — Popup ONLY
+(Prevents global Swiper pollution)
+------------------------------------------------------- */
+.popup-swiper .swiper-slide {
+  transition:
+    transform 0.9s ease,
+    opacity 0.9s ease;
+}
+
+/* -------------------------------------------------------
+Image Wrapper (controls arrows + zoom)
+------------------------------------------------------- */
+.popup-image-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+/* -------------------------------------------------------
+Hover Zoom (non-lens fallback)
+------------------------------------------------------- */
+.popup-hover-zoom {
+  transition: transform 0.35s ease;
+}
+
+@media (hover: hover) {
+  .popup-hover-zoom:hover {
+    transform: scale(1.05);
+  }
+}
+
+/* -------------------------------------------------------
+KITH–STYLE PRODUCT ARROWS
+------------------------------------------------------- */
+.popup-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%) translateX(10px);
+  z-index: 30;
+  width: 42px;
+  height: 42px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 22px;
+  color: black;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease,
+    background 0.25s ease;
+}
+
+/* Fade arrows in when hovering the carousel */
+.popup-swiper:hover .popup-arrow {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(-50%) translateX(0);
+}
+
+.popup-arrow:hover {
+  background: white;
+}
+
+.popup-arrow.left {
+  left: 12px;
+}
+
+.popup-arrow.right {
+  right: 12px;
+  transform: translateY(-50%) translateX(-10px);
+}
+
+.popup-swiper:hover .popup-arrow.right {
+  transform: translateY(-50%) translateX(0);
 }

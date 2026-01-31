@@ -1,10 +1,16 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useShopContext } from "@/contexts/shopContext";
 import TabSection from "@/components/TabSection";
+
+/* ---------------- Swiper v9 ---------------- */
+import { Swiper, SwiperSlide } from "swiper/react";
+import { EffectCreative } from "swiper";
+
+/* Swiper CSS is loaded globally */
 
 function pushDataLayer(payload) {
   if (typeof window === "undefined") return;
@@ -15,7 +21,7 @@ function pushDataLayer(payload) {
 export default function ProductSlugLayout({
   product,
   portfolioId,
-  storeSection = "shop", // "shop" | "popup"
+  storeSection = "shop",
   backHref = "/shop",
   backLabel = "Back to Shop",
   breadcrumbLabel = "Shop",
@@ -23,326 +29,154 @@ export default function ProductSlugLayout({
 }) {
   const { handleAddToCart } = useShopContext();
   const router = useRouter();
+  const swiperRef = useRef(null);
 
-  if (!product || !product.variants || !product.images) {
-    return <div className="text-center py-20 text-lg">Loading product...</div>;
+  if (!product || !product.images || !product.variants) {
+    return <div className="text-center py-20">Loading product…</div>;
   }
 
-  // Build portfolioId if not passed
+  /* ---------------- Portfolio ID ---------------- */
   const computedPortfolioId = useMemo(() => {
     if (portfolioId) return portfolioId;
-    const handle = product?.handle || "unknown";
-    return `${storeSection}_slug:${handle}`;
-  }, [portfolioId, product?.handle, storeSection]);
+    return `${storeSection}_slug:${product.handle}`;
+  }, [portfolioId, product.handle, storeSection]);
 
-  // --- Color options (if present)
-  const colorOptions = useMemo(() => {
-    const vals = product.variants
-      .map(
-        (v) =>
-          v.selectedOptions?.find((opt) => opt.name?.toLowerCase() === "color")
-            ?.value
-      )
-      .filter(Boolean);
-
-    return Array.from(new Set(vals));
-  }, [product.variants]);
-
-  // --- Default Variant: slug-aware (Monochrome/BW slugs pick Monochrome; otherwise Regular; fallback to first)
-  const defaultVariant = useMemo(() => {
-    const handle = String(product?.handle || "").toLowerCase();
-
-    const wantsMono =
-      handle.includes("mono") ||
-      handle.includes("monochrome") ||
-      handle.includes("monochromatic") ||
-      handle.includes("bw") ||
-      handle.includes("black-and-white") ||
-      handle.includes("blackwhite");
-
-    const targetColor = wantsMono ? "monochrome" : "regular";
-
-    const matchByColor = product.variants.find((v) =>
-      v.selectedOptions?.some(
-        (opt) =>
-          opt.name?.toLowerCase() === "color" &&
-          String(opt.value).toLowerCase() === targetColor
-      )
-    );
-
-    const matchRegular = product.variants.find((v) =>
-      v.selectedOptions?.some(
-        (opt) =>
-          opt.name?.toLowerCase() === "color" &&
-          String(opt.value).toLowerCase() === "regular"
-      )
-    );
-
-    return matchByColor || matchRegular || product.variants[0];
-  }, [product?.handle, product.variants]);
-
-  const defaultColor = useMemo(() => {
-    return defaultVariant.selectedOptions?.find(
-      (opt) => opt.name?.toLowerCase() === "color"
-    )?.value;
-  }, [defaultVariant]);
-
-  const [selectedColor, setSelectedColor] = useState(defaultColor || "");
+  /* ---------------- Default Variant ---------------- */
+  const defaultVariant = product.variants[0];
   const [selectedVariant, setSelectedVariant] = useState(defaultVariant);
 
-  const [currentImageIdx, setCurrentImageIdx] = useState(0);
-  const [mainImage, setMainImage] = useState(
-    defaultVariant.image?.src || product.images[0]?.src
-  );
+  /* ---------------- Image State ---------------- */
+  const [activeIndex, setActiveIndex] = useState(0);
 
-  // Variants for selected color (if color exists)
-  const variantsForColor = useMemo(() => {
-    if (!selectedColor) return product.variants;
-    return product.variants.filter((v) =>
-      v.selectedOptions?.some(
-        (opt) =>
-          opt.name?.toLowerCase() === "color" && opt.value === selectedColor
-      )
-    );
-  }, [product.variants, selectedColor]);
+  /* ---------------- Price ---------------- */
+  const price = Number(selectedVariant.priceV2?.amount || 0).toFixed(2);
 
-  // When color changes, select first variant in that color
-  useEffect(() => {
-    const v = variantsForColor[0];
-    if (!v) return;
+  /* ---------------- Sold Out ---------------- */
+  const isSoldOut = selectedVariant.availableForSale === false;
 
-    setSelectedVariant(v);
-    setMainImage(v.image?.src || product.images[0]?.src);
-    setCurrentImageIdx(0);
-  }, [selectedColor]); // intentionally only color change
-
-  const price = useMemo(() => {
-    const raw = selectedVariant?.priceV2?.amount ?? "0";
-    const n = Number.parseFloat(raw);
-    return Number.isFinite(n) ? n.toFixed(2) : "0.00";
-  }, [selectedVariant]);
-
-  const currency = useMemo(() => {
-    return "USD";
-  }, []);
-
-  // ✅ SOLD OUT logic aligned with index (fallback to product-level)
-  const isSoldOut = useMemo(() => {
-    if (typeof selectedVariant?.availableForSale === "boolean") {
-      return !selectedVariant.availableForSale;
-    }
-    if (typeof product?.availableForSale === "boolean") {
-      return !product.availableForSale;
-    }
-    return false;
-  }, [selectedVariant?.availableForSale, product?.availableForSale]);
-
-  // Variant dropdown change
-  const handleVariantChange = (e) => {
-    const variant = product.variants.find((v) => v.id === e.target.value);
-    if (!variant) return;
-
-    setSelectedVariant(variant);
-    setMainImage(variant.image?.src || product.images[0]?.src);
-
-    const newColor = variant.selectedOptions?.find(
-      (opt) => opt.name?.toLowerCase() === "color"
-    );
-    if (newColor?.value) setSelectedColor(newColor.value);
-
-    pushDataLayer({
-      event: "variant_change",
-      portfolio_id: computedPortfolioId,
-      store_section: storeSection,
-      product_id: product?.handle,
-      product_title: product?.title,
-      variant_id: variant.id,
-      item_variant: variant.title,
-      price,
-      currency,
-      ui_action: "variant_select",
-      view_context: "slug",
-    });
+  /* =====================================================
+A2-SOFT CREATIVE EFFECT (Option B – index-aware)
+===================================================== */
+  const creativeEffect = {
+    prev: {
+      translate: ["-12%", 0, -1],
+      opacity: 0.85,
+    },
+    next: {
+      translate: ["12%", 0, -1],
+      opacity: 0.85,
+    },
   };
 
-  // Image nav
-  const nextImage = () => {
-    const newIdx = (currentImageIdx + 1) % product.images.length;
-    setCurrentImageIdx(newIdx);
-    setMainImage(product.images[newIdx].src);
+  const isPopup = storeSection === "popup";
 
-    pushDataLayer({
-      event: "product_image_nav",
-      portfolio_id: computedPortfolioId,
-      store_section: storeSection,
-      product_id: product?.handle,
-      ui_action: "next_image",
-      view_context: "slug",
-      value: newIdx,
-    });
+  /* ---------------- Slide Change ---------------- */
+  const handleSlideChange = (swiper) => {
+    setActiveIndex(swiper.realIndex);
   };
 
-  const prevImage = () => {
-    const newIdx =
-      (currentImageIdx - 1 + product.images.length) % product.images.length;
-    setCurrentImageIdx(newIdx);
-    setMainImage(product.images[newIdx].src);
-
-    pushDataLayer({
-      event: "product_image_nav",
-      portfolio_id: computedPortfolioId,
-      store_section: storeSection,
-      product_id: product?.handle,
-      ui_action: "prev_image",
-      view_context: "slug",
-      value: newIdx,
-    });
+  /* ---------------- Thumbnail Click ---------------- */
+  const handleThumbnailClick = (idx) => {
+    if (!swiperRef.current) return;
+    swiperRef.current.slideToLoop(idx, 600);
   };
 
+  /* ---------------- Buy Now ---------------- */
   const handleBuyNow = async () => {
-    pushDataLayer({
-      event: "begin_checkout",
-      portfolio_id: computedPortfolioId,
-      store_section: storeSection,
-      product_id: product?.handle,
-      product_title: product?.title,
-      variant_id: selectedVariant?.id,
-      quantity: 1,
-      price,
-      currency,
-      ui_action: "buy_now",
-      view_context: "slug",
-    });
-
     await handleAddToCart(selectedVariant.id, 1);
     router.push("/checkout");
   };
 
-  const handleNotifyClick = () => {
-    pushDataLayer({
-      event: "notify_me_click",
-      portfolio_id: computedPortfolioId,
-      store_section: storeSection,
-      product_id: product?.handle,
-      product_title: product?.title,
-      variant_id: selectedVariant?.id,
-      ui_action: "notify_me",
-      view_context: "slug",
-    });
-
-    if (window._klOnsite) window._klOnsite.push(["openForm", "RjNi3C"]);
-  };
-
-  // Fire product_view on slug render (once per product)
-  useEffect(() => {
-    if (!product?.handle) return;
-
-    pushDataLayer({
-      event: "product_view",
-      portfolio_id: computedPortfolioId,
-      store_section: storeSection,
-      product_id: product?.handle,
-      product_title: product?.title,
-      view_context: "slug",
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [product?.handle]);
-
+  /* =====================================================
+RENDER
+===================================================== */
   return (
     <main className="bg-white text-black px-4 py-12 container mx-auto">
-      <div
-        id="product-details"
-        className="flex flex-col lg:flex-row gap-10 scroll-mt-20 items-start">
-        {/* Image Column */}
+      <div className="flex flex-col lg:flex-row gap-10 items-start">
+        {/* =================================================
+IMAGE COLUMN
+================================================= */}
         <div className="w-full lg:max-w-[550px] relative">
-          <div className="relative aspect-[4/5] w-full overflow-hidden rounded shadow group">
-            {product.images.length > 1 && (
-              <>
-                <button
-                  type="button"
-                  onClick={prevImage}
-                  className="modal-arrow left"
-                  aria-label="Prev Image">
-                  <ChevronLeft />
-                </button>
-                <button
-                  type="button"
-                  onClick={nextImage}
-                  className="modal-arrow right"
-                  aria-label="Next Image">
-                  <ChevronRight />
-                </button>
-              </>
-            )}
+          {isPopup ? (
+            <>
+              {/* ---------- Swiper ---------- */}
+              <Swiper
+                modules={[EffectCreative]}
+                effect="creative"
+                creativeEffect={creativeEffect}
+                speed={650}
+                loop
+                onSwiper={(s) => (swiperRef.current = s)}
+                onSlideChange={handleSlideChange}
+                className="rounded shadow overflow-hidden">
+                {product.images.map((img, idx) => (
+                  <SwiperSlide key={idx}>
+                    <div className="popup-zoom-wrapper">
+                      <Image
+                        src={img.src}
+                        alt={product.title}
+                        width={1600}
+                        height={2000}
+                        priority={idx === 0}
+                        className="popup-zoom-image object-contain"
+                      />
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
 
-            <Image
-              src={mainImage}
-              alt={product.title}
-              fill
-              className="object-contain"
-              priority
-            />
+              {/* ---------- Arrows ---------- */}
+              <button
+                className="modal-arrow left"
+                onClick={() => swiperRef.current?.slidePrev()}
+                aria-label="Previous image">
+                <ChevronLeft size={18} />
+              </button>
 
-            {/* ✅ EXACT SAME SOLD OUT BADGE AS PopupProductCard */}
-            {isSoldOut && (
-              <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded z-20">
-                Sold Out
-              </div>
-            )}
-          </div>
+              <button
+                className="modal-arrow right"
+                onClick={() => swiperRef.current?.slideNext()}
+                aria-label="Next image">
+                <ChevronRight size={18} />
+              </button>
+            </>
+          ) : (
+            /* ---------- Shop fallback ---------- */
+            <div className="relative aspect-[4/5] w-full overflow-hidden rounded shadow">
+              <Image
+                src={product.images[0].src}
+                alt={product.title}
+                fill
+                className="object-contain"
+              />
+            </div>
+          )}
 
+          {/* ---------- Thumbnails ---------- */}
           {product.images.length > 1 && (
             <div className="flex gap-3 mt-4 overflow-x-auto">
               {product.images.map((img, idx) => (
                 <button
                   key={idx}
-                  type="button"
-                  onClick={() => {
-                    setMainImage(img.src);
-                    setCurrentImageIdx(idx);
-
-                    pushDataLayer({
-                      event: "product_thumbnail_click",
-                      portfolio_id: computedPortfolioId,
-                      store_section: storeSection,
-                      product_id: product?.handle,
-                      ui_action: "thumbnail_select",
-                      view_context: "slug",
-                      value: idx,
-                    });
-                  }}
+                  onClick={() => handleThumbnailClick(idx)}
                   className={`border rounded-md overflow-hidden ${
-                    currentImageIdx === idx ? "border-black" : "border-gray-300"
-                  }`}
-                  aria-label={`Thumbnail ${idx + 1}`}>
-                  <Image
-                    src={img.src}
-                    alt={`Thumbnail ${idx}`}
-                    width={80}
-                    height={100}
-                    className="thumbnail-image"
-                  />
+                    idx === activeIndex ? "border-black" : "border-gray-300"
+                  }`}>
+                  <Image src={img.src} alt="" width={80} height={100} />
                 </button>
               ))}
             </div>
           )}
         </div>
 
-        {/* Details Column */}
+        {/* =================================================
+DETAILS COLUMN
+================================================= */}
         <div className="w-full lg:max-w-md">
           {/* Breadcrumb */}
-          <nav className="text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
-            <ol className="flex space-x-2">
-              <li>
-                <Link href={breadcrumbHref} className="hover:underline">
-                  {breadcrumbLabel}
-                </Link>
-                <span className="mx-1">/</span>
-              </li>
-              <li className="text-black font-medium truncate">
-                {product.title}
-              </li>
-            </ol>
+          <nav className="text-sm text-gray-500 mb-4">
+            <Link href={breadcrumbHref}>{breadcrumbLabel}</Link> /{" "}
+            <span className="text-black font-medium">{product.title}</span>
           </nav>
 
           <h1 className="text-3xl font-bold mb-2">{product.title}</h1>
@@ -355,135 +189,33 @@ export default function ProductSlugLayout({
 
           <p className="text-xl font-semibold mb-4">${price}</p>
 
-          {typeof selectedVariant?.quantityAvailable === "number" &&
-            selectedVariant.quantityAvailable <= 3 &&
-            selectedVariant.quantityAvailable > 0 && (
-              <p className="text-sm text-red-600 font-semibold mt-1">
-                Only {selectedVariant.quantityAvailable} left in stock!
-              </p>
-            )}
-
-          {/* Color Swatches */}
-          {colorOptions.length > 1 && (
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Color</label>
-              <div className="flex gap-2">
-                {colorOptions.map((color) => (
-                  <button
-                    key={color}
-                    type="button"
-                    onClick={() => {
-                      setSelectedColor(color);
-
-                      pushDataLayer({
-                        event: "color_change",
-                        portfolio_id: computedPortfolioId,
-                        store_section: storeSection,
-                        product_id: product?.handle,
-                        product_title: product?.title,
-                        ui_action: "color_select",
-                        item_variant: color,
-                        view_context: "slug",
-                      });
-                    }}
-                    className={`w-6 h-6 rounded-full border-2 ${
-                      selectedColor === color
-                        ? "border-black ring-2 ring-black"
-                        : "border-gray-300"
-                    }`}
-                    style={{
-                      backgroundColor:
-                        color.toLowerCase() === "monochrome"
-                          ? "#000"
-                          : "#e5e5e5",
-                    }}
-                    aria-label={color}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Variant dropdown (Edition/Size) */}
-          {variantsForColor.length > 1 && (
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">
-                Edition / Size
-              </label>
-              <select
-                value={selectedVariant.id}
-                onChange={handleVariantChange}
-                className="w-full border rounded p-2">
-                {variantsForColor.map((v) => (
-                  <option key={v.id} value={v.id}>
-                    {v.title}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
           {/* CTA */}
           <div className="space-y-3 mb-6">
             {!isSoldOut ? (
               <>
                 <button
-                  type="button"
-                  onClick={() => {
-                    pushDataLayer({
-                      event: "add_to_cart",
-                      portfolio_id: computedPortfolioId,
-                      store_section: storeSection,
-                      product_id: product?.handle,
-                      product_title: product?.title,
-                      variant_id: selectedVariant?.id,
-                      quantity: 1,
-                      price,
-                      currency,
-                      ui_action: "slug_add_to_cart",
-                      view_context: "slug",
-                    });
-                    handleAddToCart(selectedVariant.id, 1);
-                  }}
-                  className="w-full bg-black text-white py-3 rounded text-lg font-medium">
+                  className="w-full bg-black text-white py-3 rounded font-medium"
+                  onClick={() => handleAddToCart(selectedVariant.id, 1)}>
                   Add to Cart
                 </button>
 
                 <button
-                  type="button"
-                  onClick={handleBuyNow}
-                  className="w-full bg-black text-white py-3 rounded text-lg font-semibold hover:bg-gray-800">
+                  className="w-full bg-black text-white py-3 rounded font-semibold hover:bg-gray-800"
+                  onClick={handleBuyNow}>
                   Buy It Now
                 </button>
               </>
             ) : (
-              <button
-                type="button"
-                onClick={handleNotifyClick}
-                className="w-full border border-black py-3 rounded text-lg font-semibold hover:bg-gray-100">
+              <button className="w-full border border-black py-3 rounded font-semibold">
                 Notify Me When Back in Stock
               </button>
             )}
           </div>
 
-          {/* Tabs */}
           <TabSection details={product.description} />
 
-          {/* Back link */}
           <div className="mt-6">
-            <Link
-              href={backHref}
-              className="inline-flex items-center text-sm text-gray-600 hover:text-black transition"
-              onClick={() =>
-                pushDataLayer({
-                  event: "back_nav",
-                  portfolio_id: computedPortfolioId,
-                  store_section: storeSection,
-                  product_id: product?.handle,
-                  ui_action: "back_link",
-                  view_context: "slug",
-                })
-              }>
+            <Link href={backHref} className="text-gray-600 hover:text-black">
               ← {backLabel}
             </Link>
           </div>
