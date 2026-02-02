@@ -6,6 +6,21 @@
 @import "swiper/css";
 @import "swiper/css/effect-fade";
 
+.zoom-pulse img {
+  animation: zoomPulse 0.45s ease-out;
+}
+
+@keyframes zoomPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
 /* Custom zoom for popup slug */
 .popup-zoom-wrapper {
   overflow: hidden;
@@ -17,8 +32,8 @@
   transform-origin: center center;
 }
 
-.popup-zoom-wrapper:hover .popup-zoom-image {
-  transform: scale(2); /* ZH-1: 2× zoom */
+.popup-zoom-wrapper.zoomed .popup-zoom-image {
+  transform: scale(1.15);
 }
 
 /* ✅ General Styles */
