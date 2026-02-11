@@ -6,6 +6,7 @@ import { FaInstagram, FaLinkedin } from "react-icons/fa";
 import { HiOutlineUserCircle } from "react-icons/hi";
 import { useRouter } from "next/router";
 import CartIcon from "./CartIcon";
+import CurrencySwitcher from "./CurrencySwitcher";
 import { useSession, signOut } from "next-auth/react";
 
 const GA_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID;
@@ -37,6 +38,9 @@ const Navbar = () => {
     router.pathname.startsWith("/shop") ||
     router.pathname.startsWith("/popup") ||
     router.pathname.startsWith("/capsule-01");
+
+  const showCommerceControls =
+    router.pathname.startsWith("/shop") || router.pathname.startsWith("/popup");
 
   // Gated rule: only show avatar on authenticated /music/* pages
   const isGatedRoute = router.pathname.startsWith("/music/");
@@ -250,9 +254,12 @@ const Navbar = () => {
             />
           )}
 
-          {/* Cart Icon */}
-          {typeof window !== "undefined" && (
-            <CartIcon isDarkMode={!isLightModePage} />
+          {/* Cart + Currency (shop & popup only, client-side) */}
+          {showCommerceControls && typeof window !== "undefined" && (
+            <div className="flex items-center gap-3">
+              <CurrencySwitcher />
+              <CartIcon isDarkMode={!isLightModePage} />
+            </div>
           )}
 
           {/* Mobile Menu Toggle */}

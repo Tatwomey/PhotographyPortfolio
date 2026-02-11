@@ -844,3 +844,55 @@ KITH–STYLE PRODUCT ARROWS
     display: none;
   }
 }
+.product-feature-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 18px 0 26px;
+  padding: 0;
+  list-style: none;
+}
+
+.product-feature-badges li {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #555;
+  letter-spacing: 0.02em;
+}
+
+.badge-icon {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  border-radius: 50%;
+  border: 1px solid #bbb;
+  font-size: 12px;
+  color: #000;
+}
+
+.currency-switcher {
+  position: relative;
+  display: inline-block;
+  margin-left: 8px;
+}
+
+.currency-current {
+  padding: 6px 10px;
+  border: 1px solid red;
+  background: yellow;
+  color: black;
+  font-size: 12px;
+}
+
+.currency-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid black;
+  z-index: 9999;
+}

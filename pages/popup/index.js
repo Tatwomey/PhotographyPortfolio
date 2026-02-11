@@ -112,20 +112,20 @@ export default function Popup({ products }) {
 
       {/* Desktop view toggle */}
       <div className="popup-view-toggle">
-        <span>View</span>
-
         <button
+          aria-label="Gallery view"
           className={viewMode === VIEW_MODES.GRID_3 ? "active" : ""}
-          onClick={() => setViewMode(VIEW_MODES.GRID_3)}
-          aria-label="3 column grid">
+          onClick={() => setViewMode(VIEW_MODES.GRID_3)}>
           <span className="icon-grid" />
+          <span className="view-label">Gallery</span>
         </button>
 
         <button
+          aria-label="Compact view"
           className={viewMode === VIEW_MODES.GRID_2 ? "active" : ""}
-          onClick={() => setViewMode(VIEW_MODES.GRID_2)}
-          aria-label="2 column grid">
+          onClick={() => setViewMode(VIEW_MODES.GRID_2)}>
           <span className="icon-list" />
+          <span className="view-label">Compact</span>
         </button>
       </div>
 
