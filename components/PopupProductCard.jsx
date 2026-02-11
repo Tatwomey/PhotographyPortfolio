@@ -20,12 +20,12 @@ export default function PopupProductCard({
   const hoverImage = product?.altImageSrc || product?.imageSrc;
 
   const displayPrice = useMemo(() => {
-    const raw = product?.variantOptions?.[0]?.price?.amount ?? "0";
+    const raw = product?.variants?.[0]?.price?.amount ?? "0";
     const n = Number.parseFloat(raw);
     return Number.isFinite(n) ? n.toFixed(2) : "0.00";
   }, [product]);
 
-  const isSoldOut = !product?.availableForSale;
+  const isSoldOut = product?.variants?.[0]?.availableForSale === false;
 
   const handleCardClick = () => {
     if (onProductClick) onProductClick(product);
@@ -62,7 +62,7 @@ export default function PopupProductCard({
   return (
     // ✅ Add `group` so group-hover works
     <div
-      className="relative w-full group"
+      className="product-card relative w-full group"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}>
       {/* Card link */}
@@ -70,12 +70,12 @@ export default function PopupProductCard({
         href={`/popup/${product.handle}`}
         onClick={handleCardClick}
         className="block cursor-pointer">
-        <div className="relative aspect-[4/5] bg-gray-100 overflow-hidden rounded-lg shadow">
+        <div className="product-card-image relative bg-gray-100 overflow-hidden rounded-lg shadow">
           <Image
             src={isHovered ? hoverImage : product.imageSrc}
             alt={product.imageAlt || product.title}
             fill
-            className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+            className="transition-transform duration-300 ease-in-out group-hover:scale-105"
             priority
           />
 

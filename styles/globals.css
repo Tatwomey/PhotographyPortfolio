@@ -698,3 +698,149 @@ KITH–STYLE PRODUCT ARROWS
 .popup-swiper:hover .popup-arrow.right {
   transform: translateY(-50%) translateX(0);
 }
+
+/* =====================================================
+   POPUP GRID — HOUSE OF SPOILS (FINAL / LOCKED)
+===================================================== */
+
+.popup-grid-wrapper {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 48px 120px;
+}
+
+/* Base grid (NO columns here) */
+.popup-grid {
+  display: grid;
+  gap: 48px;
+}
+
+/* ===== Desktop modes ===== */
+.popup-grid--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.popup-grid--2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* ===== Tablet: forced 2 columns ===== */
+@media (max-width: 900px) {
+  .popup-grid--3,
+  .popup-grid--2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .popup-view-toggle {
+    display: none;
+  }
+}
+
+/* ===== Mobile: forced 1 column ===== */
+@media (max-width: 520px) {
+  .popup-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* =====================================================
+   PRODUCT CARD SCALE (HoS match)
+===================================================== */
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card-image {
+  aspect-ratio: 4 / 5;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.product-card-image img {
+  width: 96%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* =====================================================
+   VIEW TOGGLE (HoS style)
+===================================================== */
+/* =====================================================
+   VIEW TOGGLE (House of Spoils style)
+===================================================== */
+
+.popup-view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 32px 48px 16px;
+  font-size: 13px;
+  color: #111;
+}
+
+.popup-view-toggle span {
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* Button wrapper feel */
+.popup-view-toggle button {
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0.35;
+  transition: opacity 0.2s ease;
+}
+
+.popup-view-toggle button:hover {
+  opacity: 0.6;
+}
+
+.popup-view-toggle button.active {
+  opacity: 1;
+}
+
+/* Icons */
+.icon-grid,
+.icon-list {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+/* 3-grid icon */
+.icon-grid {
+  background-image:
+    linear-gradient(#000 0 0), linear-gradient(#000 0 0),
+    linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+  background-size: 8px 8px;
+  background-position:
+    0 0,
+    12px 0,
+    0 12px,
+    12px 12px;
+}
+
+/* 2-grid / list icon */
+.icon-list {
+  background-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+  background-size: 22px 4px;
+  background-position:
+    0 4px,
+    0 14px;
+}
+
+/* Hide toggle on mobile (HoS behavior) */
+@media (max-width: 900px) {
+  .popup-view-toggle {
+    display: none;
+  }
+}
