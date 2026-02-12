@@ -1,55 +1,50 @@
-import { useEffect, useState, useRef } from "react";
+import { useCurrency, CURRENCIES } from "@/contexts/CurrencyContext";
+import { useState, useRef, useEffect } from "react";
 
-const CURRENCIES = {
-  USD: "$",
-  EUR: "€",
-  GBP: "£",
-};
-
-export default function CurrencySwitcher() {
-  const [currency, setCurrency] = useState("USD");
+export default function CurrencySwitcher({ isDarkMode = false }) {
+  const { currency, setCurrency } = useCurrency();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
+  // Close on outside click
   useEffect(() => {
-    const saved = localStorage.getItem("currency");
-    if (saved) setCurrency(saved);
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (e) => {
+    function handleClickOutside(e) {
       if (ref.current && !ref.current.contains(e.target)) {
         setOpen(false);
       }
-    };
+    }
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  function changeCurrency(next) {
-    setCurrency(next);
-    localStorage.setItem("currency", next);
-    window.dispatchEvent(new Event("currency-change"));
-    setOpen(false);
-  }
+  const textColor = isDarkMode ? "text-white" : "text-black";
+  const borderColor = isDarkMode ? "border-white/20" : "border-black/10";
+  const dropdownBg = isDarkMode ? "bg-black text-white" : "bg-white text-black";
 
   return (
     <div ref={ref} className="relative">
       <button
         type="button"
-        onClick={() => setOpen(!open)}
-        className="text-sm font-medium tracking-wide px-2 py-1 rounded hover:opacity-70 transition">
-        {currency} {CURRENCIES[currency]} ▾
+        onClick={() => setOpen((prev) => !prev)}
+        className={`text-sm font-medium tracking-wide ${textColor} hover:opacity-70 transition`}
+        aria-haspopup="menu"
+        aria-expanded={open}>
+        {currency} {CURRENCIES[currency].symbol} ▾
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 bg-white text-black border border-black/10 rounded shadow-lg z-[9999]">
+        <div
+          className={`absolute right-0 mt-2 min-w-[90px] border ${borderColor} rounded-md shadow-lg z-[9999] ${dropdownBg}`}>
           {Object.keys(CURRENCIES).map((c) => (
             <button
               key={c}
-              onClick={() => changeCurrency(c)}
-              className="block w-full text-left px-3 py-2 text-sm hover:bg-black/5">
-              {c} {CURRENCIES[c]}
+              onClick={() => {
+                setCurrency(c);
+                setOpen(false);
+              }}
+              className="block w-full px-3 py-2 text-sm text-left hover:bg-black/5 dark:hover:bg-white/10 transition">
+              {c} {CURRENCIES[c].symbol}
             </button>
           ))}
         </div>

@@ -6,6 +6,7 @@ import { FaInstagram, FaLinkedin } from "react-icons/fa";
 import { HiOutlineUserCircle } from "react-icons/hi";
 import { useRouter } from "next/router";
 import CartIcon from "./CartIcon";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import CurrencySwitcher from "./CurrencySwitcher";
 import { useSession, signOut } from "next-auth/react";
 
@@ -33,6 +34,8 @@ const Navbar = () => {
 
   const router = useRouter();
   const { data: session, status } = useSession();
+
+  const { currency } = useCurrency();
 
   const isLightModePage =
     router.pathname.startsWith("/shop") ||
@@ -253,11 +256,24 @@ const Navbar = () => {
               }`}
             />
           )}
-
-          {/* Cart + Currency (shop & popup only, client-side) */}
+          {/* Commerce Controls (Shop / Popup only) */}
           {showCommerceControls && typeof window !== "undefined" && (
-            <div className="flex items-center gap-3">
-              <CurrencySwitcher />
+            <div className="hidden md:flex items-center gap-4">
+              {/* Only show currency switcher if NOT USD */}
+              {currency !== "USD" && (
+                <>
+                  <CurrencySwitcher isDarkMode={!isLightModePage} />
+
+                  {/* Separator */}
+                  <div
+                    className={`h-4 w-px ${
+                      isLightModePage ? "bg-black/20" : "bg-white/20"
+                    }`}
+                  />
+                </>
+              )}
+
+              {/* Cart */}
               <CartIcon isDarkMode={!isLightModePage} />
             </div>
           )}

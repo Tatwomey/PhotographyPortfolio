@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { X, ArrowLeft, ArrowRight } from "lucide-react";
 import { useShopContext } from "@/contexts/shopContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 function pushDataLayer(payload) {
   if (typeof window === "undefined") return;
@@ -11,19 +12,31 @@ function pushDataLayer(payload) {
   window.dataLayer.push(payload);
 }
 
+function formatMoney(amount, currencyCode = "USD") {
+  const n = Number.parseFloat(amount ?? "0");
+  const safe = Number.isFinite(n) ? n : 0;
+
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency: currencyCode,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(safe);
+  } catch {
+    return `${currencyCode} ${safe.toFixed(2)}`;
+  }
+}
+
 export default function PopupProductQuickView({ product, onClose }) {
-  const {
-    cart,
-    loading,
-    handleAddToCart,
-    refreshCart,
-    openCart, // ✅ added in shopContext.js update
-    // closeCart, // optional if you want it
-  } = useShopContext();
+  const { cart, loading, handleAddToCart, refreshCart, openCart } =
+    useShopContext();
+
+  const { currency } = useCurrency();
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState(
-    product?.variants?.[0]?.id || ""
+    product?.variants?.[0]?.id || "",
   );
 
   const images = product?.images || [];
@@ -34,7 +47,6 @@ export default function PopupProductQuickView({ product, onClose }) {
     setSelectedImageIndex(0);
     setSelectedVariant(product?.variants?.[0]?.id || "");
 
-    // analytics: quick view opened
     pushDataLayer({
       event: "quick_view_open",
       store_section: "popup",
@@ -54,16 +66,26 @@ export default function PopupProductQuickView({ product, onClose }) {
     );
   }, [variants, selectedVariant]);
 
-  const price = useMemo(() => {
-    const raw = selectedVariantObj?.price ?? variants?.[0]?.price ?? "0";
-    const n = Number.parseFloat(raw);
-    return Number.isFinite(n) ? n.toFixed(2) : "0.00";
-  }, [selectedVariantObj, variants]);
+  // ✅ FIX: your variant price is { amount, currencyCode }
+  const priceDisplay = useMemo(() => {
+    const raw =
+      selectedVariantObj?.price?.amount ?? variants?.[0]?.price?.amount ?? "0";
+    const code =
+      currency ||
+      selectedVariantObj?.price?.currencyCode ||
+      variants?.[0]?.price?.currencyCode ||
+      "USD";
+    return formatMoney(raw, code);
+  }, [selectedVariantObj, variants, currency]);
 
-  const currency = "USD";
+  const currencyCode =
+    currency ||
+    selectedVariantObj?.price?.currencyCode ||
+    variants?.[0]?.price?.currencyCode ||
+    "USD";
+
   const isSoldOut = selectedVariantObj?.availableForSale === false;
 
-  // If product doesn't have images, don't render
   if (!product || !images.length) return null;
 
   const closeWithEvent = useCallback(
@@ -78,7 +100,7 @@ export default function PopupProductQuickView({ product, onClose }) {
       });
       onClose();
     },
-    [onClose, product]
+    [onClose, product],
   );
 
   const closeIfOverlay = (e) => {
@@ -87,13 +109,13 @@ export default function PopupProductQuickView({ product, onClose }) {
 
   const goPrev = () => {
     setSelectedImageIndex((prev) =>
-      prev === 0 ? images.length - 1 : prev - 1
+      prev === 0 ? images.length - 1 : prev - 1,
     );
   };
 
   const goNext = () => {
     setSelectedImageIndex((prev) =>
-      prev === images.length - 1 ? 0 : prev + 1
+      prev === images.length - 1 ? 0 : prev + 1,
     );
   };
 
@@ -107,20 +129,17 @@ export default function PopupProductQuickView({ product, onClose }) {
       product_title: product?.title,
       variant_id: selectedVariant,
       quantity: 1,
-      price,
-      currency,
+      currency: currencyCode,
       ui_action: "quick_view_add_to_cart",
       view_context: "quick_view",
     });
 
     await handleAddToCart(selectedVariant, 1);
 
-    // refreshCart is optional, but helps keep drawer checkoutUrl correct
     if (typeof refreshCart === "function") {
       await refreshCart();
     }
 
-    // ✅ open cart explicitly (never toggles closed)
     if (typeof openCart === "function") openCart();
 
     closeWithEvent("post_add_close");
@@ -136,18 +155,16 @@ export default function PopupProductQuickView({ product, onClose }) {
       product_title: product?.title,
       variant_id: selectedVariant,
       quantity: 1,
-      price,
-      currency,
+      currency: currencyCode,
       ui_action: "quick_view_buy_now",
       view_context: "quick_view",
     });
 
     await handleAddToCart(selectedVariant, 1);
 
-    // ✅ Refresh then redirect using freshest checkoutUrl available
     let freshCart = null;
     if (typeof refreshCart === "function") {
-      freshCart = await refreshCart(); // (see tiny shopContext tweak below)
+      freshCart = await refreshCart();
     }
 
     const checkoutUrl = freshCart?.checkoutUrl || cart?.checkoutUrl;
@@ -157,7 +174,6 @@ export default function PopupProductQuickView({ product, onClose }) {
       return;
     }
 
-    // Fallback: open cart so user can checkout from drawer
     if (typeof openCart === "function") openCart();
     closeWithEvent("buy_now_fallback_open_cart");
   };
@@ -272,7 +288,7 @@ export default function PopupProductQuickView({ product, onClose }) {
               {product.title}
             </h1>
 
-            <p className="text-lg text-gray-700 mb-4">${price}</p>
+            <p className="text-lg text-gray-700 mb-4">{priceDisplay}</p>
 
             {variants.length > 0 && (
               <>

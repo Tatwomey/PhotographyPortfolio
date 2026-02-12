@@ -7,11 +7,14 @@ import Head from "next/head";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Cart from "@/components/Cart";
+
 import { NavigationProvider } from "@/contexts/NavigationContext";
-import { ShopProvider } from "/contexts/shopContext";
-import "@/styles/globals.css";
+import { ShopProvider } from "@/contexts/shopContext";
+import { CurrencyProvider } from "@/contexts/CurrencyContext";
 
 import AnalyticsSessionBridge from "@/components/AnalyticsSessionBridge";
+
+import "@/styles/globals.css";
 
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 const KLAVIYO_KEY = process.env.NEXT_PUBLIC_KLAVIYO_API_KEY;
@@ -20,7 +23,9 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const router = useRouter();
   const [hydrated, setHydrated] = useState(false);
 
-  // Klaviyo
+  /* ---------------------------------------
+KLAVIYO SCRIPT
+---------------------------------------- */
   useEffect(() => {
     if (!KLAVIYO_KEY) return;
 
@@ -34,7 +39,9 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
     };
   }, []);
 
-  // SPA Pageviews -> dataLayer (GTM forwards to GA4)
+  /* ---------------------------------------
+GTM PAGE VIEWS
+---------------------------------------- */
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -49,26 +56,28 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
       });
     };
 
-    // initial
     pushPageView(router.asPath);
 
-    // route changes
     router.events.on("routeChangeComplete", pushPageView);
     return () => {
       router.events.off("routeChangeComplete", pushPageView);
     };
   }, [router]);
 
-  // Hydration
+  /* ---------------------------------------
+HYDRATION
+---------------------------------------- */
   useEffect(() => {
     setHydrated(true);
   }, []);
 
-  // Light mode for /shop + /popup (and their slugs)
+  /* ---------------------------------------
+LIGHT MODE ROUTES
+---------------------------------------- */
   useEffect(() => {
     const lightModeRoutes = ["/shop", "/popup"];
     const isLightMode = lightModeRoutes.some((path) =>
-      router.pathname.startsWith(path)
+      router.pathname.startsWith(path),
     );
     document.body.classList.toggle("light-mode", isLightMode);
   }, [router.pathname]);
@@ -77,47 +86,54 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
 
   return (
     <SessionProvider session={session}>
-      {/* user_context -> dataLayer */}
       <AnalyticsSessionBridge />
 
-      <ShopProvider>
-        <Head>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <CurrencyProvider>
+        <ShopProvider>
+          <Head>
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1"
+            />
 
-          {/* GTM only */}
-          {GTM_ID && (
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
+            {GTM_ID && (
+              <script
+                dangerouslySetInnerHTML={{
+                  __html: `
 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id=${GTM_ID}'+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','${GTM_ID}');
 `,
-              }}
-            />
+                }}
+              />
+            )}
+          </Head>
+
+          <NavigationProvider>
+            <Navbar />
+
+            <Component {...pageProps} />
+
+            {/* Global Cart Drawer (controlled internally) */}
+            <Cart />
+
+            <Footer />
+          </NavigationProvider>
+
+          {GTM_ID && (
+            <noscript>
+              <iframe
+                src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+                height="0"
+                width="0"
+                style={{ display: "none", visibility: "hidden" }}
+              />
+            </noscript>
           )}
-        </Head>
-
-        <NavigationProvider>
-          <Navbar />
-          <Component {...pageProps} />
-          <Cart />
-          <Footer />
-        </NavigationProvider>
-
-        {GTM_ID && (
-          <noscript>
-            <iframe
-              src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
-              height="0"
-              width="0"
-              style={{ display: "none", visibility: "hidden" }}
-            />
-          </noscript>
-        )}
-      </ShopProvider>
+        </ShopProvider>
+      </CurrencyProvider>
     </SessionProvider>
   );
 }

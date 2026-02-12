@@ -2,11 +2,28 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 function pushDataLayer(payload) {
   if (typeof window === "undefined") return;
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(payload);
+}
+
+function formatMoney(amount, currencyCode = "USD") {
+  const n = Number.parseFloat(amount ?? "0");
+  const safe = Number.isFinite(n) ? n : 0;
+
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency: currencyCode,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(safe);
+  } catch {
+    return `${currencyCode} ${safe.toFixed(2)}`;
+  }
 }
 
 export default function PopupProductCard({
@@ -16,16 +33,47 @@ export default function PopupProductCard({
   onQuickView,
 }) {
   const [isHovered, setIsHovered] = useState(false);
+  const { currency } = useCurrency();
 
   const hoverImage = product?.altImageSrc || product?.imageSrc;
 
+  /* --------------------------------------------------
+     ✅ PRICE: Support BOTH price and priceV2 shapes
+  --------------------------------------------------- */
+
   const displayPrice = useMemo(() => {
-    const raw = product?.variants?.[0]?.price?.amount ?? "0";
-    const n = Number.parseFloat(raw);
-    return Number.isFinite(n) ? n.toFixed(2) : "0.00";
+    const firstVariant = product?.variants?.[0];
+
+    if (!firstVariant) return formatMoney("0", currency || "USD");
+
+    // Support both shapes:
+    // 1) { price: { amount, currencyCode } }
+    // 2) { priceV2: { amount, currencyCode } }
+
+    const amount =
+      firstVariant?.price?.amount ?? firstVariant?.priceV2?.amount ?? "0";
+
+    const baseCurrency =
+      firstVariant?.price?.currencyCode ??
+      firstVariant?.priceV2?.currencyCode ??
+      "USD";
+
+    return formatMoney(amount, currency || baseCurrency);
+  }, [product, currency]);
+
+  /* --------------------------------------------------
+     ✅ SOLD OUT LOGIC
+  --------------------------------------------------- */
+
+  const isSoldOut = useMemo(() => {
+    const vars = product?.variants || [];
+    if (!vars.length) return false;
+    return vars.every((v) => v?.availableForSale === false);
   }, [product]);
 
-  const isSoldOut = product?.variants?.[0]?.availableForSale === false;
+  /* --------------------------------------------------
+     Analytics
+  --------------------------------------------------- */
 
   const handleCardClick = () => {
     if (onProductClick) onProductClick(product);
@@ -42,7 +90,6 @@ export default function PopupProductCard({
   };
 
   const handleQuickView = (e) => {
-    // Critical: stop the link navigation
     e.preventDefault();
     e.stopPropagation();
 
@@ -59,23 +106,25 @@ export default function PopupProductCard({
     });
   };
 
+  /* --------------------------------------------------
+     Render
+  --------------------------------------------------- */
+
   return (
-    // ✅ Add `group` so group-hover works
     <div
-      className="product-card relative w-full group"
+      className="relative w-full group product-card"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}>
-      {/* Card link */}
       <Link
         href={`/popup/${product.handle}`}
         onClick={handleCardClick}
         className="block cursor-pointer">
-        <div className="product-card-image relative bg-gray-100 overflow-hidden rounded-lg shadow">
+        <div className="relative aspect-[4/5] bg-gray-100 overflow-hidden rounded-lg shadow product-card-image">
           <Image
             src={isHovered ? hoverImage : product.imageSrc}
             alt={product.imageAlt || product.title}
             fill
-            className="transition-transform duration-300 ease-in-out group-hover:scale-105"
+            className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
             priority
           />
 
@@ -85,22 +134,19 @@ export default function PopupProductCard({
             </div>
           )}
 
-          {/* Hover wash that does NOT block clicks */}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition z-10 pointer-events-none" />
         </div>
 
         <div className="mt-2 px-1">
           <h3 className="text-sm font-semibold">{product.title}</h3>
-          <p className="text-sm text-gray-600">${displayPrice}</p>
+          <p className="text-sm text-gray-600">{displayPrice}</p>
         </div>
       </Link>
 
-      {/* ✅ Quick View overlay ABOVE the link, but only the button captures clicks */}
       <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
         <button
           type="button"
           onClick={handleQuickView}
-          // Desktop: appears on hover. Mobile: lightly visible by default.
           className="
 pointer-events-auto
 text-white text-xs font-medium

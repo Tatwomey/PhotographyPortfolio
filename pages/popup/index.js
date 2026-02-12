@@ -21,7 +21,8 @@ const VIEW_MODES = {
 ----------------------------------------- */
 
 const POPUP_PRODUCTS_QUERY = `
-  query PopupProducts {
+  query PopupProducts($country:CountryCode)
+  @inContext(country: $country) {
     collectionByHandle(handle: "popup-shop") {
       title
       products(first: 50) {
@@ -110,23 +111,37 @@ export default function Popup({ products }) {
 
       <PopupHero />
 
-      {/* Desktop view toggle */}
-      <div className="popup-view-toggle">
-        <button
-          aria-label="Gallery view"
-          className={viewMode === VIEW_MODES.GRID_3 ? "active" : ""}
-          onClick={() => setViewMode(VIEW_MODES.GRID_3)}>
-          <span className="icon-grid" />
-          <span className="view-label">Gallery</span>
-        </button>
+      {/* View Toggle */}
+      <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setViewMode(VIEW_MODES.GRID_3)}
+            className={`p-2 rounded ${
+              viewMode === VIEW_MODES.GRID_3 ? "opacity-100" : "opacity-50"
+            }`}>
+            {/* 3 grid icon */}
+            <div className="grid grid-cols-2 gap-[2px] w-4 h-4">
+              <div className="bg-black w-full h-full"></div>
+              <div className="bg-black w-full h-full"></div>
+              <div className="bg-black w-full h-full"></div>
+              <div className="bg-black w-full h-full"></div>
+            </div>
+          </button>
 
-        <button
-          aria-label="Compact view"
-          className={viewMode === VIEW_MODES.GRID_2 ? "active" : ""}
-          onClick={() => setViewMode(VIEW_MODES.GRID_2)}>
-          <span className="icon-list" />
-          <span className="view-label">Compact</span>
-        </button>
+          <button
+            onClick={() => setViewMode(VIEW_MODES.GRID_2)}
+            className={`p-2 rounded ${
+              viewMode === VIEW_MODES.GRID_2 ? "opacity-100" : "opacity-50"
+            }`}>
+            {/* 2 grid icon */}
+            <div className="grid grid-cols-2 gap-[2px] w-4 h-4">
+              <div className="bg-black w-full h-full col-span-2"></div>
+              <div className="bg-black w-full h-full col-span-2"></div>
+            </div>
+          </button>
+        </div>
+
+        <span className="text-sm text-black/60">Gallery</span>
       </div>
 
       {/* Grid */}
@@ -157,8 +172,10 @@ export default function Popup({ products }) {
    Static Props
 ----------------------------------------- */
 
-export async function getStaticProps() {
-  const responseJson = await shopifyFetch(POPUP_PRODUCTS_QUERY);
+export async function getStaticProps({ req }) {
+  const country = req?.headers["x-vercel-ip-country"] || "US";
+
+  const responseJson = await shopifyFetch(POPUP_PRODUCTS_QUERY, { country });
 
   if (!responseJson?.data?.collectionByHandle) {
     return { props: { products: [] }, revalidate: 60 };
@@ -172,19 +189,17 @@ export async function getStaticProps() {
         id: node.id,
         title: node.title,
         handle: node.handle,
-        description: node.description,
-
         imageSrc: images[0] || null,
         altImageSrc: images[1] || null,
         allImages: images,
-
         variants: node.variants.edges.map(({ node }) => ({
           id: node.id,
           title: node.title,
           availableForSale: node.availableForSale,
           price: {
-            amount: node.priceV2.amount,
-            currencyCode: node.priceV2.currencyCode,
+            amount: node.priceV2?.amount || node.price?.amount || "0.00",
+            currencyCode:
+              node.priceV2?.currencyCode || node.price?.currencyCode || "USD",
           },
           image: node.image?.url || null,
           selectedOptions: node.selectedOptions || [],

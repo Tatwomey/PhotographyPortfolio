@@ -11,7 +11,10 @@ import {
 ------------------------------------------------------ */
 
 export async function getStaticPaths() {
-  return await getPopupProductPaths();
+  return {
+    paths: [],
+    fallback: false,
+  };
 }
 
 export async function getStaticProps({ params }) {
