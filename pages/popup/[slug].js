@@ -11,10 +11,8 @@ import {
 ------------------------------------------------------ */
 
 export async function getStaticPaths() {
-  return {
-    paths: [],
-    fallback: false,
-  };
+  // ✅ Restore proper static generation for popup slugs
+  return await getPopupProductPaths();
 }
 
 export async function getStaticProps({ params }) {
@@ -22,7 +20,10 @@ export async function getStaticProps({ params }) {
 
   if (!product) return { notFound: true };
 
-  return { props: { product } };
+  return {
+    props: { product },
+    revalidate: 60,
+  };
 }
 
 /* ------------------------------------------------------
@@ -30,7 +31,6 @@ export async function getStaticProps({ params }) {
 ------------------------------------------------------ */
 
 export default function PopupSlug({ product }) {
-  // Build a unique portfolio analytics ID
   const portfolioId = useMemo(() => {
     const handle = product?.handle || "unknown";
     return `popup_slug:${handle}`;
@@ -43,7 +43,7 @@ export default function PopupSlug({ product }) {
       <ProductSlugLayout
         product={product}
         portfolioId={portfolioId}
-        storeSection="popup" // 👈 Required so ProductSlugLayout enables Swiper + Zoom
+        storeSection="popup"
         breadcrumbLabel="Popup Shop"
         breadcrumbHref="/popup"
         backHref="/popup"

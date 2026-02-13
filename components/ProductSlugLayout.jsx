@@ -1,11 +1,9 @@
-// components/ProductSlugLayout.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useShopContext } from "@/contexts/shopContext";
-import { useCurrency } from "@/contexts/CurrencyContext";
 import TabSection from "@/components/TabSection";
 
 /* -----------------------------
@@ -22,22 +20,6 @@ function pushDataLayer(payload) {
   window.dataLayer.push(payload);
 }
 
-function formatMoney(amount, currencyCode = "USD") {
-  const n = Number.parseFloat(amount ?? "0");
-  const safe = Number.isFinite(n) ? n : 0;
-
-  try {
-    return new Intl.NumberFormat(undefined, {
-      style: "currency",
-      currency: currencyCode,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(safe);
-  } catch {
-    return `${currencyCode} ${safe.toFixed(2)}`;
-  }
-}
-
 export default function ProductSlugLayout({
   product,
   portfolioId,
@@ -47,25 +29,29 @@ export default function ProductSlugLayout({
   breadcrumbLabel = "Shop",
   breadcrumbHref = "/shop",
 }) {
-  const { handleAddToCart, refreshCart, openCart, cart } = useShopContext();
-  const { currency } = useCurrency();
+  const { handleAddToCart } = useShopContext();
   const router = useRouter();
   const swiperRef = useRef(null);
 
+  if (!product || !product.variants || !product.images) {
+    return <div className="text-center py-20 text-lg">Loading product…</div>;
+  }
+
   const isPopup = storeSection === "popup";
 
+  /* -----------------------------
+Portfolio ID
+------------------------------ */
   const computedPortfolioId = useMemo(() => {
     if (portfolioId) return portfolioId;
-
-    const handle = product?.handle || "unknown";
-    return `${storeSection}_slug:${handle}`;
-  }, [portfolioId, product?.handle, storeSection]);
+    return `${storeSection}_slug:${product.handle}`;
+  }, [portfolioId, product.handle, storeSection]);
 
   /* -----------------------------
 Variant logic
 ------------------------------ */
   const colorOptions = useMemo(() => {
-    const vals = product?.variants
+    const vals = product.variants
       .map(
         (v) =>
           v.selectedOptions?.find((o) => o.name.toLowerCase() === "color")
@@ -73,16 +59,14 @@ Variant logic
       )
       .filter(Boolean);
     return Array.from(new Set(vals));
-  }, [product?.variants]);
+  }, [product.variants]);
 
   const defaultVariant = useMemo(() => {
-    const handle = (product?.handle || "").toLowerCase();
+    const handle = product.handle.toLowerCase();
     const wantsMono = handle.includes("mono") || handle.includes("bw");
+
     const targetColor = wantsMono ? "monochrome" : "regular";
 
-    if (!product || !product.variants || !product.images) {
-      return <div className="text-center py-20 text-lg">Loading product…</div>;
-    }
     return (
       product.variants.find((v) =>
         v.selectedOptions?.some(
@@ -92,7 +76,7 @@ Variant logic
         ),
       ) || product.variants[0]
     );
-  }, [product?.handle, product?.variants]);
+  }, [product]);
 
   const defaultColor =
     defaultVariant.selectedOptions?.find(
@@ -106,39 +90,30 @@ Variant logic
 
   const variantsForColor = useMemo(() => {
     if (!selectedColor) return product.variants;
-    return product?.variants.filter((v) =>
+    return product.variants.filter((v) =>
       v.selectedOptions?.some(
         (o) => o.name.toLowerCase() === "color" && o.value === selectedColor,
       ),
     );
-  }, [product?.variants, selectedColor]);
+  }, [product.variants, selectedColor]);
 
   useEffect(() => {
     const v = variantsForColor[0];
     if (!v) return;
     setSelectedVariant(v);
     setCurrentImageIdx(0);
-    swiperRef.current?.slideToLoop?.(0);
-  }, [selectedColor, variantsForColor]);
+    swiperRef.current?.slideToLoop(0);
+  }, [selectedColor]);
 
-  // ✅ Support both shapes
-  const rawAmount =
-    selectedVariant?.price?.amount ?? selectedVariant?.priceV2?.amount ?? "0";
+  const price = Number(selectedVariant?.priceV2?.amount || 0).toFixed(2);
 
-  const rawCode =
-    currency ||
-    selectedVariant?.price?.currencyCode ||
-    selectedVariant?.priceV2?.currencyCode ||
-    "USD";
-
-  const priceDisplay = useMemo(() => {
-    return formatMoney(rawAmount, rawCode);
-  }, [rawAmount, rawCode]);
-
-  const isSoldOut = selectedVariant?.availableForSale === false;
+  const isSoldOut =
+    selectedVariant?.availableForSale === false ||
+    product?.availableForSale === false;
 
   /* -----------------------------
 Swiper animation config
+A1 / A2 Soft (Best practice)
 ------------------------------ */
   const creativeEffect = {
     prev: {
@@ -158,16 +133,19 @@ Swiper animation config
     setTimeout(() => setZoomPulse(false), 450);
   };
 
+  /* -----------------------------
+Handlers
+------------------------------ */
   const handleArrowNav = (dir) => {
     triggerZoomPulse();
-    if (dir === "prev") swiperRef.current?.slidePrev?.();
-    if (dir === "next") swiperRef.current?.slideNext?.();
+    if (dir === "prev") swiperRef.current?.slidePrev();
+    if (dir === "next") swiperRef.current?.slideNext();
   };
 
   const handleThumbnailClick = (idx) => {
     triggerZoomPulse();
     setCurrentImageIdx(idx);
-    swiperRef.current?.slideToLoop?.(idx);
+    swiperRef.current?.slideToLoop(idx);
   };
 
   const handleSlideChange = (swiper) => {
@@ -175,22 +153,13 @@ Swiper animation config
   };
 
   const handleBuyNow = async () => {
-    if (!selectedVariant?.id || isSoldOut) return;
-
     await handleAddToCart(selectedVariant.id, 1);
-
-    let fresh = null;
-    if (typeof refreshCart === "function") fresh = await refreshCart();
-
-    const checkoutUrl = fresh?.checkoutUrl || cart?.checkoutUrl;
-    if (checkoutUrl) {
-      window.location.href = checkoutUrl;
-      return;
-    }
-
-    if (typeof openCart === "function") openCart();
+    router.push("/checkout");
   };
 
+  /* ============================================================
+RENDER
+============================================================ */
   return (
     <main className="bg-white text-black px-4 py-12 container mx-auto">
       <div className="flex flex-col lg:flex-row gap-10 items-start">
@@ -225,18 +194,15 @@ Swiper animation config
                 ))}
               </Swiper>
 
+              {/* Arrows */}
               <button
                 className="modal-arrow left"
-                onClick={() => handleArrowNav("prev")}
-                type="button"
-                aria-label="Previous image">
+                onClick={() => handleArrowNav("prev")}>
                 <ChevronLeft />
               </button>
               <button
                 className="modal-arrow right"
-                onClick={() => handleArrowNav("next")}
-                type="button"
-                aria-label="Next image">
+                onClick={() => handleArrowNav("next")}>
                 <ChevronRight />
               </button>
             </div>
@@ -251,6 +217,7 @@ Swiper animation config
             </div>
           )}
 
+          {/* Thumbnails */}
           {product.images.length > 1 && (
             <div className="flex gap-3 mt-4 overflow-x-auto">
               {product.images.map((img, idx) => (
@@ -259,8 +226,7 @@ Swiper animation config
                   onClick={() => handleThumbnailClick(idx)}
                   className={`border rounded ${
                     currentImageIdx === idx ? "border-black" : "border-gray-300"
-                  }`}
-                  type="button">
+                  }`}>
                   <Image src={img.src} alt="" width={80} height={100} />
                 </button>
               ))}
@@ -290,8 +256,9 @@ Swiper animation config
             </p>
           )}
 
-          <p className="text-xl font-semibold mb-4">{priceDisplay}</p>
+          <p className="text-xl font-semibold mb-4">${price}</p>
 
+          {/* Color Swatches */}
           {colorOptions.length > 1 && (
             <div className="mb-4">
               <label className="block mb-1">Color</label>
@@ -311,14 +278,13 @@ Swiper animation config
                           ? "#000"
                           : "#e5e5e5",
                     }}
-                    type="button"
-                    aria-label={`Select ${color}`}
                   />
                 ))}
               </div>
             </div>
           )}
 
+          {/* Variant Dropdown */}
           {variantsForColor.length > 1 && (
             <div className="mb-4">
               <label className="block mb-1">Edition / Size</label>
@@ -326,8 +292,7 @@ Swiper animation config
                 value={selectedVariant.id}
                 onChange={(e) =>
                   setSelectedVariant(
-                    variantsForColor.find((v) => v.id === e.target.value) ||
-                      variantsForColor[0],
+                    variantsForColor.find((v) => v.id === e.target.value),
                   )
                 }
                 className="w-full border rounded p-2">
@@ -340,24 +305,23 @@ Swiper animation config
             </div>
           )}
 
+          {/* CTA */}
           <div className="space-y-3 mb-6">
             {!isSoldOut ? (
               <>
                 <button
                   className="w-full bg-black text-white py-3 rounded"
-                  onClick={() => handleAddToCart(selectedVariant.id, 1)}
-                  type="button">
+                  onClick={() => handleAddToCart(selectedVariant.id, 1)}>
                   Add to Cart
                 </button>
                 <button
                   className="w-full bg-black text-white py-3 rounded hover:bg-gray-800"
-                  onClick={handleBuyNow}
-                  type="button">
+                  onClick={handleBuyNow}>
                   Buy It Now
                 </button>
               </>
             ) : (
-              <button className="w-full border py-3 rounded" type="button">
+              <button className="w-full border py-3 rounded">
                 Notify Me When Back in Stock
               </button>
             )}
