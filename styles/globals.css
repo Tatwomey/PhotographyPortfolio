@@ -55,6 +55,7 @@ body {
   display: flex;
   flex-direction: column;
   cursor: default;
+  overflow-x: hidden;
 }
 
 /* ✅ Tab underline reset */
