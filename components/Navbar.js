@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
-import { FaInstagram, FaLinkedin } from "react-icons/fa";
+import { FaInstagram } from "react-icons/fa";
 import { HiOutlineUserCircle } from "react-icons/hi";
 import { useRouter } from "next/router";
 import CartIcon from "./CartIcon";
@@ -34,7 +34,6 @@ const Navbar = () => {
 
   const router = useRouter();
   const { data: session, status } = useSession();
-
   const { currency } = useCurrency();
 
   const isLightModePage =
@@ -56,7 +55,7 @@ const Navbar = () => {
     session?.user?.email?.split?.("@")?.[0] ||
     "there";
 
-  // Avatar menu state (works for desktop + mobile)
+  // Avatar menu state
   const [clientMenuOpen, setClientMenuOpen] = useState(false);
   const clientMenuRef = useRef(null);
 
@@ -105,13 +104,8 @@ const Navbar = () => {
   };
 
   const handleSignOut = async () => {
-    // analytics cleanup
     clearGAUserContextAndTrackLogout({ userType: "band" });
-
-    // close menu immediately for snappy UX
     setClientMenuOpen(false);
-
-    // sign out + return home
     await signOut({ callbackUrl: "/" });
   };
 
@@ -158,6 +152,7 @@ const Navbar = () => {
             </Link>
           ))}
 
+          {/* Social */}
           <div className="flex space-x-2 items-center">
             <a
               href="https://www.instagram.com/trevortwomey/"
@@ -170,23 +165,12 @@ const Navbar = () => {
                 }`}
               />
             </a>
-            <a
-              href="https://www.linkedin.com/in/trevor-twomey"
-              target="_blank"
-              rel="noopener noreferrer">
-              <FaLinkedin
-                size={20}
-                className={`cursor-pointer ${
-                  isLightModePage ? "text-black" : "text-white"
-                }`}
-              />
-            </a>
           </div>
         </div>
 
-        {/* Right-side icons (Avatar + Separator + Cart + Mobile Menu Toggle) */}
+        {/* Right-side icons */}
         <div className="flex items-center gap-3">
-          {/* Client Avatar (GATED ONLY) */}
+          {/* Client Avatar */}
           {showClientAvatar && (
             <div className="relative" ref={clientMenuRef}>
               <button
@@ -205,7 +189,6 @@ const Navbar = () => {
                   }`}
                 />
 
-                {/* Desktop hover tooltip (subtle) */}
                 <div
                   className={`hidden md:block absolute right-0 top-full mt-2 whitespace-nowrap rounded px-2 py-1 text-xs shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-150 delay-100 ${
                     isLightModePage
@@ -216,7 +199,6 @@ const Navbar = () => {
                 </div>
               </button>
 
-              {/* Click/tap menu (desktop + mobile) */}
               {clientMenuOpen && (
                 <div
                   className={`absolute right-0 top-full mt-2 w-52 rounded-lg shadow-xl border ${
@@ -248,7 +230,7 @@ const Navbar = () => {
             </div>
           )}
 
-          {/* Tiny separator (desktop-only for a clean look; remove `hidden md:block` if you want it on mobile too) */}
+          {/* Separator */}
           {showClientAvatar && (
             <div
               className={`hidden md:block h-4 w-px ${
@@ -256,15 +238,13 @@ const Navbar = () => {
               }`}
             />
           )}
-          {/* Commerce Controls (Shop / Popup only) */}
+
+          {/* Commerce Controls */}
           {showCommerceControls && typeof window !== "undefined" && (
             <div className="hidden md:flex items-center gap-4">
-              {/* Only show currency switcher if NOT USD */}
               {currency !== "USD" && (
                 <>
                   <CurrencySwitcher isDarkMode={!isLightModePage} />
-
-                  {/* Separator */}
                   <div
                     className={`h-4 w-px ${
                       isLightModePage ? "bg-black/20" : "bg-white/20"
@@ -273,7 +253,6 @@ const Navbar = () => {
                 </>
               )}
 
-              {/* Cart */}
               <CartIcon isDarkMode={!isLightModePage} />
             </div>
           )}
@@ -323,7 +302,6 @@ const Navbar = () => {
               <Link href="/shop#shop">Shop</Link>
             </li>
 
-            {/* Mobile-only sign out inside hamburger menu when gated */}
             {showClientAvatar && (
               <li
                 className={`pt-2 border-t ${

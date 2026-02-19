@@ -15,18 +15,18 @@ const Footer = () => {
     <footer
       className={`py-4 mt-12 text-center transition-colors duration-300 ${
         isEcommercePage ? "bg-white text-black" : "bg-black text-white"
-      }`}
-    >
-      &copy; 2025 Trevor Twomey Photography. All Rights Reserved. | Site Design by{" "}
+      }`}>
+      &copy; 2026 Trevor Twomey Photography. All Rights Reserved. | Site Design
+      by{" "}
       <a
         href="mailto:trevor.a.twomey@gmail.com"
         className={
-          isEcommercePage ? "text-black hover:text-gray-600" : "text-white hover:text-gray-300"
-        }
-      >
+          isEcommercePage
+            ? "text-black hover:text-gray-600"
+            : "text-white hover:text-gray-300"
+        }>
         Trevor Twomey
       </a>
-
       {isEcommercePage && (
         <div className="mt-2">
           <Link href="/shop/terms" className="mx-2 hover:underline">
