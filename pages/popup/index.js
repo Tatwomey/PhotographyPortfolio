@@ -1,215 +1,195 @@
 // pages/popup/index.js
-
-import React, { useMemo, useState } from "react";
+import React, { useRef, useState, useMemo, useEffect } from "react";
 import Head from "next/head";
 import PopupHero from "@/components/PopupHero";
 import PopupProductCard from "@/components/PopupProductCard";
 import PopupProductQuickView from "@/components/PopupProductQuickView";
-import { shopifyFetch } from "@/lib/shopify";
+import { useSmoothScroll } from "@/hooks/useSmoothScroll";
+import { useNavigation } from "@/contexts/NavigationContext"; // ✅ import useNavigation
 
-/* ----------------------------------------
-   View modes (single source of truth)
------------------------------------------ */
-
-const VIEW_MODES = {
-  GRID_3: "grid-3",
-  GRID_2: "grid-2",
-};
-
-/* ----------------------------------------
-   GraphQL (FIXED for Shopify 2023-10)
------------------------------------------ */
-
-const POPUP_PRODUCTS_QUERY = `
-  query PopupProducts($country:CountryCode)
-  @inContext(country: $country) {
-    collectionByHandle(handle: "popup-shop") {
-      title
-      products(first: 50) {
-        edges {
-          node {
-            id
-            title
-            handle
-            description
-            images(first: 10) {
-              edges {
-                node {
-                  url
-                  altText
-                }
-              }
-            }
-            variants(first: 10) {
-              edges {
-                node {
-                  id
-                  title
-                  availableForSale
-                  priceV2 {
-                    amount
-                    currencyCode
-                  }
-                  image {
-                    url
-                  }
-                  selectedOptions {
-                    name
-                    value
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
-/* ----------------------------------------
-   Normalize for Quick View
------------------------------------------ */
-
-function normalizeForQuickView(product) {
+function normalizeForQuickView(p) {
   const images =
-    Array.isArray(product?.allImages) && product.allImages.length
-      ? product.allImages.map((url) => ({ src: url }))
-      : product?.imageSrc
-        ? [{ src: product.imageSrc }]
-        : [];
+    Array.isArray(p?.allImages) && p.allImages.length
+      ? p.allImages.map((src) => ({ src }))
+      : [p?.imageSrc].filter(Boolean).map((src) => ({ src }));
+
+  const variants = Array.isArray(p?.variantOptions)
+    ? p.variantOptions.map((v) => ({
+        id: v.id,
+        title: v.title,
+        price: v?.price?.amount ?? "0.00",
+        availableForSale: v?.available ?? true,
+        selectedOptions: v?.options ?? [],
+        image: v?.image ?? null,
+      }))
+    : [];
 
   return {
-    ...product,
+    title: p?.title,
+    handle: p?.handle,
+    description: p?.description,
     images,
+    variants,
   };
 }
 
-/* ----------------------------------------
-   Page
------------------------------------------ */
+export default function PopupShop({ products }) {
+  const safeProducts = Array.isArray(products) ? products : [];
+  const shopPageRef = useRef(null);
 
-export default function Popup({ products }) {
   const [quickViewProduct, setQuickViewProduct] = useState(null);
-  const [viewMode, setViewMode] = useState(VIEW_MODES.GRID_3);
 
-  const normalizedProducts = useMemo(
-    () => products.map(normalizeForQuickView),
-    [products],
-  );
+  useSmoothScroll("#popup", shopPageRef);
 
-  const gridClassName =
-    viewMode === VIEW_MODES.GRID_2
-      ? "popup-grid popup-grid--2"
-      : "popup-grid popup-grid--3";
+  const { lastNavigatedPage } = useNavigation(); // ✅ access context
+
+  useEffect(() => {
+    if (lastNavigatedPage === "/popup") {
+      const element = shopPageRef.current;
+      if (element) {
+        window.scroll({
+          top: element.getBoundingClientRect().top + window.scrollY,
+          behavior: "smooth",
+        });
+      }
+    }
+  }, [lastNavigatedPage]);
+
+  const normalizedQuickViewProduct = useMemo(() => {
+    if (!quickViewProduct) return null;
+    return normalizeForQuickView(quickViewProduct);
+  }, [quickViewProduct]);
 
   return (
-    <>
+    <div className="bg-white text-black w-full min-h-screen transition-colors duration-300">
       <Head>
-        <title>Popup Shop | Trevor Twomey</title>
+        <title>Popup Shop</title>
+        <meta name="description" content="Shop exclusive popup items" />
       </Head>
 
       <PopupHero />
 
-      {/* View Toggle */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setViewMode(VIEW_MODES.GRID_3)}
-            className={`p-2 rounded ${
-              viewMode === VIEW_MODES.GRID_3 ? "opacity-100" : "opacity-50"
-            }`}>
-            {/* 3 grid icon */}
-            <div className="grid grid-cols-2 gap-[2px] w-4 h-4">
-              <div className="bg-black w-full h-full"></div>
-              <div className="bg-black w-full h-full"></div>
-              <div className="bg-black w-full h-full"></div>
-              <div className="bg-black w-full h-full"></div>
-            </div>
-          </button>
-
-          <button
-            onClick={() => setViewMode(VIEW_MODES.GRID_2)}
-            className={`p-2 rounded ${
-              viewMode === VIEW_MODES.GRID_2 ? "opacity-100" : "opacity-50"
-            }`}>
-            {/* 2 grid icon */}
-            <div className="grid grid-cols-2 gap-[2px] w-4 h-4">
-              <div className="bg-black w-full h-full col-span-2"></div>
-              <div className="bg-black w-full h-full col-span-2"></div>
-            </div>
-          </button>
-        </div>
-
-        <span className="text-sm text-black/60">Gallery</span>
-      </div>
-
-      {/* Grid */}
-      <section className="popup-grid-wrapper">
-        <div className={gridClassName}>
-          {normalizedProducts.map((product) => (
+      <main
+        id="popup"
+        ref={shopPageRef}
+        className="max-w-[1440px] mx-auto px-4 py-16 bg-white text-black transition-colors duration-300">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
+          {safeProducts.map((product) => (
             <PopupProductCard
               key={product.id}
               product={product}
-              onQuickView={() => setQuickViewProduct(product)}
+              portfolioId="popup_index"
+              onQuickView={(p) => setQuickViewProduct(p)}
             />
           ))}
         </div>
-      </section>
+      </main>
 
-      {/* Quick View */}
-      {quickViewProduct && (
+      {normalizedQuickViewProduct && (
         <PopupProductQuickView
-          product={quickViewProduct}
+          product={normalizedQuickViewProduct}
           onClose={() => setQuickViewProduct(null)}
         />
       )}
-    </>
+    </div>
   );
 }
 
-/* ----------------------------------------
-   Static Props
------------------------------------------ */
+export async function getStaticProps() {
+  const endpoint = `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2023-10/graphql.json`;
+  const token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
-export async function getStaticProps({ req }) {
-  const country = req?.headers["x-vercel-ip-country"] || "US";
+  const graphqlQuery = {
+    query: `
+query getPopupProducts {
+collectionByHandle(handle: "popup-shop") {
+products(first: 100) {
+edges {
+node {
+id
+title
+handle
+description
+availableForSale
+images(first: 10) {
+edges {
+node {
+src
+altText
+}
+}
+}
+variants(first: 10) {
+edges {
+node {
+id
+title
+availableForSale
+selectedOptions {
+name
+value
+}
+priceV2 {
+amount
+currencyCode
+}
+}
+}
+}
+}
+}
+}
+}
+}
+`,
+  };
 
-  const responseJson = await shopifyFetch(POPUP_PRODUCTS_QUERY, { country });
+  try {
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Storefront-Access-Token": token,
+      },
+      body: JSON.stringify(graphqlQuery),
+    });
 
-  if (!responseJson?.data?.collectionByHandle) {
-    return { props: { products: [] }, revalidate: 60 };
-  }
+    if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
 
-  const products = responseJson.data.collectionByHandle.products.edges.map(
-    ({ node }) => {
-      const images = node.images?.edges?.map(({ node }) => node.url) || [];
+    const responseJson = await res.json();
+    const edges = responseJson?.data?.collectionByHandle?.products?.edges || [];
+
+    const products = edges.map(({ node }) => {
+      const variants = node?.variants?.edges?.map((v) => v.node) || [];
+      const images = node?.images?.edges?.map((e) => e.node) || [];
 
       return {
         id: node.id,
         title: node.title,
         handle: node.handle,
-        imageSrc: images[0] || null,
-        altImageSrc: images[1] || null,
-        allImages: images,
-        variants: node.variants.edges.map(({ node }) => ({
-          id: node.id,
-          title: node.title,
-          availableForSale: node.availableForSale,
-          price: {
-            amount: node.priceV2?.amount || node.price?.amount || "0.00",
-            currencyCode:
-              node.priceV2?.currencyCode || node.price?.currencyCode || "USD",
-          },
-          image: node.image?.url || null,
-          selectedOptions: node.selectedOptions || [],
+        description: node.description,
+        availableForSale: node.availableForSale,
+
+        imageSrc: images[0]?.src || "/fallback-image.jpg",
+        altImageSrc: images[1]?.src || null,
+        imageAlt: images[0]?.altText || node.title,
+
+        allImages: images.map((img) => img.src),
+
+        variantId: variants[0]?.id || null,
+        variantOptions: variants.map((v) => ({
+          id: v.id,
+          title: v.title,
+          price: v.priceV2,
+          available: v.availableForSale,
+          options: v.selectedOptions,
         })),
       };
-    },
-  );
+    });
 
-  return {
-    props: { products },
-    revalidate: 60,
-  };
+    return { props: { products }, revalidate: 60 };
+  } catch (error) {
+    console.error("Error fetching popup products:", error);
+    return { props: { products: [] }, revalidate: 60 };
+  }
 }

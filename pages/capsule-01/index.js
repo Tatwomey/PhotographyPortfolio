@@ -1,17 +1,65 @@
+import { useEffect } from "react";
 import Head from "next/head";
-import Image from "next/image";
 
 export default function CapsuleLanding() {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    window.dataLayer = window.dataLayer || [];
+
+    const handleKlaviyoFormEvent = (event) => {
+      const detail = event?.detail || {};
+      const eventType = detail?.type;
+
+      if (eventType !== "submit") return;
+
+      const formId = detail?.formId || detail?.formID || "SyxgXY";
+      const metaData = detail?.metaData || {};
+
+      const hasEmail = Boolean(metaData?.$email);
+      const hasPhone = Boolean(
+        metaData?.$phone_number || metaData?.phone_number,
+      );
+
+      window.dataLayer.push({
+        event: "generate_lead",
+        lead_type: "capsule_waitlist",
+        page_type: "capsule_01",
+        page_path: window.location.pathname,
+        page_location: window.location.href,
+        form_id: formId,
+        email_opt_in: hasEmail,
+        sms_opt_in: hasPhone,
+      });
+
+      console.log("[GTM] generate_lead pushed", {
+        event: "generate_lead",
+        lead_type: "capsule_waitlist",
+        page_type: "capsule_01",
+        page_path: window.location.pathname,
+        page_location: window.location.href,
+        form_id: formId,
+        email_opt_in: hasEmail,
+        sms_opt_in: hasPhone,
+      });
+    };
+
+    window.addEventListener("klaviyoForms", handleKlaviyoFormEvent);
+
+    return () => {
+      window.removeEventListener("klaviyoForms", handleKlaviyoFormEvent);
+    };
+  }, []);
+
   return (
     <>
       <Head>
         <title>Capsule 01 — Limited Edition Prints</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <script
-          async
-          type="text/javascript"
-          src="https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=RagX9z"
-        ></script>
+        <meta
+          name="description"
+          content="Join the drop list for early access to signed, limited-edition Trevor Twomey prints."
+        />
       </Head>
 
       <main className="bg-white pt-[160px] sm:pt-[180px] px-4 pb-12 text-center flex flex-col items-center min-h-screen">
@@ -19,9 +67,10 @@ export default function CapsuleLanding() {
           Get notified when signed, limited-edition prints drop.
         </h1>
 
-        <p className="text-sm text-gray-400 italic mt-2 mb-6">Preview the drop.</p>
+        <p className="text-sm text-gray-400 italic mt-2 mb-6">
+          Preview the drop.
+        </p>
 
-        {/* 🔥 Vertical Sliver Grid (not clickable) */}
         <div className="flex justify-center mb-8 overflow-x-auto no-scrollbar w-full">
           {[1, 2, 3, 4, 5].map((num) => (
             <div
@@ -33,20 +82,20 @@ export default function CapsuleLanding() {
                 backgroundPosition: "center",
               }}
               title={`Sliver ${num}`}
+              aria-hidden="true"
             />
           ))}
         </div>
 
         <p className="text-base text-gray-700 max-w-xl mb-6">
-          Join the drop list to unlock early access—and a shot at a signed 16×20″ print from the vault.
+          Join the drop list to unlock early access—and a shot at a signed
+          16×20″ print from the vault.
         </p>
 
-        {/* 📬 Klaviyo form embed */}
         <div className="w-full max-w-md mb-10">
           <div className="klaviyo-form-SyxgXY"></div>
         </div>
 
-        {/* Legal/collector copy (part of Klaviyo form or optional footer) */}
         <p className="text-xs text-gray-500 mt-8 max-w-md leading-relaxed">
           Msg &amp; data rates may apply. Unsubscribe anytime.
         </p>
