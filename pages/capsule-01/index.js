@@ -18,7 +18,7 @@ export default function CapsuleLanding() {
 
       const hasEmail = Boolean(metaData?.$email);
       const hasPhone = Boolean(
-        metaData?.$phone_number || metaData?.phone_number,
+        metaData?.$phone_number || metaData?.phone_number
       );
 
       window.dataLayer.push({

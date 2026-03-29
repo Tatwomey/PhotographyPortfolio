@@ -1,4 +1,3 @@
-// components/PopupProductQuickView.jsx
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState, useCallback } from "react";
@@ -10,6 +9,7 @@ function pushDataLayer(payload) {
   if (typeof window === "undefined") return;
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(payload);
+  console.log(`[GTM] ${payload.event} pushed`, payload);
 }
 
 function formatMoney(amount, currencyCode = "USD") {
@@ -19,46 +19,71 @@ function formatMoney(amount, currencyCode = "USD") {
   try {
     return new Intl.NumberFormat(undefined, {
       style: "currency",
-      currency: currencyCode,
+      currency: currencyCode || "USD",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(safe);
   } catch {
-    return `${currencyCode} ${safe.toFixed(2)}`;
+    return `${currencyCode || "USD"} ${safe.toFixed(2)}`;
   }
+}
+
+function buildAnalyticsItem({ product, selectedVariantObj, quantity = 1 }) {
+  const rawPrice =
+    selectedVariantObj?.price?.amount ??
+    selectedVariantObj?.priceV2?.amount ??
+    "0";
+
+  return {
+    item_id: String(
+      selectedVariantObj?.id ||
+        product?.id ||
+        product?.handle ||
+        product?.title ||
+        "",
+    ),
+    item_name: product?.title || "",
+    item_brand: "Trevor Twomey Photo",
+    item_category: "Fine Art Print",
+    item_variant: selectedVariantObj?.title || "",
+    price: Number(rawPrice || 0),
+    quantity: Number(quantity || 1),
+  };
 }
 
 export default function PopupProductQuickView({ product, onClose }) {
   const { cart, loading, handleAddToCart, refreshCart, openCart } =
     useShopContext();
-
   const { currency } = useCurrency();
+
+  const safeProduct = product || {};
+  const images = Array.isArray(safeProduct.images) ? safeProduct.images : [];
+  const variants = Array.isArray(safeProduct.variants)
+    ? safeProduct.variants
+    : [];
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState(
-    product?.variants?.[0]?.id || "",
+    variants?.[0]?.id || "",
   );
-
-  const images = product?.images || [];
-  const variants = product?.variants || [];
 
   useEffect(() => {
     document.body.classList.add("modal-open");
     setSelectedImageIndex(0);
-    setSelectedVariant(product?.variants?.[0]?.id || "");
+    setSelectedVariant(variants?.[0]?.id || "");
 
     pushDataLayer({
       event: "quick_view_open",
       store_section: "popup",
-      product_id: product?.handle,
-      product_title: product?.title,
+      product_id: safeProduct?.handle,
+      product_title: safeProduct?.title,
       view_context: "quick_view",
     });
 
     return () => {
       document.body.classList.remove("modal-open");
     };
-  }, [product]);
+  }, [safeProduct?.handle, variants]);
 
   const selectedVariantObj = useMemo(() => {
     return (
@@ -66,41 +91,46 @@ export default function PopupProductQuickView({ product, onClose }) {
     );
   }, [variants, selectedVariant]);
 
-  // ✅ FIX: your variant price is { amount, currencyCode }
-  const priceDisplay = useMemo(() => {
-    const raw =
-      selectedVariantObj?.price?.amount ?? variants?.[0]?.price?.amount ?? "0";
-    const code =
-      currency ||
-      selectedVariantObj?.price?.currencyCode ||
-      variants?.[0]?.price?.currencyCode ||
-      "USD";
-    return formatMoney(raw, code);
-  }, [selectedVariantObj, variants, currency]);
+  const priceAmount = useMemo(() => {
+    return (
+      selectedVariantObj?.price?.amount ??
+      selectedVariantObj?.priceV2?.amount ??
+      variants?.[0]?.price?.amount ??
+      variants?.[0]?.priceV2?.amount ??
+      "0"
+    );
+  }, [selectedVariantObj, variants]);
 
   const currencyCode =
     currency ||
     selectedVariantObj?.price?.currencyCode ||
+    selectedVariantObj?.priceV2?.currencyCode ||
     variants?.[0]?.price?.currencyCode ||
+    variants?.[0]?.priceV2?.currencyCode ||
     "USD";
+
+  const priceDisplay = useMemo(() => {
+    return formatMoney(priceAmount, currencyCode);
+  }, [priceAmount, currencyCode]);
 
   const isSoldOut = selectedVariantObj?.availableForSale === false;
 
-  if (!product || !images.length) return null;
+  if (!safeProduct || !images.length) return null;
 
   const closeWithEvent = useCallback(
     (ui_action) => {
       pushDataLayer({
         event: "quick_view_close",
         store_section: "popup",
-        product_id: product?.handle,
-        product_title: product?.title,
+        product_id: safeProduct?.handle,
+        product_title: safeProduct?.title,
         ui_action,
         view_context: "quick_view",
       });
-      onClose();
+
+      if (typeof onClose === "function") onClose();
     },
-    [onClose, product],
+    [onClose, safeProduct],
   );
 
   const closeIfOverlay = (e) => {
@@ -120,21 +150,25 @@ export default function PopupProductQuickView({ product, onClose }) {
   };
 
   const handleAdd = async () => {
-    if (!selectedVariant || isSoldOut || loading) return;
+    if (!selectedVariant || isSoldOut || loading || !selectedVariantObj) return;
 
-    pushDataLayer({
-      event: "add_to_cart",
-      store_section: "popup",
-      product_id: product?.handle,
-      product_title: product?.title,
-      variant_id: selectedVariant,
+    const item = buildAnalyticsItem({
+      product: safeProduct,
+      selectedVariantObj,
       quantity: 1,
-      currency: currencyCode,
-      ui_action: "quick_view_add_to_cart",
-      view_context: "quick_view",
     });
 
     await handleAddToCart(selectedVariant, 1);
+
+    pushDataLayer({
+      event: "add_to_cart",
+      currency: currencyCode,
+      value: Number(priceAmount || 0),
+      items: [item],
+      page_type: "popup_quick_view",
+      page_path: window.location.pathname,
+      page_location: window.location.href,
+    });
 
     if (typeof refreshCart === "function") {
       await refreshCart();
@@ -146,26 +180,40 @@ export default function PopupProductQuickView({ product, onClose }) {
   };
 
   const handleBuyNow = async () => {
-    if (!selectedVariant || isSoldOut || loading) return;
+    if (!selectedVariant || isSoldOut || loading || !selectedVariantObj) return;
 
-    pushDataLayer({
-      event: "begin_checkout",
-      store_section: "popup",
-      product_id: product?.handle,
-      product_title: product?.title,
-      variant_id: selectedVariant,
+    const item = buildAnalyticsItem({
+      product: safeProduct,
+      selectedVariantObj,
       quantity: 1,
-      currency: currencyCode,
-      ui_action: "quick_view_buy_now",
-      view_context: "quick_view",
     });
 
     await handleAddToCart(selectedVariant, 1);
+
+    pushDataLayer({
+      event: "add_to_cart",
+      currency: currencyCode,
+      value: Number(priceAmount || 0),
+      items: [item],
+      page_type: "popup_quick_view",
+      page_path: window.location.pathname,
+      page_location: window.location.href,
+    });
 
     let freshCart = null;
     if (typeof refreshCart === "function") {
       freshCart = await refreshCart();
     }
+
+    pushDataLayer({
+      event: "begin_checkout",
+      currency: currencyCode,
+      value: Number(priceAmount || 0),
+      items: [item],
+      page_type: "checkout",
+      page_path: window.location.pathname,
+      page_location: window.location.href,
+    });
 
     const checkoutUrl = freshCart?.checkoutUrl || cart?.checkoutUrl;
 
@@ -184,7 +232,6 @@ export default function PopupProductQuickView({ product, onClose }) {
       onClick={closeIfOverlay}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="bg-white w-full max-w-3xl max-h-[95vh] overflow-y-auto rounded-lg shadow-xl flex flex-col md:flex-row relative">
-        {/* Close */}
         <button
           onClick={() => closeWithEvent("close_button")}
           className="absolute top-3 right-3 bg-white p-1 rounded-full shadow z-10"
@@ -193,12 +240,11 @@ export default function PopupProductQuickView({ product, onClose }) {
           <X className="w-6 h-6 text-black" />
         </button>
 
-        {/* Image Section */}
         <div className="w-full md:w-1/2 flex flex-col items-center p-4">
           <div className="relative w-full aspect-[4/5] max-w-[480px] bg-white flex items-center justify-center rounded">
             <Image
               src={images[selectedImageIndex]?.src}
-              alt={product.title}
+              alt={safeProduct.title}
               fill
               className="object-contain rounded"
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -215,7 +261,7 @@ export default function PopupProductQuickView({ product, onClose }) {
                     pushDataLayer({
                       event: "quick_view_image_nav",
                       store_section: "popup",
-                      product_id: product?.handle,
+                      product_id: safeProduct?.handle,
                       ui_action: "prev_image",
                       view_context: "quick_view",
                     });
@@ -234,7 +280,7 @@ export default function PopupProductQuickView({ product, onClose }) {
                     pushDataLayer({
                       event: "quick_view_image_nav",
                       store_section: "popup",
-                      product_id: product?.handle,
+                      product_id: safeProduct?.handle,
                       ui_action: "next_image",
                       view_context: "quick_view",
                     });
@@ -264,7 +310,7 @@ export default function PopupProductQuickView({ product, onClose }) {
                     pushDataLayer({
                       event: "quick_view_thumbnail_click",
                       store_section: "popup",
-                      product_id: product?.handle,
+                      product_id: safeProduct?.handle,
                       ui_action: "thumbnail_select",
                       view_context: "quick_view",
                       value: i,
@@ -281,11 +327,10 @@ export default function PopupProductQuickView({ product, onClose }) {
           )}
         </div>
 
-        {/* Info Section */}
         <div className="w-full md:w-1/2 p-6 flex flex-col justify-between">
           <div>
             <h1 className="text-lg sm:text-xl font-semibold leading-tight mb-2 truncate max-w-full">
-              {product.title}
+              {safeProduct.title}
             </h1>
 
             <p className="text-lg text-gray-700 mb-4">{priceDisplay}</p>
@@ -306,8 +351,8 @@ export default function PopupProductQuickView({ product, onClose }) {
                     pushDataLayer({
                       event: "select_item",
                       store_section: "popup",
-                      product_id: product?.handle,
-                      product_title: product?.title,
+                      product_id: safeProduct?.handle,
+                      product_title: safeProduct?.title,
                       variant_id: e.target.value,
                       ui_action: "variant_select",
                       view_context: "quick_view",
@@ -358,18 +403,17 @@ export default function PopupProductQuickView({ product, onClose }) {
             </p>
           </div>
 
-          {/* View Details */}
           <div className="mt-5 text-center">
             <Link
-              href={`/popup/${product.handle}#product-details`}
+              href={`/popup/${safeProduct.handle}#product-details`}
               scroll={false}
               className="view-details-link text-sm inline-block"
               onClick={() =>
                 pushDataLayer({
-                  event: "view_item",
+                  event: "view_details_click",
                   store_section: "popup",
-                  product_id: product?.handle,
-                  product_title: product?.title,
+                  product_id: safeProduct?.handle,
+                  product_title: safeProduct?.title,
                   ui_action: "view_details",
                   view_context: "quick_view",
                 })

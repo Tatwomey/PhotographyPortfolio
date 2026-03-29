@@ -20,6 +20,7 @@ function pushDataLayer(payload) {
   if (typeof window === "undefined") return;
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(payload);
+  console.log(`[GTM] ${payload.event} pushed`, payload);
 }
 
 function formatPrice(amount, currencyCode = "USD") {
@@ -31,6 +32,29 @@ function formatPrice(amount, currencyCode = "USD") {
   } catch {
     return `$${Number(amount || 0).toFixed(2)}`;
   }
+}
+
+function buildAnalyticsItem({
+  product,
+  selectedVariant,
+  priceAmount,
+  quantity = 1,
+}) {
+  return {
+    item_id: String(
+      selectedVariant?.id ||
+        product?.id ||
+        product?.handle ||
+        product?.title ||
+        "",
+    ),
+    item_name: product?.title || "",
+    item_brand: "Trevor Twomey Photo",
+    item_category: "Fine Art Print",
+    item_variant: selectedVariant?.title || "",
+    price: Number(priceAmount || 0),
+    quantity: Number(quantity || 1),
+  };
 }
 
 /* ============================================================
@@ -49,6 +73,7 @@ export default function ProductSlugLayout({
   const { handleAddToCart } = useShopContext();
   const router = useRouter();
   const swiperRef = useRef(null);
+  const lastViewItemRef = useRef("");
 
   if (!product || !product.variants || !product.images) {
     return <div className="text-center py-20 text-lg">Loading product…</div>;
@@ -119,7 +144,7 @@ Variant logic
     setSelectedVariant(v);
     setCurrentImageIdx(0);
     swiperRef.current?.slideToLoop(0);
-  }, [selectedColor]);
+  }, [selectedColor, variantsForColor]);
 
   const priceAmount =
     selectedVariant?.priceV2?.amount || selectedVariant?.price?.amount || 0;
@@ -134,6 +159,47 @@ Variant logic
   const isSoldOut =
     selectedVariant?.availableForSale === false ||
     product?.availableForSale === false;
+
+  /* -----------------------------
+Analytics: view_item
+------------------------------ */
+  useEffect(() => {
+    if (!product || !selectedVariant) return;
+
+    const dedupeKey = `${product.handle}:${selectedVariant.id}:${storeSection}`;
+    if (lastViewItemRef.current === dedupeKey) return;
+
+    const item = buildAnalyticsItem({
+      product,
+      selectedVariant,
+      priceAmount,
+      quantity: 1,
+    });
+
+    pushDataLayer({
+      event: "view_item",
+      currency: currencyCode,
+      value: Number(priceAmount || 0),
+      items: [item],
+      item_id: item.item_id,
+      item_name: item.item_name,
+      item_variant: item.item_variant,
+      page_type: `${storeSection}_product`,
+      page_path: window.location.pathname,
+      page_location: window.location.href,
+      content_group: storeSection,
+      portfolio_id: computedPortfolioId,
+    });
+
+    lastViewItemRef.current = dedupeKey;
+  }, [
+    product,
+    selectedVariant,
+    priceAmount,
+    currencyCode,
+    storeSection,
+    computedPortfolioId,
+  ]);
 
   /* -----------------------------
 Swiper animation
@@ -172,8 +238,75 @@ Swiper animation
     setCurrentImageIdx(swiper.realIndex);
   };
 
-  const handleBuyNow = async () => {
+  const handleAddToCartClick = async () => {
+    if (!selectedVariant?.id) return;
+
     await handleAddToCart(selectedVariant.id, 1);
+
+    const item = buildAnalyticsItem({
+      product,
+      selectedVariant,
+      priceAmount,
+      quantity: 1,
+    });
+
+    pushDataLayer({
+      event: "add_to_cart",
+      currency: currencyCode,
+      value: Number(priceAmount || 0),
+      items: [item],
+      item_id: item.item_id,
+      item_name: item.item_name,
+      item_variant: item.item_variant,
+      quantity: 1,
+      page_type: `${storeSection}_product`,
+      page_path: window.location.pathname,
+      page_location: window.location.href,
+      content_group: storeSection,
+      portfolio_id: computedPortfolioId,
+    });
+  };
+
+  const handleBuyNow = async () => {
+    if (!selectedVariant?.id) return;
+
+    await handleAddToCart(selectedVariant.id, 1);
+
+    const item = buildAnalyticsItem({
+      product,
+      selectedVariant,
+      priceAmount,
+      quantity: 1,
+    });
+
+    pushDataLayer({
+      event: "add_to_cart",
+      currency: currencyCode,
+      value: Number(priceAmount || 0),
+      items: [item],
+      item_id: item.item_id,
+      item_name: item.item_name,
+      item_variant: item.item_variant,
+      quantity: 1,
+      page_type: `${storeSection}_product`,
+      page_path: window.location.pathname,
+      page_location: window.location.href,
+      content_group: storeSection,
+      portfolio_id: computedPortfolioId,
+    });
+
+    pushDataLayer({
+      event: "begin_checkout",
+      currency: currencyCode,
+      value: Number(priceAmount || 0),
+      items: [item],
+      page_type: "checkout",
+      page_path: window.location.pathname,
+      page_location: window.location.href,
+      content_group: storeSection,
+      portfolio_id: computedPortfolioId,
+    });
+
     router.push("/checkout");
   };
 
@@ -183,7 +316,6 @@ RENDER
 
   return (
     <main className="bg-white text-black w-full overflow-x-hidden">
-      {/* ELITE CONTAINER */}
       <div className="max-w-[1280px] mx-auto px-5 lg:px-6 pt-8 lg:pt-12 pb-16">
         <div className="flex flex-col lg:flex-row items-start gap-10 lg:gap-16">
           {/* ================= IMAGE COLUMN ================= */}
@@ -217,7 +349,6 @@ RENDER
                   ))}
                 </Swiper>
 
-                {/* ARROWS — ALWAYS VISIBLE */}
                 <button
                   className="modal-arrow left !flex"
                   onClick={() => handleArrowNav("prev")}>
@@ -240,7 +371,6 @@ RENDER
               </div>
             )}
 
-            {/* Thumbnails */}
             {product.images.length > 1 && (
               <div className="flex gap-3 mt-4 overflow-x-auto">
                 {product.images.map((img, idx) => (
@@ -261,7 +391,6 @@ RENDER
 
           {/* ================= DETAILS COLUMN ================= */}
           <div className="w-full lg:w-[42%] lg:pt-6">
-            {/* Breadcrumb — popup focused */}
             <nav className="text-sm text-gray-500 mb-4">
               <ol className="flex items-center gap-2">
                 <li>
@@ -274,7 +403,6 @@ RENDER
               </ol>
             </nav>
 
-            {/* TITLE — NO AWKWARD BREAK */}
             <h1 className="text-3xl lg:text-4xl font-semibold leading-tight tracking-tight mb-3">
               {product.title}
             </h1>
@@ -287,7 +415,6 @@ RENDER
 
             <p className="text-xl font-semibold mb-6">{formattedPrice}</p>
 
-            {/* Color Swatches */}
             {colorOptions.length > 1 && (
               <div className="mb-5">
                 <label className="block mb-2 text-sm">Color</label>
@@ -313,7 +440,6 @@ RENDER
               </div>
             )}
 
-            {/* Variant Dropdown */}
             {variantsForColor.length > 1 && (
               <div className="mb-6">
                 <label className="block mb-2 text-sm">Edition / Size</label>
@@ -334,13 +460,12 @@ RENDER
               </div>
             )}
 
-            {/* CTA — TIGHT SPACING */}
             <div className="space-y-2 mb-8">
               {!isSoldOut ? (
                 <>
                   <button
                     className="w-full bg-black text-white py-3 rounded-md"
-                    onClick={() => handleAddToCart(selectedVariant.id, 1)}>
+                    onClick={handleAddToCartClick}>
                     Add to Cart
                   </button>
 
