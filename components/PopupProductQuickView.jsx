@@ -3,7 +3,6 @@ import Link from "next/link";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { X, ArrowLeft, ArrowRight } from "lucide-react";
 import { useShopContext } from "@/contexts/shopContext";
-import { useCurrency } from "@/contexts/CurrencyContext";
 
 function pushDataLayer(payload) {
   if (typeof window === "undefined") return;
@@ -28,11 +27,119 @@ function formatMoney(amount, currencyCode = "USD") {
   }
 }
 
+function normalizeImage(image) {
+  if (!image) return null;
+
+  if (typeof image === "string") {
+    return { src: image };
+  }
+
+  if (image.src) {
+    return {
+      ...image,
+      src: image.src,
+    };
+  }
+
+  if (image.url) {
+    return {
+      ...image,
+      src: image.url,
+    };
+  }
+
+  return null;
+}
+
+function normalizeImages(product) {
+  const productImages = Array.isArray(product?.images)
+    ? product.images.map(normalizeImage).filter(Boolean)
+    : [];
+
+  const allImages = Array.isArray(product?.allImages)
+    ? product.allImages.map(normalizeImage).filter(Boolean)
+    : [];
+
+  const fallbackImages = [product?.imageSrc, product?.altImageSrc]
+    .map(normalizeImage)
+    .filter(Boolean);
+
+  const merged = [...productImages, ...allImages, ...fallbackImages];
+
+  const seen = new Set();
+
+  return merged.filter((image) => {
+    if (!image?.src || seen.has(image.src)) return false;
+    seen.add(image.src);
+    return true;
+  });
+}
+
+function getProductVariants(product) {
+  if (Array.isArray(product?.variants) && product.variants.length) {
+    return product.variants;
+  }
+
+  if (Array.isArray(product?.variantOptions) && product.variantOptions.length) {
+    return product.variantOptions;
+  }
+
+  return [];
+}
+
+function getVariantAmount(variant) {
+  return (
+    variant?.price?.amount ?? variant?.priceV2?.amount ?? variant?.price ?? "0"
+  );
+}
+
+function getVariantCurrencyCode(variant) {
+  return (
+    variant?.price?.currencyCode ?? variant?.priceV2?.currencyCode ?? "USD"
+  );
+}
+
+function getVariantAvailable(variant) {
+  if (typeof variant?.availableForSale === "boolean") {
+    return variant.availableForSale;
+  }
+
+  if (typeof variant?.available === "boolean") {
+    return variant.available;
+  }
+
+  return true;
+}
+
+function getVariantTitle(variant) {
+  if (!variant) return "";
+
+  if (variant.title && variant.title !== "Default Title") {
+    return variant.title;
+  }
+
+  if (Array.isArray(variant.options) && variant.options.length) {
+    return variant.options
+      .map((option) => option?.value)
+      .filter(Boolean)
+      .join(" / ");
+  }
+
+  if (
+    Array.isArray(variant.selectedOptions) &&
+    variant.selectedOptions.length
+  ) {
+    return variant.selectedOptions
+      .map((option) => option?.value)
+      .filter(Boolean)
+      .join(" / ");
+  }
+
+  return variant.title || "Default";
+}
+
 function buildAnalyticsItem({ product, selectedVariantObj, quantity = 1 }) {
-  const rawPrice =
-    selectedVariantObj?.price?.amount ??
-    selectedVariantObj?.priceV2?.amount ??
-    "0";
+  const rawPrice = getVariantAmount(selectedVariantObj);
 
   return {
     item_id: String(
@@ -45,7 +152,7 @@ function buildAnalyticsItem({ product, selectedVariantObj, quantity = 1 }) {
     item_name: product?.title || "",
     item_brand: "Trevor Twomey Photo",
     item_category: "Fine Art Print",
-    item_variant: selectedVariantObj?.title || "",
+    item_variant: getVariantTitle(selectedVariantObj),
     price: Number(rawPrice || 0),
     quantity: Number(quantity || 1),
   };
@@ -54,13 +161,13 @@ function buildAnalyticsItem({ product, selectedVariantObj, quantity = 1 }) {
 export default function PopupProductQuickView({ product, onClose }) {
   const { cart, loading, handleAddToCart, refreshCart, openCart } =
     useShopContext();
-  const { currency } = useCurrency();
 
   const safeProduct = product || {};
-  const images = Array.isArray(safeProduct.images) ? safeProduct.images : [];
-  const variants = Array.isArray(safeProduct.variants)
-    ? safeProduct.variants
-    : [];
+  const images = useMemo(() => normalizeImages(safeProduct), [safeProduct]);
+  const variants = useMemo(
+    () => getProductVariants(safeProduct),
+    [safeProduct],
+  );
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState(
@@ -83,39 +190,34 @@ export default function PopupProductQuickView({ product, onClose }) {
     return () => {
       document.body.classList.remove("modal-open");
     };
-  }, [safeProduct?.handle, variants]);
+  }, [safeProduct?.handle, safeProduct?.title, variants]);
 
   const selectedVariantObj = useMemo(() => {
     return (
-      variants.find((v) => v.id === selectedVariant) || variants[0] || null
+      variants.find((variant) => variant.id === selectedVariant) ||
+      variants[0] ||
+      null
     );
   }, [variants, selectedVariant]);
 
   const priceAmount = useMemo(() => {
-    return (
-      selectedVariantObj?.price?.amount ??
-      selectedVariantObj?.priceV2?.amount ??
-      variants?.[0]?.price?.amount ??
-      variants?.[0]?.priceV2?.amount ??
-      "0"
-    );
-  }, [selectedVariantObj, variants]);
+    return getVariantAmount(selectedVariantObj);
+  }, [selectedVariantObj]);
 
-  const currencyCode =
-    currency ||
-    selectedVariantObj?.price?.currencyCode ||
-    selectedVariantObj?.priceV2?.currencyCode ||
-    variants?.[0]?.price?.currencyCode ||
-    variants?.[0]?.priceV2?.currencyCode ||
-    "USD";
+  const currencyCode = useMemo(() => {
+    return getVariantCurrencyCode(selectedVariantObj);
+  }, [selectedVariantObj]);
 
   const priceDisplay = useMemo(() => {
     return formatMoney(priceAmount, currencyCode);
   }, [priceAmount, currencyCode]);
 
-  const isSoldOut = selectedVariantObj?.availableForSale === false;
+  const isSoldOut = useMemo(() => {
+    if (safeProduct?.availableForSale === false) return true;
+    if (!selectedVariantObj) return false;
 
-  if (!safeProduct || !images.length) return null;
+    return getVariantAvailable(selectedVariantObj) === false;
+  }, [safeProduct?.availableForSale, selectedVariantObj]);
 
   const closeWithEvent = useCallback(
     (ui_action) => {
@@ -130,7 +232,7 @@ export default function PopupProductQuickView({ product, onClose }) {
 
       if (typeof onClose === "function") onClose();
     },
-    [onClose, safeProduct],
+    [onClose, safeProduct?.handle, safeProduct?.title],
   );
 
   const closeIfOverlay = (e) => {
@@ -201,6 +303,7 @@ export default function PopupProductQuickView({ product, onClose }) {
     });
 
     let freshCart = null;
+
     if (typeof refreshCart === "function") {
       freshCart = await refreshCart();
     }
@@ -225,6 +328,8 @@ export default function PopupProductQuickView({ product, onClose }) {
     if (typeof openCart === "function") openCart();
     closeWithEvent("buy_now_fallback_open_cart");
   };
+
+  if (!safeProduct || !images.length) return null;
 
   return (
     <div
@@ -361,7 +466,8 @@ export default function PopupProductQuickView({ product, onClose }) {
                   className="w-full border border-gray-300 rounded-md shadow-sm p-2 mb-4">
                   {variants.map((variant) => (
                     <option key={variant.id} value={variant.id}>
-                      {variant.title}
+                      {getVariantTitle(variant)}
+                      {getVariantAvailable(variant) ? "" : " — Sold Out"}
                     </option>
                   ))}
                 </select>

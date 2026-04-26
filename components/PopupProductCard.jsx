@@ -2,7 +2,6 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useCurrency } from "@/contexts/CurrencyContext";
 
 function pushDataLayer(payload) {
   if (typeof window === "undefined") return;
@@ -17,13 +16,49 @@ function formatMoney(amount, currencyCode = "USD") {
   try {
     return new Intl.NumberFormat(undefined, {
       style: "currency",
-      currency: currencyCode,
+      currency: currencyCode || "USD",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(safe);
   } catch {
-    return `${currencyCode} ${safe.toFixed(2)}`;
+    return `${currencyCode || "USD"} ${safe.toFixed(2)}`;
   }
+}
+
+function getProductVariants(product) {
+  if (Array.isArray(product?.variants) && product.variants.length) {
+    return product.variants;
+  }
+
+  if (Array.isArray(product?.variantOptions) && product.variantOptions.length) {
+    return product.variantOptions;
+  }
+
+  return [];
+}
+
+function getVariantAmount(variant) {
+  return (
+    variant?.price?.amount ?? variant?.priceV2?.amount ?? variant?.price ?? "0"
+  );
+}
+
+function getVariantCurrencyCode(variant) {
+  return (
+    variant?.price?.currencyCode ?? variant?.priceV2?.currencyCode ?? "USD"
+  );
+}
+
+function getVariantAvailable(variant) {
+  if (typeof variant?.availableForSale === "boolean") {
+    return variant.availableForSale;
+  }
+
+  if (typeof variant?.available === "boolean") {
+    return variant.available;
+  }
+
+  return true;
 }
 
 export default function PopupProductCard({
@@ -33,47 +68,35 @@ export default function PopupProductCard({
   onQuickView,
 }) {
   const [isHovered, setIsHovered] = useState(false);
-  const { currency } = useCurrency();
+
+  const variants = useMemo(() => getProductVariants(product), [product]);
 
   const hoverImage = product?.altImageSrc || product?.imageSrc;
 
-  /* --------------------------------------------------
-     ✅ PRICE: Support BOTH price and priceV2 shapes
-  --------------------------------------------------- */
+  const firstVariant = variants?.[0] || null;
 
   const displayPrice = useMemo(() => {
-    const firstVariant = product?.variants?.[0];
+    const amount = getVariantAmount(firstVariant);
+    const currencyCode = getVariantCurrencyCode(firstVariant);
 
-    if (!firstVariant) return formatMoney("0", currency || "USD");
+    return formatMoney(amount, currencyCode);
+  }, [firstVariant]);
 
-    // Support both shapes:
-    // 1) { price: { amount, currencyCode } }
-    // 2) { priceV2: { amount, currencyCode } }
+  const priceAmount = useMemo(() => {
+    const n = Number.parseFloat(getVariantAmount(firstVariant));
+    return Number.isFinite(n) ? n : 0;
+  }, [firstVariant]);
 
-    const amount =
-      firstVariant?.price?.amount ?? firstVariant?.priceV2?.amount ?? "0";
-
-    const baseCurrency =
-      firstVariant?.price?.currencyCode ??
-      firstVariant?.priceV2?.currencyCode ??
-      "USD";
-
-    return formatMoney(amount, currency || baseCurrency);
-  }, [product, currency]);
-
-  /* --------------------------------------------------
-     ✅ SOLD OUT LOGIC
-  --------------------------------------------------- */
+  const currencyCode = useMemo(() => {
+    return getVariantCurrencyCode(firstVariant);
+  }, [firstVariant]);
 
   const isSoldOut = useMemo(() => {
-    const vars = product?.variants || [];
-    if (!vars.length) return false;
-    return vars.every((v) => v?.availableForSale === false);
-  }, [product]);
+    if (product?.availableForSale === false) return true;
+    if (!variants.length) return false;
 
-  /* --------------------------------------------------
-     Analytics
-  --------------------------------------------------- */
+    return variants.every((variant) => getVariantAvailable(variant) === false);
+  }, [product, variants]);
 
   const handleCardClick = () => {
     if (onProductClick) onProductClick(product);
@@ -86,6 +109,8 @@ export default function PopupProductCard({
       product_title: product?.title,
       sold_out: isSoldOut,
       click_source: "popup_grid",
+      currency: currencyCode,
+      value: priceAmount,
     });
   };
 
@@ -103,12 +128,12 @@ export default function PopupProductCard({
       product_title: product?.title,
       ui_action: "quick_view",
       view_context: "popup_grid",
+      currency: currencyCode,
+      value: priceAmount,
     });
   };
 
-  /* --------------------------------------------------
-     Render
-  --------------------------------------------------- */
+  if (!product) return null;
 
   return (
     <div
