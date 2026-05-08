@@ -18,7 +18,7 @@ export default function CapsuleLanding() {
 
       const hasEmail = Boolean(metaData?.$email);
       const hasPhone = Boolean(
-        metaData?.$phone_number || metaData?.phone_number
+        metaData?.$phone_number || metaData?.phone_number,
       );
 
       window.dataLayer.push({
@@ -64,7 +64,7 @@ export default function CapsuleLanding() {
 
       <main className="bg-white pt-[160px] sm:pt-[180px] px-4 pb-12 text-center flex flex-col items-center min-h-screen">
         <h1 className="text-3xl md:text-4xl font-semibold mb-3 tracking-tight text-black">
-          Get notified when signed, limited-edition prints drop.
+          Get notified when limited-edition, hand-numbered prints drop.
         </h1>
 
         <p className="text-sm text-gray-400 italic mt-2 mb-6">

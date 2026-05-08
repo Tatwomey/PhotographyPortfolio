@@ -175,7 +175,7 @@ const PrivacyPolicy = () => {
         <a
           href="mailto:trevor.a.twomey@gmail.com"
           className="underline underline-offset-4 text-black">
-          trevor.a.twomey@gmail.com
+          info@trevortwomeyphoto.com
         </a>
       </p>
     </div>
