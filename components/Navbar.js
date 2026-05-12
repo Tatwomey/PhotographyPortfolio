@@ -169,7 +169,7 @@ const Navbar = () => {
         </div>
 
         {/* Right-side icons */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           {/* Client Avatar */}
           {showClientAvatar && (
             <div className="relative" ref={clientMenuRef}>
@@ -241,18 +241,20 @@ const Navbar = () => {
 
           {/* Commerce Controls */}
           {showCommerceControls && typeof window !== "undefined" && (
-            <div className="hidden md:flex items-center gap-4">
+            <div className="flex items-center gap-3 md:gap-4">
+              {/* Keep currency switcher desktop-only */}
               {currency !== "USD" && (
-                <>
+                <div className="hidden md:flex items-center gap-4">
                   <CurrencySwitcher isDarkMode={!isLightModePage} />
                   <div
                     className={`h-4 w-px ${
                       isLightModePage ? "bg-black/20" : "bg-white/20"
                     }`}
                   />
-                </>
+                </div>
               )}
 
+              {/* Show cart on mobile and desktop */}
               <CartIcon isDarkMode={!isLightModePage} />
             </div>
           )}

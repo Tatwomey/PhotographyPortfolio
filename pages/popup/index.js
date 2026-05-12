@@ -5,7 +5,6 @@ import PopupHero from "@/components/PopupHero";
 import PopupProductCard from "@/components/PopupProductCard";
 import PopupProductQuickView from "@/components/PopupProductQuickView";
 import { useSmoothScroll } from "@/hooks/useSmoothScroll";
-import { useNavigation } from "@/contexts/NavigationContext"; // ✅ import useNavigation
 
 function normalizeForQuickView(p) {
   const images =
@@ -41,19 +40,18 @@ export default function PopupShop({ products }) {
 
   useSmoothScroll("#popup", shopPageRef);
 
-  const { lastNavigatedPage } = useNavigation(); // ✅ access context
-
   useEffect(() => {
-    if (lastNavigatedPage === "/popup") {
-      const element = shopPageRef.current;
-      if (element) {
-        window.scroll({
-          top: element.getBoundingClientRect().top + window.scrollY,
+    const section = document.getElementById("popup");
+
+    if (section) {
+      setTimeout(() => {
+        section.scrollIntoView({
           behavior: "smooth",
+          block: "start",
         });
-      }
+      }, 300);
     }
-  }, [lastNavigatedPage]);
+  }, []);
 
   const normalizedQuickViewProduct = useMemo(() => {
     if (!quickViewProduct) return null;

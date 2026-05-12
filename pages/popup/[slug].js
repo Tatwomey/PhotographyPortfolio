@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import PopupHero from "@/components/PopupHero";
 import ProductSlugLayout from "@/components/ProductSlugLayout";
 import {
@@ -11,7 +11,6 @@ import {
 ------------------------------------------------------ */
 
 export async function getStaticPaths() {
-  // ✅ Restore proper static generation for popup slugs
   return await getPopupProductPaths();
 }
 
@@ -36,19 +35,34 @@ export default function PopupSlug({ product }) {
     return `popup_slug:${handle}`;
   }, [product?.handle]);
 
+  useEffect(() => {
+    const section = document.getElementById("popup-product");
+
+    if (section) {
+      setTimeout(() => {
+        section.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 300);
+    }
+  }, []);
+
   return (
     <>
       <PopupHero />
 
-      <ProductSlugLayout
-        product={product}
-        portfolioId={portfolioId}
-        storeSection="popup"
-        breadcrumbLabel="Popup Shop"
-        breadcrumbHref="/popup"
-        backHref="/popup"
-        backLabel="Back to Popup Shop"
-      />
+      <div id="popup-product">
+        <ProductSlugLayout
+          product={product}
+          portfolioId={portfolioId}
+          storeSection="popup"
+          breadcrumbLabel="Popup Shop"
+          breadcrumbHref="/popup"
+          backHref="/popup"
+          backLabel="Back to Popup Shop"
+        />
+      </div>
     </>
   );
 }
