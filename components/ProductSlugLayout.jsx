@@ -23,14 +23,28 @@ function pushDataLayer(payload) {
   console.log(`[GTM] ${payload.event} pushed`, payload);
 }
 
+function normalizeAnalyticsPrice(value) {
+  const num = Number(value || 0);
+
+  if (!Number.isFinite(num)) return 0;
+
+  // Guard against accidental micros/subunit prices appearing in analytics.
+  // Example: 350000000 should normalize back to 350.
+  if (num > 1000000) return num / 1000000;
+
+  return num;
+}
+
 function formatPrice(amount, currencyCode = "USD") {
+  const normalizedAmount = normalizeAnalyticsPrice(amount);
+
   try {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: currencyCode || "USD",
-    }).format(Number(amount || 0));
+    }).format(normalizedAmount);
   } catch {
-    return `$${Number(amount || 0).toFixed(2)}`;
+    return `$${normalizedAmount.toFixed(2)}`;
   }
 }
 
@@ -40,6 +54,8 @@ function buildAnalyticsItem({
   priceAmount,
   quantity = 1,
 }) {
+  const normalizedPrice = normalizeAnalyticsPrice(priceAmount);
+
   return {
     item_id: String(
       selectedVariant?.id ||
@@ -52,7 +68,7 @@ function buildAnalyticsItem({
     item_brand: "Trevor Twomey Photo",
     item_category: "Fine Art Print",
     item_variant: selectedVariant?.title || "",
-    price: Number(priceAmount || 0),
+    price: normalizedPrice,
     quantity: Number(quantity || 1),
   };
 }
@@ -82,16 +98,16 @@ export default function ProductSlugLayout({
   const isPopup = storeSection === "popup";
 
   /* -----------------------------
-Portfolio ID
------------------------------- */
+  Portfolio ID
+  ------------------------------ */
   const computedPortfolioId = useMemo(() => {
     if (portfolioId) return portfolioId;
     return `${storeSection}_slug:${product.handle}`;
   }, [portfolioId, product.handle, storeSection]);
 
   /* -----------------------------
-Variant logic
------------------------------- */
+  Variant logic
+  ------------------------------ */
   const colorOptions = useMemo(() => {
     const vals = product.variants
       .map(
@@ -146,8 +162,10 @@ Variant logic
     swiperRef.current?.slideToLoop(0);
   }, [selectedColor, variantsForColor]);
 
-  const priceAmount =
+  const rawPriceAmount =
     selectedVariant?.priceV2?.amount || selectedVariant?.price?.amount || 0;
+
+  const priceAmount = normalizeAnalyticsPrice(rawPriceAmount);
 
   const currencyCode =
     selectedVariant?.priceV2?.currencyCode ||
@@ -161,8 +179,8 @@ Variant logic
     product?.availableForSale === false;
 
   /* -----------------------------
-Analytics: view_item
------------------------------- */
+  Analytics: view_item
+  ------------------------------ */
   useEffect(() => {
     if (!product || !selectedVariant) return;
 
@@ -179,7 +197,7 @@ Analytics: view_item
     pushDataLayer({
       event: "view_item",
       currency: currencyCode,
-      value: Number(priceAmount || 0),
+      value: priceAmount,
       items: [item],
       item_id: item.item_id,
       item_name: item.item_name,
@@ -202,8 +220,8 @@ Analytics: view_item
   ]);
 
   /* -----------------------------
-Swiper animation
------------------------------- */
+  Swiper animation
+  ------------------------------ */
   const creativeEffect = {
     prev: {
       translate: ["-12%", 0, -1],
@@ -253,7 +271,7 @@ Swiper animation
     pushDataLayer({
       event: "add_to_cart",
       currency: currencyCode,
-      value: Number(priceAmount || 0),
+      value: priceAmount,
       items: [item],
       item_id: item.item_id,
       item_name: item.item_name,
@@ -282,7 +300,7 @@ Swiper animation
     pushDataLayer({
       event: "add_to_cart",
       currency: currencyCode,
-      value: Number(priceAmount || 0),
+      value: priceAmount,
       items: [item],
       item_id: item.item_id,
       item_name: item.item_name,
@@ -298,7 +316,7 @@ Swiper animation
     pushDataLayer({
       event: "begin_checkout",
       currency: currencyCode,
-      value: Number(priceAmount || 0),
+      value: priceAmount,
       items: [item],
       page_type: "checkout",
       page_path: window.location.pathname,
@@ -311,8 +329,8 @@ Swiper animation
   };
 
   /* ============================================================
-RENDER
-============================================================ */
+  RENDER
+  ============================================================ */
 
   return (
     <main className="bg-white text-black w-full overflow-x-hidden">

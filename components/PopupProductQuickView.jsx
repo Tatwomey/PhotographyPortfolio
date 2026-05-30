@@ -11,9 +11,20 @@ function pushDataLayer(payload) {
   console.log(`[GTM] ${payload.event} pushed`, payload);
 }
 
+function normalizeAnalyticsPrice(value) {
+  const num = Number.parseFloat(value ?? "0");
+
+  if (!Number.isFinite(num)) return 0;
+
+  // Defensive guard for accidental micros/subunit values.
+  // Example: 350000000 -> 350
+  if (num > 1000000) return num / 1000000;
+
+  return num;
+}
+
 function formatMoney(amount, currencyCode = "USD") {
-  const n = Number.parseFloat(amount ?? "0");
-  const safe = Number.isFinite(n) ? n : 0;
+  const safe = normalizeAnalyticsPrice(amount);
 
   try {
     return new Intl.NumberFormat(undefined, {
@@ -140,6 +151,7 @@ function getVariantTitle(variant) {
 
 function buildAnalyticsItem({ product, selectedVariantObj, quantity = 1 }) {
   const rawPrice = getVariantAmount(selectedVariantObj);
+  const normalizedPrice = normalizeAnalyticsPrice(rawPrice);
 
   return {
     item_id: String(
@@ -153,7 +165,7 @@ function buildAnalyticsItem({ product, selectedVariantObj, quantity = 1 }) {
     item_brand: "Trevor Twomey Photo",
     item_category: "Fine Art Print",
     item_variant: getVariantTitle(selectedVariantObj),
-    price: Number(rawPrice || 0),
+    price: normalizedPrice,
     quantity: Number(quantity || 1),
   };
 }
@@ -201,7 +213,7 @@ export default function PopupProductQuickView({ product, onClose }) {
   }, [variants, selectedVariant]);
 
   const priceAmount = useMemo(() => {
-    return getVariantAmount(selectedVariantObj);
+    return normalizeAnalyticsPrice(getVariantAmount(selectedVariantObj));
   }, [selectedVariantObj]);
 
   const currencyCode = useMemo(() => {
@@ -265,7 +277,7 @@ export default function PopupProductQuickView({ product, onClose }) {
     pushDataLayer({
       event: "add_to_cart",
       currency: currencyCode,
-      value: Number(priceAmount || 0),
+      value: priceAmount,
       items: [item],
       page_type: "popup_quick_view",
       page_path: window.location.pathname,
@@ -295,7 +307,7 @@ export default function PopupProductQuickView({ product, onClose }) {
     pushDataLayer({
       event: "add_to_cart",
       currency: currencyCode,
-      value: Number(priceAmount || 0),
+      value: priceAmount,
       items: [item],
       page_type: "popup_quick_view",
       page_path: window.location.pathname,
@@ -311,7 +323,7 @@ export default function PopupProductQuickView({ product, onClose }) {
     pushDataLayer({
       event: "begin_checkout",
       currency: currencyCode,
-      value: Number(priceAmount || 0),
+      value: priceAmount,
       items: [item],
       page_type: "checkout",
       page_path: window.location.pathname,
