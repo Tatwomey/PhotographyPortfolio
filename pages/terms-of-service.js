@@ -101,7 +101,7 @@ const TermsOfService = () => {
       </p>
 
       <h2 className="text-xl font-semibold mt-8 mb-3 text-black">
-        Returns, Refunds, and Damaged Orders
+        Returns, Refunds, and Damaged Goods
       </h2>
 
       <p className="leading-relaxed mb-4">

@@ -10,7 +10,6 @@ import TabSection from "@/components/TabSection";
 Swiper v9
 ------------------------------ */
 import { Swiper, SwiperSlide } from "swiper/react";
-import { EffectCreative } from "swiper";
 
 /* -----------------------------
 Helpers
@@ -91,25 +90,32 @@ export default function ProductSlugLayout({
   const swiperRef = useRef(null);
   const lastViewItemRef = useRef("");
 
-  if (!product || !product.variants || !product.images) {
-    return <div className="text-center py-20 text-lg">Loading product…</div>;
-  }
-
   const isPopup = storeSection === "popup";
+  const variants = useMemo(
+    () => (Array.isArray(product?.variants) ? product.variants : []),
+    [product?.variants],
+  );
+  const images = useMemo(
+    () => (Array.isArray(product?.images) ? product.images : []),
+    [product?.images],
+  );
+  const hasRenderableProduct = Boolean(
+    product && variants.length && images.length,
+  );
 
   /* -----------------------------
   Portfolio ID
   ------------------------------ */
   const computedPortfolioId = useMemo(() => {
     if (portfolioId) return portfolioId;
-    return `${storeSection}_slug:${product.handle}`;
-  }, [portfolioId, product.handle, storeSection]);
+    return `${storeSection}_slug:${product?.handle || "unknown"}`;
+  }, [portfolioId, product?.handle, storeSection]);
 
   /* -----------------------------
   Variant logic
   ------------------------------ */
   const colorOptions = useMemo(() => {
-    const vals = product.variants
+    const vals = variants
       .map(
         (v) =>
           v.selectedOptions?.find((o) => o.name.toLowerCase() === "color")
@@ -117,26 +123,28 @@ export default function ProductSlugLayout({
       )
       .filter(Boolean);
     return Array.from(new Set(vals));
-  }, [product.variants]);
+  }, [variants]);
 
   const defaultVariant = useMemo(() => {
-    const handle = product.handle.toLowerCase();
+    const handle = product?.handle?.toLowerCase() || "";
     const wantsMono = handle.includes("mono") || handle.includes("bw");
     const targetColor = wantsMono ? "monochrome" : "regular";
 
     return (
-      product.variants.find((v) =>
+      variants.find((v) =>
         v.selectedOptions?.some(
           (o) =>
             o.name.toLowerCase() === "color" &&
             o.value.toLowerCase() === targetColor,
         ),
-      ) || product.variants[0]
+      ) ||
+      variants[0] ||
+      null
     );
-  }, [product]);
+  }, [product?.handle, variants]);
 
   const defaultColor =
-    defaultVariant.selectedOptions?.find(
+    defaultVariant?.selectedOptions?.find(
       (o) => o.name.toLowerCase() === "color",
     )?.value || "";
 
@@ -146,13 +154,20 @@ export default function ProductSlugLayout({
   const [zoomPulse, setZoomPulse] = useState(false);
 
   const variantsForColor = useMemo(() => {
-    if (!selectedColor) return product.variants;
-    return product.variants.filter((v) =>
+    if (!selectedColor) return variants;
+    return variants.filter((v) =>
       v.selectedOptions?.some(
         (o) => o.name.toLowerCase() === "color" && o.value === selectedColor,
       ),
     );
-  }, [product.variants, selectedColor]);
+  }, [variants, selectedColor]);
+
+  useEffect(() => {
+    setSelectedColor(defaultColor);
+    setSelectedVariant(defaultVariant);
+    setCurrentImageIdx(0);
+    swiperRef.current?.slideToLoop(0);
+  }, [defaultColor, defaultVariant, product?.handle]);
 
   useEffect(() => {
     const v = variantsForColor[0];
@@ -177,6 +192,8 @@ export default function ProductSlugLayout({
   const isSoldOut =
     selectedVariant?.availableForSale === false ||
     product?.availableForSale === false;
+
+  const currentImage = images[currentImageIdx] || images[0];
 
   /* -----------------------------
   Analytics: view_item
@@ -218,22 +235,6 @@ export default function ProductSlugLayout({
     storeSection,
     computedPortfolioId,
   ]);
-
-  /* -----------------------------
-  Swiper animation
-  ------------------------------ */
-  const creativeEffect = {
-    prev: {
-      translate: ["-12%", 0, -1],
-      scale: 0.95,
-      opacity: 0.6,
-    },
-    next: {
-      translate: ["12%", 0, -1],
-      scale: 0.95,
-      opacity: 0.6,
-    },
-  };
 
   const triggerZoomPulse = () => {
     setZoomPulse(true);
@@ -328,6 +329,10 @@ export default function ProductSlugLayout({
     router.push("/checkout");
   };
 
+  if (!hasRenderableProduct) {
+    return <div className="text-center py-20 text-lg">Loading product…</div>;
+  }
+
   /* ============================================================
   RENDER
   ============================================================ */
@@ -341,17 +346,14 @@ export default function ProductSlugLayout({
             {isPopup ? (
               <div className="relative">
                 <Swiper
-                  modules={[EffectCreative]}
-                  effect="creative"
-                  creativeEffect={creativeEffect}
-                  speed={700}
+                  speed={450}
                   loop
                   onSwiper={(s) => (swiperRef.current = s)}
                   onSlideChange={handleSlideChange}
                   className={`rounded-md overflow-hidden ${
                     zoomPulse ? "zoom-pulse" : ""
                   }`}>
-                  {product.images.map((img, idx) => (
+                  {images.map((img, idx) => (
                     <SwiperSlide key={idx}>
                       <div className="aspect-[4/5] w-full flex items-center justify-center overflow-hidden">
                         <Image
@@ -381,17 +383,18 @@ export default function ProductSlugLayout({
             ) : (
               <div className="relative aspect-[4/5] w-full overflow-hidden rounded-md">
                 <Image
-                  src={product.images[0].src}
-                  alt={product.title}
+                  key={currentImage.src}
+                  src={currentImage.src}
+                  alt={currentImage.altText || product.title}
                   fill
                   className="object-contain"
                 />
               </div>
             )}
 
-            {product.images.length > 1 && (
+            {images.length > 1 && (
               <div className="flex gap-3 mt-4 overflow-x-auto">
-                {product.images.map((img, idx) => (
+                {images.map((img, idx) => (
                   <button
                     key={idx}
                     onClick={() => handleThumbnailClick(idx)}
@@ -400,7 +403,14 @@ export default function ProductSlugLayout({
                         ? "border-black"
                         : "border-gray-300"
                     }`}>
-                    <Image src={img.src} alt="" width={80} height={100} />
+                    <Image
+                      src={img.src}
+                      alt={
+                        img.altText || `${product.title} thumbnail ${idx + 1}`
+                      }
+                      width={80}
+                      height={100}
+                    />
                   </button>
                 ))}
               </div>
