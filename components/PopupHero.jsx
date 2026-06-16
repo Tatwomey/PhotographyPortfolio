@@ -30,7 +30,7 @@ export default function PopUpHero() {
       {/* ✅ Mobile image */}
       <div className="absolute inset-0 block md:hidden">
         <Image
-          src="/mobile_hero.png"
+          src="/mobilehero.jpg"
           alt="Popup Hero Mobile"
           fill
           priority
