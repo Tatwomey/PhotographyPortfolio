@@ -18,7 +18,7 @@ export default function PopUpHero() {
       {/* ✅ Desktop image */}
       <div className="absolute inset-0 hidden md:block">
         <Image
-          src="/hero_desktop.png"
+          src="/herodesktop.jpg"
           alt="Popup Hero Desktop"
           fill
           priority
