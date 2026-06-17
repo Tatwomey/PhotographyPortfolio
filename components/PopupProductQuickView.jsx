@@ -149,6 +149,14 @@ function getVariantTitle(variant) {
   return variant.title || "Default";
 }
 
+function getImageAlt(image, productTitle, index) {
+  return (
+    image?.altText ||
+    image?.alt ||
+    `${productTitle || "Product image"} ${index + 1}`
+  );
+}
+
 function buildAnalyticsItem({ product, selectedVariantObj, quantity = 1 }) {
   const rawPrice = getVariantAmount(selectedVariantObj);
   const normalizedPrice = normalizeAnalyticsPrice(rawPrice);
@@ -175,7 +183,9 @@ export default function PopupProductQuickView({ product, onClose }) {
     useShopContext();
 
   const safeProduct = product || {};
+
   const images = useMemo(() => normalizeImages(safeProduct), [safeProduct]);
+
   const variants = useMemo(
     () => getProductVariants(safeProduct),
     [safeProduct],
@@ -186,23 +196,7 @@ export default function PopupProductQuickView({ product, onClose }) {
     variants?.[0]?.id || "",
   );
 
-  useEffect(() => {
-    document.body.classList.add("modal-open");
-    setSelectedImageIndex(0);
-    setSelectedVariant(variants?.[0]?.id || "");
-
-    pushDataLayer({
-      event: "quick_view_open",
-      store_section: "popup",
-      product_id: safeProduct?.handle,
-      product_title: safeProduct?.title,
-      view_context: "quick_view",
-    });
-
-    return () => {
-      document.body.classList.remove("modal-open");
-    };
-  }, [safeProduct?.handle, safeProduct?.title, variants]);
+  const selectedImage = images[selectedImageIndex] || images[0];
 
   const selectedVariantObj = useMemo(() => {
     return (
@@ -247,20 +241,86 @@ export default function PopupProductQuickView({ product, onClose }) {
     [onClose, safeProduct?.handle, safeProduct?.title],
   );
 
+  useEffect(() => {
+    document.body.classList.add("modal-open");
+
+    setSelectedImageIndex(0);
+    setSelectedVariant(variants?.[0]?.id || "");
+
+    pushDataLayer({
+      event: "quick_view_open",
+      store_section: "popup",
+      product_id: safeProduct?.handle,
+      product_title: safeProduct?.title,
+      view_context: "quick_view",
+    });
+
+    return () => {
+      document.body.classList.remove("modal-open");
+    };
+  }, [safeProduct?.handle, safeProduct?.title, variants]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") closeWithEvent("escape_key");
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [closeWithEvent]);
+
   const closeIfOverlay = (e) => {
-    if (e.target.id === "overlay") closeWithEvent("overlay_close");
+    if (e.currentTarget === e.target) {
+      closeWithEvent("overlay_close");
+    }
   };
 
   const goPrev = () => {
+    if (!images.length) return;
+
+    pushDataLayer({
+      event: "quick_view_image_nav",
+      store_section: "popup",
+      product_id: safeProduct?.handle,
+      ui_action: "prev_image",
+      view_context: "quick_view",
+    });
+
     setSelectedImageIndex((prev) =>
       prev === 0 ? images.length - 1 : prev - 1,
     );
   };
 
   const goNext = () => {
+    if (!images.length) return;
+
+    pushDataLayer({
+      event: "quick_view_image_nav",
+      store_section: "popup",
+      product_id: safeProduct?.handle,
+      ui_action: "next_image",
+      view_context: "quick_view",
+    });
+
     setSelectedImageIndex((prev) =>
       prev === images.length - 1 ? 0 : prev + 1,
     );
+  };
+
+  const handleThumbnailClick = (index) => {
+    setSelectedImageIndex(index);
+
+    pushDataLayer({
+      event: "quick_view_thumbnail_click",
+      store_section: "popup",
+      product_id: safeProduct?.handle,
+      ui_action: "thumbnail_select",
+      view_context: "quick_view",
+      value: index,
+    });
   };
 
   const handleAdd = async () => {
@@ -282,6 +342,8 @@ export default function PopupProductQuickView({ product, onClose }) {
       page_type: "popup_quick_view",
       page_path: window.location.pathname,
       page_location: window.location.href,
+      content_group: "popup",
+      portfolio_id: `popup_quick_view:${safeProduct?.handle || "unknown"}`,
     });
 
     if (typeof refreshCart === "function") {
@@ -312,6 +374,8 @@ export default function PopupProductQuickView({ product, onClose }) {
       page_type: "popup_quick_view",
       page_path: window.location.pathname,
       page_location: window.location.href,
+      content_group: "popup",
+      portfolio_id: `popup_quick_view:${safeProduct?.handle || "unknown"}`,
     });
 
     let freshCart = null;
@@ -328,6 +392,8 @@ export default function PopupProductQuickView({ product, onClose }) {
       page_type: "checkout",
       page_path: window.location.pathname,
       page_location: window.location.href,
+      content_group: "popup",
+      portfolio_id: `popup_quick_view:${safeProduct?.handle || "unknown"}`,
     });
 
     const checkoutUrl = freshCart?.checkoutUrl || cart?.checkoutUrl;
@@ -338,6 +404,7 @@ export default function PopupProductQuickView({ product, onClose }) {
     }
 
     if (typeof openCart === "function") openCart();
+
     closeWithEvent("buy_now_fallback_open_cart");
   };
 
@@ -348,23 +415,27 @@ export default function PopupProductQuickView({ product, onClose }) {
       id="overlay"
       onClick={closeIfOverlay}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-white w-full max-w-3xl max-h-[95vh] overflow-y-auto rounded-lg shadow-xl flex flex-col md:flex-row relative">
+      <div className="bg-white w-full max-w-5xl max-h-[94vh] overflow-y-auto rounded-lg shadow-xl flex flex-col md:flex-row relative">
         <button
           onClick={() => closeWithEvent("close_button")}
-          className="absolute top-3 right-3 bg-white p-1 rounded-full shadow z-10"
+          className="absolute top-3 right-3 bg-white p-1 rounded-full shadow z-20"
           aria-label="Close Modal"
           type="button">
           <X className="w-6 h-6 text-black" />
         </button>
 
-        <div className="w-full md:w-1/2 flex flex-col items-center p-4">
-          <div className="relative w-full aspect-[4/5] max-w-[480px] bg-white flex items-center justify-center rounded">
+        <div className="w-full md:w-[58%] flex flex-col items-center p-4 md:p-6">
+          <div className="relative w-full h-[56vh] min-h-[340px] max-h-[680px] bg-[#f7f7f4] flex items-center justify-center rounded overflow-hidden">
             <Image
-              src={images[selectedImageIndex]?.src}
-              alt={safeProduct.title}
+              src={selectedImage?.src}
+              alt={getImageAlt(
+                selectedImage,
+                safeProduct?.title,
+                selectedImageIndex,
+              )}
               fill
-              className="object-contain rounded"
-              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, 58vw"
               priority
             />
 
@@ -372,38 +443,16 @@ export default function PopupProductQuickView({ product, onClose }) {
               <>
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    pushDataLayer({
-                      event: "quick_view_image_nav",
-                      store_section: "popup",
-                      product_id: safeProduct?.handle,
-                      ui_action: "prev_image",
-                      view_context: "quick_view",
-                    });
-                    goPrev();
-                  }}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white p-1 rounded-full shadow z-10"
+                  onClick={goPrev}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow z-10 hover:bg-white"
                   aria-label="Previous image">
                   <ArrowLeft className="w-5 h-5 text-black" />
                 </button>
 
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    pushDataLayer({
-                      event: "quick_view_image_nav",
-                      store_section: "popup",
-                      product_id: safeProduct?.handle,
-                      ui_action: "next_image",
-                      view_context: "quick_view",
-                    });
-                    goNext();
-                  }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white p-1 rounded-full shadow z-10"
+                  onClick={goNext}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow z-10 hover:bg-white"
                   aria-label="Next image">
                   <ArrowRight className="w-5 h-5 text-black" />
                 </button>
@@ -412,41 +461,34 @@ export default function PopupProductQuickView({ product, onClose }) {
           </div>
 
           {images.length > 1 && (
-            <div className="flex gap-2 mt-4 overflow-x-auto px-2">
-              {images.map((img, i) => (
-                <Image
-                  key={`${img.src}-${i}`}
-                  src={img.src}
-                  alt={`Thumbnail ${i + 1}`}
-                  width={64}
-                  height={80}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setSelectedImageIndex(i);
-                    pushDataLayer({
-                      event: "quick_view_thumbnail_click",
-                      store_section: "popup",
-                      product_id: safeProduct?.handle,
-                      ui_action: "thumbnail_select",
-                      view_context: "quick_view",
-                      value: i,
-                    });
-                  }}
-                  className={`rounded-md cursor-pointer border object-cover ${
-                    selectedImageIndex === i
+            <div className="flex gap-2 mt-4 overflow-x-auto w-full pb-1">
+              {images.map((img, index) => (
+                <button
+                  key={`${img.src}-${index}`}
+                  type="button"
+                  onClick={() => handleThumbnailClick(index)}
+                  className={`relative w-16 h-16 flex-shrink-0 border rounded overflow-hidden bg-[#f7f7f4] transition ${
+                    selectedImageIndex === index
                       ? "border-black"
-                      : "border-transparent"
+                      : "border-gray-300 hover:border-gray-500"
                   }`}
-                />
+                  aria-label={`View product image ${index + 1}`}>
+                  <Image
+                    src={img.src}
+                    alt={getImageAlt(img, safeProduct?.title, index)}
+                    fill
+                    sizes="64px"
+                    className="object-cover"
+                  />
+                </button>
               ))}
             </div>
           )}
         </div>
 
-        <div className="w-full md:w-1/2 p-6 flex flex-col justify-between">
+        <div className="w-full md:w-[42%] p-6 flex flex-col justify-between">
           <div>
-            <h1 className="text-lg sm:text-xl font-semibold leading-tight mb-2 truncate max-w-full">
+            <h1 className="text-lg sm:text-xl font-semibold leading-tight mb-2 pr-8">
               {safeProduct.title}
             </h1>
 
@@ -465,6 +507,7 @@ export default function PopupProductQuickView({ product, onClose }) {
                   value={selectedVariant}
                   onChange={(e) => {
                     setSelectedVariant(e.target.value);
+
                     pushDataLayer({
                       event: "select_item",
                       store_section: "popup",

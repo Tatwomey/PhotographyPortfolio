@@ -45,7 +45,7 @@ export default function PopUpHero() {
       {/* ✅ Content */}
       <div className="relative z-[2] text-white text-center px-6 max-w-[980px]">
         <h2 className="text-4xl md:text-5xl font-bold mb-4">
-          Limited Edition prints available now
+          Limited prints now available
         </h2>
       </div>
     </section>

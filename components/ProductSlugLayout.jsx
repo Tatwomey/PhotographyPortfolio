@@ -72,6 +72,12 @@ function buildAnalyticsItem({
   };
 }
 
+function getImageAlt(img, productTitle, idx) {
+  return (
+    img?.altText || img?.alt || `${productTitle || "Product image"} ${idx + 1}`
+  );
+}
+
 /* ============================================================
 COMPONENT
 ============================================================ */
@@ -91,14 +97,17 @@ export default function ProductSlugLayout({
   const lastViewItemRef = useRef("");
 
   const isPopup = storeSection === "popup";
+
   const variants = useMemo(
     () => (Array.isArray(product?.variants) ? product.variants : []),
     [product?.variants],
   );
+
   const images = useMemo(
     () => (Array.isArray(product?.images) ? product.images : []),
     [product?.images],
   );
+
   const hasRenderableProduct = Boolean(
     product && variants.length && images.length,
   );
@@ -122,6 +131,7 @@ export default function ProductSlugLayout({
             ?.value,
       )
       .filter(Boolean);
+
     return Array.from(new Set(vals));
   }, [variants]);
 
@@ -155,6 +165,7 @@ export default function ProductSlugLayout({
 
   const variantsForColor = useMemo(() => {
     if (!selectedColor) return variants;
+
     return variants.filter((v) =>
       v.selectedOptions?.some(
         (o) => o.name.toLowerCase() === "color" && o.value === selectedColor,
@@ -166,15 +177,16 @@ export default function ProductSlugLayout({
     setSelectedColor(defaultColor);
     setSelectedVariant(defaultVariant);
     setCurrentImageIdx(0);
-    swiperRef.current?.slideToLoop(0);
+    swiperRef.current?.slideToLoop?.(0);
   }, [defaultColor, defaultVariant, product?.handle]);
 
   useEffect(() => {
     const v = variantsForColor[0];
     if (!v) return;
+
     setSelectedVariant(v);
     setCurrentImageIdx(0);
-    swiperRef.current?.slideToLoop(0);
+    swiperRef.current?.slideToLoop?.(0);
   }, [selectedColor, variantsForColor]);
 
   const rawPriceAmount =
@@ -243,14 +255,15 @@ export default function ProductSlugLayout({
 
   const handleArrowNav = (dir) => {
     triggerZoomPulse();
-    if (dir === "prev") swiperRef.current?.slidePrev();
-    if (dir === "next") swiperRef.current?.slideNext();
+
+    if (dir === "prev") swiperRef.current?.slidePrev?.();
+    if (dir === "next") swiperRef.current?.slideNext?.();
   };
 
   const handleThumbnailClick = (idx) => {
     triggerZoomPulse();
     setCurrentImageIdx(idx);
-    swiperRef.current?.slideToLoop(idx);
+    swiperRef.current?.slideToLoop?.(idx);
   };
 
   const handleSlideChange = (swiper) => {
@@ -339,10 +352,10 @@ export default function ProductSlugLayout({
 
   return (
     <main className="bg-white text-black w-full overflow-x-hidden">
-      <div className="max-w-[1280px] mx-auto px-5 lg:px-6 pt-8 lg:pt-12 pb-16">
+      <div className="max-w-[1360px] mx-auto px-4 sm:px-5 lg:px-8 pt-8 lg:pt-12 pb-16">
         <div className="flex flex-col lg:flex-row items-start gap-10 lg:gap-16">
           {/* ================= IMAGE COLUMN ================= */}
-          <div className="w-full lg:w-[58%] relative">
+          <div className="w-full lg:w-[60%] relative">
             {isPopup ? (
               <div className="relative">
                 <Swiper
@@ -355,61 +368,79 @@ export default function ProductSlugLayout({
                   }`}>
                   {images.map((img, idx) => (
                     <SwiperSlide key={idx}>
-                      <div className="aspect-[4/5] w-full flex items-center justify-center overflow-hidden">
+                      {/* 
+                        Premium flexible gallery stage:
+                        - Not forced to 4:5
+                        - Wide GFAP mockups can breathe
+                        - Portrait print mockups still display cleanly
+                      */}
+                      <div className="relative w-full h-[62vh] min-h-[420px] max-h-[760px] bg-[#f7f7f4] flex items-center justify-center overflow-hidden rounded-md">
                         <Image
                           src={img.src}
-                          alt={product.title}
-                          width={1600}
-                          height={2000}
+                          alt={getImageAlt(img, product.title, idx)}
+                          fill
                           priority={idx === 0}
-                          className="object-contain w-full h-full"
+                          sizes="(min-width: 1280px) 760px, (min-width: 1024px) 60vw, 100vw"
+                          className="object-contain"
                         />
                       </div>
                     </SwiperSlide>
                   ))}
                 </Swiper>
 
-                <button
-                  className="modal-arrow left !flex"
-                  onClick={() => handleArrowNav("prev")}>
-                  <ChevronLeft />
-                </button>
-                <button
-                  className="modal-arrow right !flex"
-                  onClick={() => handleArrowNav("next")}>
-                  <ChevronRight />
-                </button>
+                {images.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      className="modal-arrow left !flex"
+                      onClick={() => handleArrowNav("prev")}
+                      aria-label="Previous product image">
+                      <ChevronLeft />
+                    </button>
+
+                    <button
+                      type="button"
+                      className="modal-arrow right !flex"
+                      onClick={() => handleArrowNav("next")}
+                      aria-label="Next product image">
+                      <ChevronRight />
+                    </button>
+                  </>
+                )}
               </div>
             ) : (
-              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-md">
+              <div className="relative w-full h-[62vh] min-h-[420px] max-h-[760px] bg-[#f7f7f4] flex items-center justify-center overflow-hidden rounded-md">
                 <Image
                   key={currentImage.src}
                   src={currentImage.src}
                   alt={currentImage.altText || product.title}
                   fill
+                  sizes="(min-width: 1280px) 760px, (min-width: 1024px) 60vw, 100vw"
                   className="object-contain"
+                  priority
                 />
               </div>
             )}
 
             {images.length > 1 && (
-              <div className="flex gap-3 mt-4 overflow-x-auto">
+              <div className="flex gap-3 mt-4 overflow-x-auto pb-2">
                 {images.map((img, idx) => (
                   <button
                     key={idx}
+                    type="button"
                     onClick={() => handleThumbnailClick(idx)}
-                    className={`border rounded ${
+                    aria-label={`View image ${idx + 1}`}
+                    className={`relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 border rounded overflow-hidden bg-[#f7f7f4] transition ${
                       currentImageIdx === idx
                         ? "border-black"
-                        : "border-gray-300"
+                        : "border-gray-300 hover:border-gray-500"
                     }`}>
                     <Image
                       src={img.src}
-                      alt={
-                        img.altText || `${product.title} thumbnail ${idx + 1}`
-                      }
-                      width={80}
-                      height={100}
+                      alt={getImageAlt(img, product.title, idx)}
+                      fill
+                      sizes="96px"
+                      className="object-cover"
                     />
                   </button>
                 ))}
@@ -418,7 +449,7 @@ export default function ProductSlugLayout({
           </div>
 
           {/* ================= DETAILS COLUMN ================= */}
-          <div className="w-full lg:w-[42%] lg:pt-6">
+          <div className="w-full lg:w-[40%] lg:pt-6 lg:sticky lg:top-24">
             <nav className="text-sm text-gray-500 mb-4">
               <ol className="flex items-center gap-2">
                 <li>
@@ -450,7 +481,9 @@ export default function ProductSlugLayout({
                   {colorOptions.map((color) => (
                     <button
                       key={color}
+                      type="button"
                       onClick={() => setSelectedColor(color)}
+                      aria-label={`Select ${color}`}
                       className={`w-6 h-6 rounded-full border-2 ${
                         selectedColor === color
                           ? "border-black"
@@ -472,7 +505,7 @@ export default function ProductSlugLayout({
               <div className="mb-6">
                 <label className="block mb-2 text-sm">Edition / Size</label>
                 <select
-                  value={selectedVariant.id}
+                  value={selectedVariant?.id || ""}
                   onChange={(e) =>
                     setSelectedVariant(
                       variantsForColor.find((v) => v.id === e.target.value),
@@ -492,19 +525,21 @@ export default function ProductSlugLayout({
               {!isSoldOut ? (
                 <>
                   <button
+                    type="button"
                     className="w-full bg-black text-white py-3 rounded-md"
                     onClick={handleAddToCartClick}>
                     Add to Cart
                   </button>
 
                   <button
+                    type="button"
                     className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-800"
                     onClick={handleBuyNow}>
                     Buy It Now
                   </button>
                 </>
               ) : (
-                <button className="w-full border py-3 rounded-md">
+                <button type="button" className="w-full border py-3 rounded-md">
                   Notify Me When Back in Stock
                 </button>
               )}
