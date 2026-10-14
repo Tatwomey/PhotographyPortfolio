@@ -48,3 +48,9 @@ Unit tests exercise payloads, quantity deltas, invalid currencies, checkout navi
 ## Rollback
 
 Revert this code commit and redeploy the prior successful site build. GTM version 19 is the configuration baseline; publish that version to roll back a later GTM release. GA4 dimensions, audiences and key events are prospective and do not rewrite history. Do not delete existing reporting data to undo a configuration change.
+
+
+### Shopify purchase pixel (2026-10-14)
+The connected GA4 Purchase Pixel was updated and reloaded to verify its saved source matches `integrations/shopify/ga4-purchase-pixel.js`. It subscribes only to `checkout_completed`; storefront remains the begin_checkout owner. Unit price is line total divided by quantity. Purchase value uses subtotal excluding shipping/tax and preserves zero-value orders. Invalid money/quantities and missing stable order identifiers are skipped. Checkout query strings are excluded from the purchase page_location override.
+
+Run `npm run test:analytics` for 14 tests, including the pixel sandbox fixture. This is not an end-to-end paid-order test. Order-level discount allocation and consent/GA4 receipt still need a controlled checkout validation. Both Vercel previews passed builds for commit 5095f8c; preview add-to-cart was verified.
