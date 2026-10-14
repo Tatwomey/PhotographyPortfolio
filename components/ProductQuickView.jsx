@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { X, ArrowLeft, ArrowRight } from "lucide-react";
 import { useShopContext } from "@/contexts/shopContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
@@ -36,23 +36,22 @@ function formatMoney(amount, currencyCode = "USD") {
 ------------------------------------------ */
 
 export default function PopupProductQuickView({ product, onClose }) {
-  const { cart, loading, handleAddToCart, refreshCart, openCart } =
+  const { loading, handleAddToCart, beginCheckout, openCart } =
     useShopContext();
   const { currency } =
     useCurrency(); /* -----------------------------------------
      Safe Normalization
   ------------------------------------------ */
 
-  const safeProduct = product || {};
+  const safeProduct = useMemo(() => product || {}, [product]);
   const safeImages = Array.isArray(safeProduct.images)
     ? safeProduct.images
     : [];
-  const safeVariants = Array.isArray(safeProduct.variants)
-    ? safeProduct.variants
-    : []; /* -----------------------------------------
+  const safeVariants = useMemo(() => Array.isArray(safeProduct.variants) ? safeProduct.variants : [], [safeProduct.variants]); /* -----------------------------------------
      State
   ------------------------------------------ */
 
+  const openedProduct = useRef(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState(
     safeVariants[0] || null,
@@ -68,18 +67,21 @@ export default function PopupProductQuickView({ product, onClose }) {
     setSelectedImageIndex(0);
     setSelectedVariant(safeVariants[0] || null);
 
+    if (openedProduct.current !== safeProduct.handle) {
+      openedProduct.current = safeProduct.handle;
     pushDataLayer({
       event: "quick_view_open",
-      store_section: "popup",
+      store_section: window.location.pathname.startsWith("/popup") ? "popup" : "shop",
       product_id: safeProduct.handle,
       product_title: safeProduct.title,
       view_context: "quick_view",
     });
+    }
 
     return () => {
       document.body.classList.remove("modal-open");
     };
-  }, [safeProduct.handle]); // only when product actually changes
+  }, [safeProduct.handle, safeProduct.title, safeVariants]); // only when product actually changes
   /* -----------------------------------------
      Variant + Price Logic (Fully Hardened)
   ------------------------------------------ */
@@ -117,7 +119,7 @@ export default function PopupProductQuickView({ product, onClose }) {
     (ui_action) => {
       pushDataLayer({
         event: "quick_view_close",
-        store_section: "popup",
+        store_section: window.location.pathname.startsWith("/popup") ? "popup" : "shop",
         product_id: safeProduct.handle,
         product_title: safeProduct.title,
         ui_action,
@@ -146,53 +148,17 @@ export default function PopupProductQuickView({ product, onClose }) {
 
   const handleAdd = async () => {
     if (!selectedVariant?.id || isSoldOut || loading) return;
-
-    pushDataLayer({
-      event: "add_to_cart",
-      store_section: "popup",
-      product_id: safeProduct.handle,
-      product_title: safeProduct.title,
-      variant_id: selectedVariant.id,
-      quantity: 1,
-      price: priceData.amount,
-      currency: priceData.currencyCode,
-      ui_action: "quick_view_add_to_cart",
-      view_context: "quick_view",
-    });
-
-    await handleAddToCart(selectedVariant.id, 1);
-
-    if (typeof refreshCart === "function") {
-      await refreshCart();
-    }
-
-    if (typeof openCart === "function") openCart();
-
+    const updated = await handleAddToCart(selectedVariant.id, 1);
+    if (!updated) return;
+    openCart();
     closeWithEvent("post_add_close");
   };
 
   const handleBuyNow = async () => {
     if (!selectedVariant?.id || isSoldOut || loading) return;
-
-    await handleAddToCart(selectedVariant.id, 1);
-
-    let freshCart = null;
-    if (typeof refreshCart === "function") {
-      freshCart = await refreshCart();
-    }
-
-    const checkoutUrl = freshCart?.checkoutUrl || cart?.checkoutUrl;
-
-    if (checkoutUrl) {
-      window.location.href = checkoutUrl;
-      return;
-    }
-
-    if (typeof openCart === "function") openCart();
-    closeWithEvent("buy_now_fallback_open_cart");
-  }; /* -----------------------------------------
-     Safety Exit
-  ------------------------------------------ */
+    const updated = await handleAddToCart(selectedVariant.id, 1);
+    if (updated) await beginCheckout(updated);
+  };
 
   if (!safeProduct || !safeImages.length)
     return null; /* -----------------------------------------

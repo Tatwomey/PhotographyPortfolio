@@ -1,44 +1,19 @@
-import React, { useRef, useEffect } from 'react';
-import { useShopContext } from '/contexts/shopContext';
-import Hero from "@/components/Hero";
+import { useEffect, useRef } from "react";
+import Link from "next/link";
+import { useShopContext } from "@/contexts/shopContext";
 
-const CheckoutPage = () => {
-  const { cart, handleCheckout } = useShopContext();
-  const checkoutRef = useRef(null);
-
+export default function CheckoutPage() {
+  const { cart, loading, beginCheckout } = useShopContext();
+  const started = useRef(false);
   useEffect(() => {
-    if (checkoutRef.current) {
-      checkoutRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (!loading && cart?.lines?.edges?.length && !started.current) {
+      started.current = true;
+      beginCheckout();
     }
-  }, []);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && cart?.checkoutUrl) {
-      window.location.href = cart.checkoutUrl;
-    }
-  }, [cart?.checkoutUrl]);
-
-  const handleCheckoutSubmit = async () => {
-    try {
-      const checkoutUrl = await handleCheckout();
-      if (checkoutUrl) {
-        window.location.href = checkoutUrl;
-      }
-    } catch (error) {
-      console.error('Checkout submission error:', error);
-    }
-  };
-
-  return (
-    <>
-      <Hero />
-      <div ref={checkoutRef} style={{ paddingTop: '80px' }}>
-        <button onClick={handleCheckoutSubmit}>
-          Complete Checkout
-        </button>
-      </div>
-    </>
-  );
-};
-
-export default CheckoutPage;
+  }, [cart, loading, beginCheckout]);
+  return <main className="pt-40 p-8 text-center">
+    <h1>Checkout</h1>
+    <button disabled={loading || !cart?.lines?.edges?.length} onClick={() => beginCheckout()}>Continue to secure checkout</button>
+    <p><Link href="/cart">Return to your cart</Link></p>
+  </main>;
+}

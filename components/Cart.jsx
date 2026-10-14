@@ -23,12 +23,12 @@ function formatMoney(amount, currencyCode = "USD") {
 }
 
 export default function Cart() {
-  const { cart, isCartOpen, closeCart, handleRemoveFromCart, refreshCart } =
+  const { cart, isCartOpen, closeCart, handleRemoveFromCart, beginCheckout, loading } =
     useShopContext();
 
   const { currency } = useCurrency();
 
-  const lines = cart?.lines?.edges || [];
+  const lines = useMemo(() => cart?.lines?.edges || [], [cart]);
 
   // ✅ Prevent body scroll when drawer is open
   useEffect(() => {
@@ -163,9 +163,7 @@ export default function Cart() {
                           onClick={async () => {
                             // Remove (your shopContext decrements qty or removes)
                             await handleRemoveFromCart(item);
-                            if (typeof refreshCart === "function") {
-                              await refreshCart();
-                            }
+
                           }}
                           className="mt-2 text-xs text-red-600 hover:underline">
                           Remove
@@ -188,18 +186,11 @@ export default function Cart() {
             </div>
 
             <div className="flex gap-3">
-              <Link
-                href={cart?.checkoutUrl || "#"}
-                onClick={(e) => {
-                  if (!cart?.checkoutUrl) e.preventDefault();
-                }}
-                className={`flex-1 text-center py-3 rounded text-sm font-medium ${
-                  cart?.checkoutUrl
-                    ? "bg-black text-white hover:bg-gray-800"
-                    : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                }`}>
+              <button type="button" disabled={loading || !cart?.checkoutUrl || !lines.length}
+                onClick={() => beginCheckout()}
+                className="flex-1 text-center py-3 rounded text-sm font-medium bg-black text-white disabled:bg-gray-300">
                 Checkout
-              </Link>
+              </button>
 
               <Link
                 href="/popup"

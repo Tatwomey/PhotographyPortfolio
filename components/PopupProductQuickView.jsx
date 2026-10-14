@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { X, ArrowLeft, ArrowRight } from "lucide-react";
 import { useShopContext } from "@/contexts/shopContext";
 
@@ -157,32 +157,11 @@ function getImageAlt(image, productTitle, index) {
   );
 }
 
-function buildAnalyticsItem({ product, selectedVariantObj, quantity = 1 }) {
-  const rawPrice = getVariantAmount(selectedVariantObj);
-  const normalizedPrice = normalizeAnalyticsPrice(rawPrice);
-
-  return {
-    item_id: String(
-      selectedVariantObj?.id ||
-        product?.id ||
-        product?.handle ||
-        product?.title ||
-        "",
-    ),
-    item_name: product?.title || "",
-    item_brand: "Trevor Twomey Photo",
-    item_category: "Fine Art Print",
-    item_variant: getVariantTitle(selectedVariantObj),
-    price: normalizedPrice,
-    quantity: Number(quantity || 1),
-  };
-}
-
 export default function PopupProductQuickView({ product, onClose }) {
-  const { cart, loading, handleAddToCart, refreshCart, openCart } =
+  const { loading, handleAddToCart, beginCheckout, openCart } =
     useShopContext();
 
-  const safeProduct = product || {};
+  const safeProduct = useMemo(() => product || {}, [product]);
 
   const images = useMemo(() => normalizeImages(safeProduct), [safeProduct]);
 
@@ -191,6 +170,7 @@ export default function PopupProductQuickView({ product, onClose }) {
     [safeProduct],
   );
 
+  const openedProduct = useRef(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState(
     variants?.[0]?.id || "",
@@ -247,6 +227,8 @@ export default function PopupProductQuickView({ product, onClose }) {
     setSelectedImageIndex(0);
     setSelectedVariant(variants?.[0]?.id || "");
 
+    if (openedProduct.current !== safeProduct.handle) {
+      openedProduct.current = safeProduct.handle;
     pushDataLayer({
       event: "quick_view_open",
       store_section: "popup",
@@ -254,6 +236,7 @@ export default function PopupProductQuickView({ product, onClose }) {
       product_title: safeProduct?.title,
       view_context: "quick_view",
     });
+    }
 
     return () => {
       document.body.classList.remove("modal-open");
@@ -325,87 +308,16 @@ export default function PopupProductQuickView({ product, onClose }) {
 
   const handleAdd = async () => {
     if (!selectedVariant || isSoldOut || loading || !selectedVariantObj) return;
-
-    const item = buildAnalyticsItem({
-      product: safeProduct,
-      selectedVariantObj,
-      quantity: 1,
-    });
-
-    await handleAddToCart(selectedVariant, 1);
-
-    pushDataLayer({
-      event: "add_to_cart",
-      currency: currencyCode,
-      value: priceAmount,
-      items: [item],
-      page_type: "popup_quick_view",
-      page_path: window.location.pathname,
-      page_location: window.location.href,
-      content_group: "popup",
-      portfolio_id: `popup_quick_view:${safeProduct?.handle || "unknown"}`,
-    });
-
-    if (typeof refreshCart === "function") {
-      await refreshCart();
-    }
-
-    if (typeof openCart === "function") openCart();
-
+    const updated = await handleAddToCart(selectedVariant, 1);
+    if (!updated) return;
+    openCart();
     closeWithEvent("post_add_close");
   };
 
   const handleBuyNow = async () => {
     if (!selectedVariant || isSoldOut || loading || !selectedVariantObj) return;
-
-    const item = buildAnalyticsItem({
-      product: safeProduct,
-      selectedVariantObj,
-      quantity: 1,
-    });
-
-    await handleAddToCart(selectedVariant, 1);
-
-    pushDataLayer({
-      event: "add_to_cart",
-      currency: currencyCode,
-      value: priceAmount,
-      items: [item],
-      page_type: "popup_quick_view",
-      page_path: window.location.pathname,
-      page_location: window.location.href,
-      content_group: "popup",
-      portfolio_id: `popup_quick_view:${safeProduct?.handle || "unknown"}`,
-    });
-
-    let freshCart = null;
-
-    if (typeof refreshCart === "function") {
-      freshCart = await refreshCart();
-    }
-
-    pushDataLayer({
-      event: "begin_checkout",
-      currency: currencyCode,
-      value: priceAmount,
-      items: [item],
-      page_type: "checkout",
-      page_path: window.location.pathname,
-      page_location: window.location.href,
-      content_group: "popup",
-      portfolio_id: `popup_quick_view:${safeProduct?.handle || "unknown"}`,
-    });
-
-    const checkoutUrl = freshCart?.checkoutUrl || cart?.checkoutUrl;
-
-    if (checkoutUrl) {
-      window.location.href = checkoutUrl;
-      return;
-    }
-
-    if (typeof openCart === "function") openCart();
-
-    closeWithEvent("buy_now_fallback_open_cart");
+    const updated = await handleAddToCart(selectedVariant, 1);
+    if (updated) await beginCheckout(updated);
   };
 
   if (!safeProduct || !images.length) return null;

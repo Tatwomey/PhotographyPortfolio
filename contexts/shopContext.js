@@ -1,164 +1,128 @@
-// contexts/shopContext.js
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-} from "react";
-import {
-  createCart,
-  fetchCart,
-  removeItemFromCart,
-  addItemToCart,
-  updateCartItemQuantity,
-} from "@/lib/shopify";
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
+import { createCart, fetchCart, removeItemFromCart, addItemToCart, updateCartItemQuantity } from "@/lib/shopify";
+import { addedLines, cartLines, navigateToCheckout, trackCartEvent } from "@/lib/ecommerce.mjs";
 
 const ShopContext = createContext();
-
 export const useShopContext = () => useContext(ShopContext);
 
 export const ShopProvider = ({ children }) => {
   const [cart, setCart] = useState(null);
+  const currentCart = useRef(null);
+  const busy = useRef(false);
+  const checkingOut = useRef(false);
+  const initialized = useRef(false);
   const [loading, setLoading] = useState(true);
-  const [cartId, setCartId] = useState(null);
-  const [initialized, setInitialized] = useState(false);
-
+  const [cartError, setCartError] = useState("");
   const [isCartOpen, setIsCartOpen] = useState(false);
-
-  // ✅ Explicit controls (best for modals / Buy Now flows)
   const openCart = useCallback(() => setIsCartOpen(true), []);
   const closeCart = useCallback(() => setIsCartOpen(false), []);
-  const toggleCart = useCallback(() => setIsCartOpen((prev) => !prev), []);
-
-  /**
-   * Create a new cart and immediately fetch full cart data
-   * so checkoutUrl/lines shape is consistent.
-   */
-  const createNewCart = useCallback(async () => {
-    try {
-      const newCart = await createCart(); // returns { id } from your lib
-      window.localStorage.setItem("shopify_cart_id", newCart.id);
-      setCartId(newCart.id);
-
-      // ✅ fetch full cart details (checkoutUrl, lines, etc.)
-      const fullCart = await fetchCart(newCart.id);
-      setCart(fullCart);
-
-      return newCart.id;
-    } catch (error) {
-      console.error("Error creating new cart:", error);
-      return null;
+  const toggleCart = useCallback(() => setIsCartOpen(prev => !prev), []);
+  const remember = useCallback(next => {
+    currentCart.current = next;
+    setCart(next);
+    if (next?.id) {
+      try { window.localStorage.setItem("shopify_cart_id", next.id); } catch { /* Storage may be blocked. */ }
     }
+    return next;
   }, []);
 
-  const initializeCart = useCallback(async () => {
-    const storedCartId = window.localStorage.getItem("shopify_cart_id");
-
-    if (storedCartId) {
+  useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+    busy.current = true;
+    (async () => {
       try {
-        const cartData = await fetchCart(storedCartId);
-        if (cartData && cartData.id) {
-          setCart(cartData);
-          setCartId(storedCartId);
-        } else {
-          await createNewCart();
-        }
-      } catch (error) {
-        console.error("Error fetching cart data:", error);
-        await createNewCart();
-      }
-    } else {
-      await createNewCart();
-    }
+        let id;
+        try { id = window.localStorage.getItem("shopify_cart_id"); } catch { /* Use an in-memory cart. */ }
+        remember((id ? await fetchCart(id) : null) || await createCart());
+      } catch {
+        setCartError("Your cart could not be loaded. Please try again.");
+      } finally { busy.current = false; setLoading(false); }
+    })();
+  }, [remember]);
 
-    setLoading(false);
-  }, [createNewCart]);
+  const refreshCart = useCallback(async () => {
+    if (!currentCart.current?.id || busy.current) return currentCart.current;
+    try { return remember(await fetchCart(currentCart.current.id)); }
+    catch { setCartError("Your cart could not be refreshed. Please try again."); return null; }
+  }, [remember]);
+
+  const handleAddToCart = useCallback(async (variantId, quantity = 1) => {
+    if (busy.current || checkingOut.current || !variantId || !Number.isInteger(quantity) || quantity < 1) return null;
+    busy.current = true; setLoading(true); setCartError("");
+    try {
+      const before = currentCart.current || remember(await createCart());
+      const after = await addItemToCart({cartId: before.id, variantId, quantity});
+      remember(after);
+      trackCartEvent("add_to_cart", after, addedLines(before, after, variantId));
+      return after;
+    } catch {
+      setCartError("That item could not be added. Please try again.");
+      return null;
+    } finally { busy.current = false; setLoading(false); }
+  }, [remember]);
+
+  const handleRemoveFromCart = useCallback(async item => {
+    if (busy.current || checkingOut.current || !currentCart.current?.id) return null;
+    busy.current = true; setLoading(true); setCartError("");
+    try {
+      const before = currentCart.current;
+      const line = cartLines(before).find(candidate => candidate.id === item.id);
+      if (!line) return null;
+      const after = line.quantity > 1
+        ? await updateCartItemQuantity(before.id, line.id, line.quantity - 1)
+        : await removeItemFromCart(before.id, line.id);
+      remember(after);
+      trackCartEvent("remove_from_cart", before, addedLines(after, before, line.merchandise.id));
+      return after;
+    } catch {
+      setCartError("Your cart could not be updated. Please try again.");
+      return null;
+    } finally { busy.current = false; setLoading(false); }
+  }, [remember]);
 
   useEffect(() => {
-    if (!initialized) {
-      initializeCart();
-      setInitialized(true);
-    }
-  }, [initialized, initializeCart]);
+    const resume = event => {
+      if (!event.persisted) return;
+      checkingOut.current = false;
+      setLoading(false);
+      refreshCart();
+    };
+    window.addEventListener("pageshow", resume);
+    return () => window.removeEventListener("pageshow", resume);
+  }, [refreshCart]);
 
-  /**
-   * ✅ IMPORTANT: return the fetched cart so callers (QuickView Buy Now)
-   * can immediately use the freshest checkoutUrl.
-   */
-  const refreshCart = useCallback(async () => {
-    if (!cartId) return null;
+  const beginCheckout = useCallback(async freshCart => {
+    if (busy.current || checkingOut.current) return false;
+    checkingOut.current = true; setLoading(true); setCartError("");
     try {
-      const cartData = await fetchCart(cartId);
-      setCart(cartData);
-      return cartData; // ✅ critical
-    } catch (error) {
-      console.error("Error refreshing cart:", error);
-      return null;
+      const next = freshCart?.id ? freshCart : await refreshCart();
+      if (!navigateToCheckout(next, process.env.NEXT_PUBLIC_CHECKOUT_EVENT_OWNER || "storefront")) {
+        throw new Error("Checkout unavailable");
+      }
+      return true;
+    } catch {
+      checkingOut.current = false; setLoading(false);
+      setCartError("Checkout could not be opened. Please check your cart and try again.");
+      return false;
     }
-  }, [cartId]);
+  }, [refreshCart]);
 
-  const handleAddToCart = useCallback(
-    async (variantId, quantity) => {
-      setLoading(true);
-      try {
-        const currentCartId = cartId || (await createNewCart());
-        if (!currentCartId) return;
+  // One view per opening; cart mutations while the drawer is open are not new views.
+  const drawerViewed = useRef(false);
+  useEffect(() => {
+    if (!isCartOpen) { drawerViewed.current = false; return; }
+    if (!drawerViewed.current && cartLines(cart).length) {
+      drawerViewed.current = true;
+      trackCartEvent("view_cart", cart);
+    }
+  }, [isCartOpen, cart]);
 
-        await addItemToCart({ cartId: currentCartId, variantId, quantity });
-
-        // refresh and return it (even if you don't use it everywhere)
-        await refreshCart();
-      } catch (error) {
-        console.error("Failed to add item to cart:", error);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [cartId, createNewCart, refreshCart]
-  );
-
-  const handleRemoveFromCart = useCallback(
-    async (item) => {
-      setLoading(true);
-      try {
-        if (!cartId) return;
-
-        if (item.quantity > 1) {
-          const updatedCart = await updateCartItemQuantity(
-            cartId,
-            item.id,
-            item.quantity - 1
-          );
-          setCart(updatedCart);
-        } else {
-          await removeItemFromCart(cartId, item.id);
-          await refreshCart();
-        }
-      } catch (error) {
-        console.error("Failed to remove item from cart:", error);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [cartId, refreshCart]
-  );
-
-  return (
-    <ShopContext.Provider
-      value={{
-        cart,
-        loading,
-        handleAddToCart,
-        handleRemoveFromCart,
-        refreshCart,
-
-        isCartOpen,
-        toggleCart,
-        openCart,
-        closeCart,
-      }}>
-      {children}
-    </ShopContext.Provider>
-  );
+  return <ShopContext.Provider value={{cart, loading, cartError, handleAddToCart,
+    handleRemoveFromCart, refreshCart, beginCheckout, isCartOpen, toggleCart, openCart, closeCart}}>
+    {children}
+    {cartError && <div role="alert" className="fixed bottom-4 left-4 right-4 z-[100] bg-white text-black border border-red-700 p-4 rounded shadow-lg">
+      {cartError} <button type="button" onClick={() => setCartError("")} className="underline ml-3">Dismiss</button>
+    </div>}
+  </ShopContext.Provider>;
 };

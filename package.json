@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:analytics": "node --test tests/analytics.test.mjs tests/purchase-pixel.test.mjs"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
