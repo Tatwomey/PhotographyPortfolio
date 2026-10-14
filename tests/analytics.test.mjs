@@ -73,3 +73,11 @@ test('successful add returns authoritative cart including checkout URL; expired 
   assert.equal(await shopify.fetchCart('expired'),null);
  }finally {global.fetch=original;}
 });
+test('blocked analytics cannot turn a successful cart operation into an error',()=>{
+ global.window={dataLayer:{push(){throw new Error('blocked');}},location:{pathname:'/cart',origin:'https://example.com'}};
+ assert.doesNotThrow(()=>trackCartEvent('add_to_cart',cart(line('1',1,5))));delete global.window;
+});
+test('incomplete and oversized carts omit analytics totals',()=>{
+ assert.equal(cartPayload({...cart(line('1',1,5)),lines:{...cart(line('1',1,5)).lines,pageInfo:{hasNextPage:true}}}),null);
+ assert.equal(cartPayload(cart(...Array.from({length:201},(_,i)=>line(String(i),1,5)))),null);
+});
