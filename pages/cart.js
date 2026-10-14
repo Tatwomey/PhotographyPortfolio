@@ -1,5 +1,6 @@
+import { trackCartEvent } from "@/lib/ecommerce.mjs";
 import React, { useRef, useEffect, useMemo } from "react";
-import { useShopContext } from "/contexts/shopContext";
+import { useShopContext } from "@/contexts/shopContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import Hero from "@/components/Hero";
 import Image from "next/image";
@@ -24,11 +25,17 @@ function formatMoney(amount, currencyCode) {
 }
 
 const CartPage = () => {
-  const { cart, handleRemoveFromCart } = useShopContext();
+  const { cart, handleRemoveFromCart, beginCheckout, loading } = useShopContext();
+  const viewed = useRef(false);
+  useEffect(() => {
+    if (!viewed.current && cart?.lines?.edges?.length) {
+      viewed.current = true;
+      trackCartEvent("view_cart", cart);
+    }
+  }, [cart]);
   const { currency } = useCurrency();
 
-  const safeCart =
-    cart && cart.lines && cart.lines.edges ? cart.lines.edges : [];
+  const safeCart = useMemo(() => cart?.lines?.edges || [], [cart]);
 
   const cartPageRef = useRef(null);
   const checkoutRef = useRef(null);
@@ -151,14 +158,15 @@ const CartPage = () => {
 
             <div className="flex justify-between mt-6">
               {cart && cart.checkoutUrl && (
-                <Link href={cart.checkoutUrl} passHref>
+                <>
                   <button
+                    onClick={() => beginCheckout()} disabled={loading || !safeCart.length}
                     className="checkout-button block mb-4"
                     id="checkout"
                     ref={checkoutRef}>
                     Checkout Now
                   </button>
-                </Link>
+                </>
               )}
 
               <Link href="/popup" passHref>

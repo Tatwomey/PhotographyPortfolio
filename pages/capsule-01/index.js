@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { leadPayload } from "@/lib/lead.mjs";
 import Head from "next/head";
 
 export default function CapsuleLanding() {
@@ -8,40 +9,11 @@ export default function CapsuleLanding() {
     window.dataLayer = window.dataLayer || [];
 
     const handleKlaviyoFormEvent = (event) => {
-      const detail = event?.detail || {};
-      const eventType = detail?.type;
-
-      if (eventType !== "submit") return;
-
-      const formId = detail?.formId || detail?.formID || "SyxgXY";
-      const metaData = detail?.metaData || {};
-
-      const hasEmail = Boolean(metaData?.$email);
-      const hasPhone = Boolean(
-        metaData?.$phone_number || metaData?.phone_number,
-      );
-
-      window.dataLayer.push({
-        event: "generate_lead",
-        lead_type: "capsule_waitlist",
-        page_type: "capsule_01",
-        page_path: window.location.pathname,
-        page_location: window.location.href,
-        form_id: formId,
-        email_opt_in: hasEmail,
-        sms_opt_in: hasPhone,
-      });
-
-      console.log("[GTM] generate_lead pushed", {
-        event: "generate_lead",
-        lead_type: "capsule_waitlist",
-        page_type: "capsule_01",
-        page_path: window.location.pathname,
-        page_location: window.location.href,
-        form_id: formId,
-        email_opt_in: hasEmail,
-        sms_opt_in: hasPhone,
-      });
+      const payload = leadPayload(event?.detail, window.location);
+      if (payload) {
+        window.dataLayer.push(payload);
+        if (payload.band_interest) window.dataLayer.push({event: "artist_interest", band_interest: payload.band_interest});
+      }
     };
 
     window.addEventListener("klaviyoForms", handleKlaviyoFormEvent);

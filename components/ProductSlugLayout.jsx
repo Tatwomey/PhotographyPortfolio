@@ -91,7 +91,7 @@ export default function ProductSlugLayout({
   breadcrumbLabel = "Shop",
   breadcrumbHref = "/shop",
 }) {
-  const { handleAddToCart } = useShopContext();
+  const { handleAddToCart, beginCheckout } = useShopContext();
   const router = useRouter();
   const swiperRef = useRef(null);
   const lastViewItemRef = useRef("");
@@ -271,75 +271,12 @@ export default function ProductSlugLayout({
   };
 
   const handleAddToCartClick = async () => {
-    if (!selectedVariant?.id) return;
-
-    await handleAddToCart(selectedVariant.id, 1);
-
-    const item = buildAnalyticsItem({
-      product,
-      selectedVariant,
-      priceAmount,
-      quantity: 1,
-    });
-
-    pushDataLayer({
-      event: "add_to_cart",
-      currency: currencyCode,
-      value: priceAmount,
-      items: [item],
-      item_id: item.item_id,
-      item_name: item.item_name,
-      item_variant: item.item_variant,
-      quantity: 1,
-      page_type: `${storeSection}_product`,
-      page_path: window.location.pathname,
-      page_location: window.location.href,
-      content_group: storeSection,
-      portfolio_id: computedPortfolioId,
-    });
+    if (selectedVariant?.id) await handleAddToCart(selectedVariant.id, 1);
   };
-
   const handleBuyNow = async () => {
     if (!selectedVariant?.id) return;
-
-    await handleAddToCart(selectedVariant.id, 1);
-
-    const item = buildAnalyticsItem({
-      product,
-      selectedVariant,
-      priceAmount,
-      quantity: 1,
-    });
-
-    pushDataLayer({
-      event: "add_to_cart",
-      currency: currencyCode,
-      value: priceAmount,
-      items: [item],
-      item_id: item.item_id,
-      item_name: item.item_name,
-      item_variant: item.item_variant,
-      quantity: 1,
-      page_type: `${storeSection}_product`,
-      page_path: window.location.pathname,
-      page_location: window.location.href,
-      content_group: storeSection,
-      portfolio_id: computedPortfolioId,
-    });
-
-    pushDataLayer({
-      event: "begin_checkout",
-      currency: currencyCode,
-      value: priceAmount,
-      items: [item],
-      page_type: "checkout",
-      page_path: window.location.pathname,
-      page_location: window.location.href,
-      content_group: storeSection,
-      portfolio_id: computedPortfolioId,
-    });
-
-    router.push("/checkout");
+    const updated = await handleAddToCart(selectedVariant.id, 1);
+    if (updated) await beginCheckout(updated);
   };
 
   if (!hasRenderableProduct) {

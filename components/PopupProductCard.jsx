@@ -120,17 +120,7 @@ export default function PopupProductCard({
 
     if (onQuickView) onQuickView(product);
 
-    pushDataLayer({
-      event: "quick_view_open",
-      portfolio_id: portfolioId,
-      store_section: "popup",
-      product_id: product?.handle,
-      product_title: product?.title,
-      ui_action: "quick_view",
-      view_context: "popup_grid",
-      currency: currencyCode,
-      value: priceAmount,
-    });
+
   };
 
   if (!product) return null;
