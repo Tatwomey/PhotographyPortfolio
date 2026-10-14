@@ -81,6 +81,17 @@ export const ShopProvider = ({ children }) => {
     } finally { busy.current = false; setLoading(false); }
   }, [remember]);
 
+  useEffect(() => {
+    const resume = event => {
+      if (!event.persisted) return;
+      checkingOut.current = false;
+      setLoading(false);
+      refreshCart();
+    };
+    window.addEventListener("pageshow", resume);
+    return () => window.removeEventListener("pageshow", resume);
+  }, [refreshCart]);
+
   const beginCheckout = useCallback(async freshCart => {
     if (busy.current || checkingOut.current) return false;
     checkingOut.current = true; setLoading(true); setCartError("");
