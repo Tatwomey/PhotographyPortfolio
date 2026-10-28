@@ -96,12 +96,11 @@ export default function Login() {
     });
 
     if (result?.error) {
-      setError("You fucked up.");
+      setError("Incorrect username or password.");
       return;
     }
 
     const session = await getSession();
-    console.log("🔐 Session after login:", session);
 
     const rawPages = session?.user?.allowedPages ?? [];
     const allowedPages = rawPages
@@ -151,6 +150,7 @@ export default function Login() {
           <input
             type="text"
             placeholder="Username"
+            aria-label="Username"
             value={username}
             autoComplete="username"
             onChange={(e) => setUsername(e.target.value)}
@@ -159,6 +159,7 @@ export default function Login() {
           <input
             type="password"
             placeholder="Password"
+            aria-label="Password"
             value={password}
             autoComplete="current-password"
             onChange={(e) => setPassword(e.target.value)}
