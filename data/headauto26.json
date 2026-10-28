@@ -7,7 +7,7 @@
       {
         "id": "960a2933",
         "source": "960A2933.CR2",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 On Stage, photograph 1",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — On Stage, photograph 1",
         "landscape": false,
         "export": "960A2933.jpg",
         "width": 1600,
@@ -18,7 +18,7 @@
       {
         "id": "960a2998",
         "source": "960A2998.CR2",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 On Stage, photograph 2",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — On Stage, photograph 2",
         "landscape": false,
         "export": "960A2998.jpg",
         "width": 1600,
@@ -29,7 +29,7 @@
       {
         "id": "960a3013",
         "source": "960A3013.CR2",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 On Stage, photograph 3",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — On Stage, photograph 3",
         "landscape": false,
         "export": "960A3013.jpg",
         "width": 1600,
@@ -40,7 +40,7 @@
       {
         "id": "960a3406",
         "source": "960A3406.CR2",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 On Stage, photograph 4",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — On Stage, photograph 4",
         "landscape": false,
         "export": "960A3406-2.jpg",
         "width": 1600,
@@ -51,7 +51,7 @@
       {
         "id": "960a3168",
         "source": "960A3168.CR2",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 On Stage, photograph 5",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — On Stage, photograph 5",
         "landscape": false,
         "export": "960A3168.jpg",
         "width": 1600,
@@ -62,7 +62,7 @@
       {
         "id": "960a3288",
         "source": "960A3288.CR2",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 On Stage, photograph 6",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — On Stage, photograph 6",
         "landscape": true,
         "export": "960A3288.jpg",
         "width": 2400,
@@ -80,7 +80,7 @@
       {
         "id": "960a2889",
         "source": "960A2889.CR2",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 Cold Light, photograph 1",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Cold Light, photograph 1",
         "landscape": false,
         "export": "960A2889.jpg",
         "width": 1600,
@@ -91,7 +91,7 @@
       {
         "id": "960a3179",
         "source": "960A3179.CR2",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 Cold Light, photograph 2",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Cold Light, photograph 2",
         "landscape": false,
         "export": "960A3179.jpg",
         "width": 1714,
@@ -100,9 +100,20 @@
         "bytes": 1082955
       },
       {
+        "id": "960a3151",
+        "source": "960A3151.jpg",
+        "alt": "Head Automatica vocalist in blue stage haze at Bolero Block Party, Carlstadt, NJ",
+        "landscape": false,
+        "export": "960A3151.jpg",
+        "width": 1365,
+        "height": 2048,
+        "bytes": 779390,
+        "sha256": "34be5afe4e9a44bf78114299d61dbc569fda86d0ef9120481944633f4de8e36c"
+      },
+      {
         "id": "960a3210",
         "source": "960A3210.CR2",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 Cold Light, photograph 3",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Cold Light, photograph 3",
         "landscape": false,
         "export": "960A3210.jpg",
         "width": 1600,
@@ -113,7 +124,7 @@
       {
         "id": "960a3559",
         "source": "960A3559.JPG",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 Cold Light, photograph 4",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Cold Light, photograph 4",
         "landscape": false,
         "export": "960A3559-2.jpg",
         "width": 1600,
@@ -124,7 +135,7 @@
       {
         "id": "960a3578",
         "source": "960A3578.CR2",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 Cold Light, photograph 5",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Cold Light, photograph 5",
         "landscape": false,
         "export": "960A3578.jpg",
         "width": 1600,
@@ -142,7 +153,7 @@
       {
         "id": "960a2904",
         "source": "960A2904.CR2",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 Ink, photograph 1",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Ink, photograph 1",
         "landscape": false,
         "export": "960A2904.jpg",
         "width": 1600,
@@ -151,9 +162,20 @@
         "bytes": 969451
       },
       {
+        "id": "960a3082",
+        "source": "960A3082.jpg",
+        "alt": "Black-and-white portrait of Head Automatica vocalist singing with one arm raised",
+        "landscape": false,
+        "export": "960A3082.jpg",
+        "width": 1365,
+        "height": 2048,
+        "bytes": 186454,
+        "sha256": "e47bf93ae09758c50b25fd6bdee8fa8eceb46901ce7aad05afcf9d2e618c5c97"
+      },
+      {
         "id": "960a3024-edit",
         "source": "960A3024-Edit.tif",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 Ink, photograph 2",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Ink, photograph 2",
         "landscape": false,
         "export": "960A3024-Edit.jpg",
         "width": 1714,
@@ -164,7 +186,7 @@
       {
         "id": "craig-duo",
         "source": "craig-duo.psd",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 Ink, photograph 3",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Ink, photograph 3",
         "landscape": false,
         "export": "craig-duo.jpg",
         "width": 1600,
@@ -175,7 +197,7 @@
       {
         "id": "960a3030-edit",
         "source": "960A3030-Edit.psd",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 Ink, photograph 4",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Ink, photograph 4",
         "landscape": false,
         "export": "960A3030-Edit.jpg",
         "width": 1600,
@@ -193,7 +215,7 @@
       {
         "id": "960a2988-update",
         "source": "960A2988_update.psd",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 Signal, photograph 1",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Signal, photograph 1",
         "landscape": false,
         "export": "960A2988_update.jpg",
         "width": 1600,
@@ -204,7 +226,7 @@
       {
         "id": "960a3015-edit",
         "source": "960A3015-Edit.tif",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 Signal, photograph 2",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Signal, photograph 2",
         "landscape": false,
         "export": "960A3015-Edit.jpg",
         "width": 1600,
@@ -213,9 +235,31 @@
         "bytes": 648225
       },
       {
+        "id": "960a3016-edit",
+        "source": "960A3016-Edit.jpg",
+        "alt": "Head Automatica vocalist with vertical multicolor broadcast bars",
+        "landscape": false,
+        "export": "960A3016-Edit.jpg",
+        "width": 1365,
+        "height": 2048,
+        "bytes": 610574,
+        "sha256": "e4d131d5f30660ac6c66bda037b04beb73b7f58bdf5293acd10fbc02d29b57c3"
+      },
+      {
+        "id": "960a3066-edit",
+        "source": "960A3066-Edit.jpg",
+        "alt": "Blue and yellow double-exposure treatment of Head Automatica on stage",
+        "landscape": false,
+        "export": "960A3066-Edit.jpg",
+        "width": 1365,
+        "height": 2048,
+        "bytes": 773749,
+        "sha256": "8072ec2b283360504e6c554f6b095973525dd7c45ef1e6c1c45ff05e2e5755ea"
+      },
+      {
         "id": "960a3103-edit",
         "source": "960A3103-Edit.tif",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 Signal, photograph 3",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Signal, photograph 3",
         "landscape": false,
         "export": "960A3103-Edit.jpg",
         "width": 1670,
@@ -226,7 +270,7 @@
       {
         "id": "960a3247-edit-full",
         "source": "960A3247-Edit_full.psd",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 Signal, photograph 4",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Signal, photograph 4",
         "landscape": false,
         "export": "960A3247-Edit_full.jpg",
         "width": 1600,
@@ -237,7 +281,7 @@
       {
         "id": "960a3252-edit-edit",
         "source": "960A3252-Edit-Edit.tif",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 Signal, photograph 5",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Signal, photograph 5",
         "landscape": false,
         "export": "960A3252-Edit-Edit.jpg",
         "width": 1600,
@@ -248,7 +292,7 @@
       {
         "id": "darylice",
         "source": "DARYLICE.psd",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ \u2014 Signal, photograph 6",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Signal, photograph 6",
         "landscape": false,
         "export": "DARYLICE-Edit.jpg",
         "width": 1600,
