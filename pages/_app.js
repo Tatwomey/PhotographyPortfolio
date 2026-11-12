@@ -22,7 +22,7 @@ const KLAVIYO_KEY = process.env.NEXT_PUBLIC_KLAVIYO_API_KEY;
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const router = useRouter();
-  const isHeadAutoLookbook = ["/music/headauto26", "/headauto26", "/headauto26-login"].includes(router.pathname);
+  const isHeadAutoLookbook = ["/music/headauto26", "/headauto26", "/headauto26-login", "/music/nat26"].includes(router.pathname);
   const [hydrated, setHydrated] =
     useState(false); /* ---------------------------------------
     KLAVIYO SCRIPT (client-only)
