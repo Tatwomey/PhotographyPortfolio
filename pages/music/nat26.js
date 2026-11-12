@@ -155,7 +155,7 @@ export default function NataliaClavierLookbook() {
         <header className={styles.masthead}>
           <a className={styles.wordmark} href="/">Trevor Twomey</a>
           <div className={styles.mastheadRight}>
-            <span>Private selection</span>
+            <span>Artist &amp; management</span>
             <span className={styles.separator}>/</span>
             <button
               className={styles.signOut}
