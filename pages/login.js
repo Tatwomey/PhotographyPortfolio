@@ -1,5 +1,6 @@
 // pages/login.js
 import { useState } from "react";
+import Head from "next/head";
 import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
@@ -73,10 +74,14 @@ export async function getServerSideProps(context) {
     };
   }
 
-  return { props: {} };
+  return {
+    props: {
+      isNataliaGalleryLogin: context.query?.callbackUrl === "/music/nat26",
+    },
+  };
 }
 
-export default function Login() {
+export default function Login({ isNataliaGalleryLogin = false }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -136,6 +141,56 @@ export default function Login() {
 
     router.push(target);
   };
+
+  // Match the dedicated Head Automatica private-viewing presentation, while
+  // keeping the site's existing credentials provider and notification flow.
+  if (isNataliaGalleryLogin) {
+    return (
+      <>
+        <Head>
+          <title>Natalia Clavier — Private Viewing | Trevor Twomey Photography</title>
+          <meta name="robots" content="noindex,nofollow,noarchive" />
+        </Head>
+        <main className="min-h-screen flex items-center justify-center bg-black text-white px-6">
+          <form onSubmit={handleLogin} className="w-full max-w-sm space-y-5 border border-gray-700 p-8">
+            <p className="text-xs uppercase tracking-widest text-gray-400">
+              Trevor Twomey Photography
+            </p>
+            <h1 className="text-2xl">Natalia Clavier</h1>
+            <p className="text-sm text-gray-400">Private viewing · Artist &amp; management</p>
+            {error && <p role="alert" className="text-red-300">{error}</p>}
+            <label className="block">
+              Username
+              <input
+                type="text"
+                name="username"
+                autoComplete="username"
+                value={username}
+                required
+                onChange={(e) => setUsername(e.target.value)}
+                className="block w-full mt-2 p-3 bg-white text-black"
+              />
+            </label>
+            <label className="block">
+              Password
+              <input
+                type="password"
+                name="password"
+                autoComplete="current-password"
+                value={password}
+                required
+                onChange={(e) => setPassword(e.target.value)}
+                className="block w-full mt-2 p-3 bg-white text-black"
+              />
+            </label>
+            <button type="submit" className="w-full border border-gray-500 p-3 hover:bg-gray-900 transition">
+              View lookbook
+            </button>
+          </form>
+        </main>
+      </>
+    );
+  }
 
   return (
     <div className="flex justify-center items-center h-screen bg-black">
