@@ -105,16 +105,16 @@ export function useNataliaGalleryAnalytics(photos) {
     window.addEventListener("resize", measureScroll, { passive: true });
     measureScroll();
 
-    // Approximate foreground attention, not stopwatch time on a hidden tab.
-    let activeSeconds = 0;
+    // Foreground time milestones (not proof that a visitor was actively engaged).
+    let foregroundSeconds = 0;
     const milestones = new Set([30, 60, 120, 300]);
     const interval = window.setInterval(() => {
       if (document.visibilityState !== "visible" || !document.hasFocus()) return;
-      activeSeconds += 1;
+      foregroundSeconds += 1;
 
-      if (milestones.has(activeSeconds)) {
-        pushGalleryEvent("gallery_active_time", {
-          active_seconds: activeSeconds,
+      if (milestones.has(foregroundSeconds)) {
+        pushGalleryEvent("gallery_foreground_time", {
+          foreground_seconds: foregroundSeconds,
         });
       }
     }, 1000);
