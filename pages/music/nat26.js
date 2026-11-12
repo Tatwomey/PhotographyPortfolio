@@ -4,6 +4,7 @@ import { signOut } from "next-auth/react";
 import { getToken } from "next-auth/jwt";
 import { useEffect, useRef, useState } from "react";
 import styles from "../../styles/nat26.module.css";
+import { pushGalleryEvent, useNataliaGalleryAnalytics } from "../../hooks/useNataliaGalleryAnalytics";
 
 // A standalone cover followed by six balanced, two-photo spreads.
 const images = [
@@ -66,6 +67,7 @@ export default function NataliaClavierLookbook() {
   const dialogRef = useRef(null);
   const activePhoto = selectedIndex === null ? null : photos[selectedIndex];
   const isOpen = selectedIndex !== null;
+  useNataliaGalleryAnalytics(photos);
 
   const openPhoto = (index) => {
     track({
@@ -80,13 +82,24 @@ export default function NataliaClavierLookbook() {
 
   const closeViewer = () => {
     if (dialogRef.current?.open) dialogRef.current.close();
+    pushGalleryEvent("gallery_viewer_close", {
+      photo_id: activePhoto ? photoId(selectedIndex) : null,
+      photo_position: selectedIndex === null ? null : selectedIndex + 1,
+    });
     setSelectedIndex(null);
   };
 
   const step = (direction) => {
-    setSelectedIndex((index) =>
-      index === null ? null : (index + direction + photos.length) % photos.length
-    );
+    if (selectedIndex === null) return;
+    const destination = (selectedIndex + direction + photos.length) % photos.length;
+    pushGalleryEvent("gallery_viewer_navigation", {
+      from_photo_id: photoId(selectedIndex),
+      photo_id: photoId(destination),
+      from_position: selectedIndex + 1,
+      photo_position: destination + 1,
+      direction: direction > 0 ? "next" : "previous",
+    });
+    setSelectedIndex(destination);
   };
 
   // Keep the dialog open when switching photographs; restore scrolling on close.
@@ -149,7 +162,10 @@ export default function NataliaClavierLookbook() {
             <button
               className={styles.signOut}
               type="button"
-              onClick={() => signOut({ callbackUrl: "/login?callbackUrl=%2Fmusic%2Fnat26" })}
+              onClick={() => {
+                pushGalleryEvent("gallery_sign_out");
+                signOut({ callbackUrl: "/login?callbackUrl=%2Fmusic%2Fnat26" });
+              }}
             >
               Sign out
             </button>
@@ -170,6 +186,7 @@ export default function NataliaClavierLookbook() {
                 if (!destination) return;
                 event.preventDefault();
                 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+                pushGalleryEvent("gallery_jump_to_photos", { source: "cover_cta" });
                 destination.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
                 window.history.replaceState(null, "", "#nat26-sequence");
               }}
@@ -178,7 +195,7 @@ export default function NataliaClavierLookbook() {
             </a>
           </div>
 
-          <figure className={styles.coverFigure}>
+          <figure className={styles.coverFigure} data-nat26-photo-index="0">
             <button
               className={styles.photoButton}
               type="button"
@@ -215,7 +232,7 @@ export default function NataliaClavierLookbook() {
           </div>
           <div className={styles.pairs}>
             {photos.slice(1).map((photo, index) => (
-              <figure className={styles.pair} key={photo.file}>
+              <figure className={styles.pair} key={photo.file} data-nat26-photo-index={index + 1}>
                 <button
                   className={styles.photoButton}
                   type="button"
@@ -248,7 +265,13 @@ export default function NataliaClavierLookbook() {
         ref={dialogRef}
         className={styles.viewer}
         aria-label="Natalia Clavier photograph viewer"
-        onClose={() => setSelectedIndex(null)}
+        onClose={() => {
+          pushGalleryEvent("gallery_viewer_close", {
+            photo_id: activePhoto ? photoId(selectedIndex) : null,
+            photo_position: selectedIndex === null ? null : selectedIndex + 1,
+          });
+          setSelectedIndex(null);
+        }}
         onKeyDown={(event) => {
           if (event.key === "ArrowLeft") {
             event.preventDefault();
