@@ -1,8 +1,8 @@
-// pages/api/auth/[...nextauth].js
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import nodemailer from "nodemailer";
 
+// Send email notification when a user logs in
 const sendLoginNotification = async (username) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -30,6 +30,7 @@ export default NextAuth({
         username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
+
       async authorize(credentials) {
         const users = [
           {
@@ -60,6 +61,7 @@ export default NextAuth({
               "/music/korn2025",
               "/music/dionbk25",
               "/music/bgbk25",
+              "/music/nat26",
             ],
           },
           {
@@ -74,16 +76,28 @@ export default NextAuth({
             password: "unionpool25",
             allowedPages: ["/music/dionbk25"],
           },
+
+          // Natalia Clavier — private gallery
+          ...(process.env.NAT26_USERNAME && process.env.NAT26_PASSWORD
+            ? [
+                {
+                  id: "nat26-client",
+                  username: process.env.NAT26_USERNAME,
+                  password: process.env.NAT26_PASSWORD,
+                  allowedPages: ["/music/nat26"],
+                },
+              ]
+            : []),
         ];
 
         const user = users.find(
           (u) =>
-            u.username === credentials.username &&
-            u.password === credentials.password
+            u.username === credentials?.username &&
+            u.password === credentials?.password,
         );
 
         if (!user) {
-          throw new Error("I think you fuct up.");
+          return null;
         }
 
         return {
@@ -94,28 +108,36 @@ export default NextAuth({
       },
     }),
   ],
+
   pages: {
     signIn: "/login",
   },
+
+  session: {
+    strategy: "jwt",
+  },
+
   callbacks: {
     async jwt({ token, user }) {
-      // On first login, copy allowedPages into token
       if (user) {
         token.username = user.username;
         token.allowedPages = user.allowedPages || [];
       }
+
       return token;
     },
+
     async session({ session, token }) {
-      // Make sure session.user has allowedPages
       session.user = {
         id: token.sub,
         username: token.username,
         allowedPages: token.allowedPages || [],
       };
+
       return session;
     },
   },
+
   events: {
     async signIn({ user }) {
       try {
@@ -127,5 +149,6 @@ export default NextAuth({
       }
     },
   },
+
   secret: process.env.NEXTAUTH_SECRET,
 });
