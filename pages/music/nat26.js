@@ -81,12 +81,10 @@ export default function NataliaClavierLookbook() {
   };
 
   const closeViewer = () => {
+    // The dialog's onClose fires for both this button and the Escape key.
+    // Record the close there once, rather than double-counting it here.
     if (dialogRef.current?.open) dialogRef.current.close();
-    pushGalleryEvent("gallery_viewer_close", {
-      photo_id: activePhoto ? photoId(selectedIndex) : null,
-      photo_position: selectedIndex === null ? null : selectedIndex + 1,
-    });
-    setSelectedIndex(null);
+    else setSelectedIndex(null);
   };
 
   const step = (direction) => {
