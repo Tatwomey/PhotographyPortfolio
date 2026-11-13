@@ -153,9 +153,6 @@ export default function Login({ isNataliaGalleryLogin = false }) {
         </Head>
         <main className="min-h-screen flex items-center justify-center bg-black text-white px-6">
           <form onSubmit={handleLogin} className="w-full max-w-sm space-y-5 border border-gray-700 p-8">
-            <p className="text-xs uppercase tracking-widest text-gray-400">
-              Trevor Twomey Photography
-            </p>
             <h1 className="text-2xl">Natalia Clavier</h1>
             <p className="text-sm text-gray-400">Private viewing · Artist &amp; management</p>
             {error && <p role="alert" className="text-red-300">{error}</p>}
