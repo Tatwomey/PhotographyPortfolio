@@ -33,7 +33,7 @@ export default function HeadAutoLookbook({ chapters }) {
   return <>
     <Head><title>Head Automatica — Trevor Twomey</title><meta name="robots" content="noindex,nofollow,noarchive" /><meta name="referrer" content="same-origin" /></Head>
     <main className="lookbook">
-      <header className="masthead"><a className="wordmark" href="/">Trevor Twomey</a><span>Band &amp; management · <button className="sign-out" onClick={() => signOut({ callbackUrl: "/login?callbackUrl=%2Fmusic%2Fheadauto26" })}>Sign out</button></span></header>
+      <header className="masthead"><a className="wordmark" href="/">Trevor Twomey</a><span>Band &amp; management · <button className="sign-out" onClick={() => signOut({ callbackUrl: "/headauto26-login" })}>Sign out</button></span></header>
       <section className="cover" aria-labelledby="lookbook-title"><div><p className="eyebrow">Music / 2026 / Selected work</p><h1 id="lookbook-title">HEAD<br />AUTOMATICA<small>SEPTEMBER 25 / 2026</small></h1><p className="show">Bolero Block Party<br />Carlstadt, New Jersey</p></div><figure className="cover-image">{photograph(photos[0], true)}</figure></section>
       <nav className="chapter-nav" aria-label="Lookbook chapters">{chapters.map((chapter, index) => <a key={chapter.id} href={"#" + chapter.id}><span>0{index + 1}</span>{chapter.title}</a>)}</nav>
       {chapters.map((chapter, index) => <section key={chapter.id} className={"chapter chapter-" + chapter.id} id={chapter.id} aria-labelledby={chapter.id + "-title"}>
