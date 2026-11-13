@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import nodemailer from "nodemailer";
+import { authorizeHeadAutoCredentials } from "../../../utils/headauto26-credentials.mjs";
 
 // Send email notification when a user logs in
 const sendLoginNotification = async (username) => {
@@ -32,6 +33,10 @@ export default NextAuth({
       },
 
       async authorize(credentials) {
+        // Reuse the existing, scrypt-verified Head Automatica account.
+        const headAutoUser = authorizeHeadAutoCredentials(credentials);
+        if (headAutoUser) return headAutoUser;
+
         const users = [
           {
             id: "1",
