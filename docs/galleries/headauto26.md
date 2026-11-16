@@ -1,7 +1,7 @@
 # Head Automatica lookbook
 
-21 unchanged JPEG exports across four chapters. September 25, 2026, Bolero Block Party, Carlstadt, NJ.
+32 unchanged JPEG exports across four chapters. September 25, 2026, Bolero Block Party, Carlstadt, NJ.
 
-The gallery pages at /headauto26 and /music/headauto26 require the gallery-specific NextAuth permission. JPEGs in public/headauto26 are intentionally public and accessible by direct URL, including through the public repository; Trevor approved this tradeoff. The gallery is excluded from sitemaps and uses noindex/no-store headers.
+The gallery pages at /headauto26 and /music/headauto26 require the gallery-specific NextAuth permission. JPEGs in public/headauto26 are intentionally public and accessible by direct URL, including through the public repository; Trevor approved this tradeoff. The eight November additions are encrypted in Git and served only to authorized gallery sessions. The gallery is excluded from sitemaps and uses noindex/no-store headers.
 
-Configure HEADAUTO26_USERNAME, HEADAUTO26_PASSWORD_SCRYPT and HEADAUTO26_ENABLED=true privately in Vercel. Preserve existing NEXTAUTH_SECRET. No image encryption key is required.
+Configure HEADAUTO26_USERNAME, HEADAUTO26_PASSWORD_SCRYPT and HEADAUTO26_ENABLED=true privately in Vercel. Preserve existing NEXTAUTH_SECRET. Set the server-only HEADAUTO26_ADDITIONS_KEY to decrypt the November additions.

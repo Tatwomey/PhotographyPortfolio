@@ -8,6 +8,7 @@ const nextConfig = {
   },
 
   experimental: {
+    outputFileTracingIncludes: { "/api/headauto26/**": ["./assets/headauto26/*.enc"] },
     scrollRestoration: true, // ✅ Keeps scroll position on navigation
   },
 
