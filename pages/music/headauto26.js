@@ -15,7 +15,8 @@ export async function getServerSideProps({ req, res }) {
 const photoUrl = photo => (photo.protected ? "/api/headauto26/" : "/headauto26/") + encodeURIComponent(photo.export);
 
 export default function HeadAutoLookbook({ chapters }) {
-  const photos = chapters.flatMap(chapter => chapter.photos.map(photo => ({ ...photo, chapter: chapter.title })));
+  const displayChapters = chapters.map(chapter => ({ ...chapter, photos: chapter.photos.filter(photo => !photo.coverOnly) }));
+  const photos = chapters.flatMap(chapter => chapter.photos.map(photo => ({ ...photo, chapter: photo.coverOnly ? "Cover" : chapter.title })));
   const [selected, setSelected] = useState(null);
   const dialog = useRef(null);
   const active = selected === null ? null : photos[selected];
@@ -37,8 +38,8 @@ export default function HeadAutoLookbook({ chapters }) {
     <main className="lookbook">
       <header className="masthead"><a className="wordmark" href="/">Trevor Twomey</a><span>Band &amp; management · <button className="sign-out" onClick={() => signOut({ callbackUrl: "/headauto26-login" })}>Sign out</button></span></header>
       <section className="cover" aria-labelledby="lookbook-title"><div><p className="eyebrow">Music / 2026 / Selected work</p><h1 id="lookbook-title">HEAD<br />AUTOMATICA<small>SEPTEMBER 25 / 2026</small></h1><p className="show">Bolero Block Party<br />Carlstadt, New Jersey</p></div><figure className="cover-image">{photograph(photos.find(photo => photo.id === "headautomatica2") ?? photos[0], true)}</figure></section>
-      <nav className="chapter-nav" aria-label="Lookbook chapters">{chapters.map((chapter, index) => <a key={chapter.id} href={"#" + chapter.id}><span>0{index + 1}</span>{chapter.title}</a>)}</nav>
-      {chapters.map((chapter, index) => <section key={chapter.id} className={"chapter chapter-" + chapter.id} id={chapter.id} aria-labelledby={chapter.id + "-title"}>
+      <nav className="chapter-nav" aria-label="Lookbook chapters">{displayChapters.map((chapter, index) => <a key={chapter.id} href={"#" + chapter.id}><span>0{index + 1}</span>{chapter.title}</a>)}</nav>
+      {displayChapters.map((chapter, index) => <section key={chapter.id} className={"chapter chapter-" + chapter.id} id={chapter.id} aria-labelledby={chapter.id + "-title"}>
         <div className="chapter-heading"><span className="chapter-number">0{index + 1}</span><div><h2 id={chapter.id + "-title"}>{chapter.title}</h2><p>{chapter.subtitle}</p></div><span className="count">{chapter.photos.length} photographs</span></div>
         <div className="spreads">{chapter.photos.map((photo, photoIndex) => <figure key={photo.id} className={photo.landscape ? "landscape" : photoIndex === 0 && (chapter.photos.length % 2 === 1 || chapter.photos[chapter.photos.length - 1].landscape) ? "opening" : ""}>{photograph(photo)}</figure>)}</div>
       </section>)}

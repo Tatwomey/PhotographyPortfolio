@@ -4,11 +4,14 @@ const req=token=>({cookies:token?{'next-auth.session-token':token}:{},headers:{}
 test('real encrypted NextAuth tokens enforce exact gallery permission',async()=>{assert.equal(await canViewHeadAuto(req()),false);assert.equal(await canViewHeadAuto(req('invalid')),false);for(const [pages,expected] of [[['/music/headauto26'],true],[['/music/iamx25'],false],[['/music/headauto26-other'],false]]){const token=await encode({secret:process.env.NEXTAUTH_SECRET,token:{allowedPages:pages}});assert.equal(await canViewHeadAuto(req(token)),expected);}const expired=await encode({secret:process.env.NEXTAUTH_SECRET,maxAge:-120,token:{allowedPages:['/music/headauto26']}});assert.equal(await canViewHeadAuto(req(expired)),false);});
 test('gallery credentials reject wrong passwords and preserve scoped access',()=>{const password=randomBytes(24).toString('hex'),salt=randomBytes(16),old=process.env.HEADAUTO26_PASSWORD_SCRYPT;process.env.HEADAUTO26_PASSWORD_SCRYPT=salt.toString('hex')+':'+scryptSync(password,salt,64).toString('hex');const input={username:local.HEADAUTO26_USERNAME,password};assert.deepEqual(authorizeHeadAutoCredentials(input).allowedPages,['/music/headauto26']);assert.equal(authorizeHeadAutoCredentials({...input,password:'wrong'}),null);assert.equal(authorizeHeadAutoCredentials(null),null);process.env.HEADAUTO26_ENABLED='false';assert.equal(authorizeHeadAutoCredentials(input),null);assert.equal(isHeadAutoEnabled(),false);Object.assign(process.env,local,{HEADAUTO26_PASSWORD_SCRYPT:old});});
 test('the updated sequence contains all nine protected additions and excludes the removed photos', () => {
-  assert.equal(photos.length, 32);
-  assert.equal(new Set(photos.map(p => p.id)).size, 32);
-  assert(!photos.some(p => ['960a2933', '960a2889'].includes(p.id)));
+  assert.equal(photos.length, 24);
+  assert.equal(new Set(photos.map(p => p.id)).size, 24);
+  assert(!photos.some(p => ['960a2933', '960a2889', '960a3210', '960a3559', '960a3578'].includes(p.id)));
   assert.equal(photos.filter(p => p.protected).length, 9);
   assert(photos.find(p => p.id === 'headautomatica2')?.protected);
+  assert(!chapters.some(chapter => chapter.id === 'on-stage'));
+  assert.equal(photos.filter(p => p.coverOnly).length, 1);
+  assert.equal(photos.find(p => p.id === 'headautomatica2').coverOnly, true);
 });
 import { decryptHeadAutoImage } from '../utils/headauto26-images.mjs';
 const imageKey = process.env.HEADAUTO26_ADDITIONS_KEY;
