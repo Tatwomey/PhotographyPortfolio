@@ -28,6 +28,18 @@
         "protected": true
       },
       {
+        "id": "headautomatica5",
+        "source": "headautomatica5.jpg",
+        "export": "headautomatica5.jpg",
+        "alt": "Guitarist in near darkness beneath a small circle of light",
+        "landscape": false,
+        "width": 1600,
+        "height": 2400,
+        "sha256": "6eab3371636358b8e30dfe1fe38c60350d38aeed42a56d90ff112cdb8463b140",
+        "bytes": 931686,
+        "protected": true
+      },
+      {
         "id": "960a3015-edit",
         "source": "960A3015-Edit.tif",
         "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Signal, photograph 2",
@@ -310,18 +322,6 @@
         "height": 2400,
         "sha256": "3cf00722cde479802e75b30a26a77549220c5818918dd0cf94e20d3f443de83c",
         "bytes": 2694873
-      },
-      {
-        "id": "headautomatica5",
-        "source": "headautomatica5.jpg",
-        "export": "headautomatica5.jpg",
-        "alt": "Guitarist in near darkness beneath a small circle of light",
-        "landscape": false,
-        "width": 1600,
-        "height": 2400,
-        "sha256": "6eab3371636358b8e30dfe1fe38c60350d38aeed42a56d90ff112cdb8463b140",
-        "bytes": 931686,
-        "protected": true
       }
     ]
   },
