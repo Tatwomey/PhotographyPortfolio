@@ -142,15 +142,16 @@
         "protected": true
       },
       {
-        "id": "darylice",
-        "source": "DARYLICE.psd",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Signal, photograph 8",
+        "id": "headautomatica9",
+        "source": "headautomatica9.jpg",
+        "export": "headautomatica9.jpg",
+        "alt": "Cyan-lit singer and bassist fragmented by horizontal glitch bands",
         "landscape": false,
-        "export": "DARYLICE-Edit.jpg",
         "width": 1600,
         "height": 2400,
-        "sha256": "2ea1e066ca56aa955ef5a0c8c693850c1bafe5bd07c9ff05d4aaf21a6994fb75",
-        "bytes": 3009357
+        "sha256": "27b843a851f9e4090995e9f069456d9917ff37801de86fb1b3434e858db5ad12",
+        "bytes": 1343094,
+        "protected": true
       }
     ]
   },
