@@ -76,6 +76,17 @@
         "sha256": "2f80a930ae6f89632a8ba6845a927128e6d9cbdece63ab50d52348244da0e59d"
       },
       {
+        "id": "960a3387",
+        "source": "960A3387.jpg",
+        "alt": "Head Automatica drummer looking toward the camera under cyan and green stage lighting",
+        "landscape": false,
+        "export": "960A3387.jpg",
+        "width": 1600,
+        "height": 2400,
+        "bytes": 1089806,
+        "sha256": "548fd31e228631690a7acb0aefda40a7d81e8735acad1983f490ce42a3410ad5"
+      },
+      {
         "id": "headautomatica8",
         "source": "headautomatica8.jpg",
         "export": "headautomatica8.jpg",
@@ -101,6 +112,18 @@
         "keyVersion": "signal"
       },
       {
+        "id": "headautomatica4",
+        "source": "headautomatica4.jpg",
+        "export": "headautomatica4.jpg",
+        "alt": "Vocalist leaning into the microphone under green rim light",
+        "landscape": false,
+        "width": 1600,
+        "height": 2400,
+        "sha256": "3ed57da94db836eeb78ca5511d72cd610a076e5b22f5ce0aea3531e869e856e7",
+        "bytes": 1114113,
+        "protected": true
+      },
+      {
         "id": "headautomatica14",
         "source": "headautomatica14.jpg",
         "export": "headautomatica14.jpg",
@@ -112,6 +135,17 @@
         "bytes": 471473,
         "protected": true,
         "keyVersion": "signal"
+      },
+      {
+        "id": "craig-duo",
+        "source": "craig-duo.psd",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Ink, photograph 4",
+        "landscape": false,
+        "export": "craig-duo.jpg",
+        "width": 1600,
+        "height": 2400,
+        "sha256": "dbdf67b1ccd531e42a53796dbbea32fe777551195931a2064a90072f1200c395",
+        "bytes": 1030806
       },
       {
         "id": "960a3247-edit-full",
@@ -173,6 +207,17 @@
         "bytes": 1936604
       },
       {
+        "id": "960a3030-edit",
+        "source": "960A3030-Edit.psd",
+        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Ink, photograph 5",
+        "landscape": false,
+        "export": "960A3030-Edit.jpg",
+        "width": 1600,
+        "height": 2400,
+        "sha256": "a4e603f16475601793edb0f0879f61ea026d50a44f8b5aa5bf6b2136c96c9dff",
+        "bytes": 5585294
+      },
+      {
         "id": "960a3066-edit",
         "source": "960A3066-Edit.jpg",
         "alt": "Blue and yellow double-exposure treatment of Head Automatica on stage",
@@ -229,120 +274,6 @@
         "sha256": "27b843a851f9e4090995e9f069456d9917ff37801de86fb1b3434e858db5ad12",
         "bytes": 1343094,
         "protected": true
-      }
-    ]
-  },
-  {
-    "id": "cold-light",
-    "title": "After the Lights Turn",
-    "subtitle": "Cyan and green fall away into the quieter edges of the stage.",
-    "photos": [
-      {
-        "id": "960a3387",
-        "source": "960A3387.jpg",
-        "alt": "Head Automatica drummer looking toward the camera under cyan and green stage lighting",
-        "landscape": false,
-        "export": "960A3387.jpg",
-        "width": 1600,
-        "height": 2400,
-        "bytes": 1089806,
-        "sha256": "548fd31e228631690a7acb0aefda40a7d81e8735acad1983f490ce42a3410ad5"
-      },
-      {
-        "id": "headautomatica4",
-        "source": "headautomatica4.jpg",
-        "export": "headautomatica4.jpg",
-        "alt": "Vocalist leaning into the microphone under green rim light",
-        "landscape": false,
-        "width": 1600,
-        "height": 2400,
-        "sha256": "3ed57da94db836eeb78ca5511d72cd610a076e5b22f5ce0aea3531e869e856e7",
-        "bytes": 1114113,
-        "protected": true
-      },
-      {
-        "id": "960a3179",
-        "source": "960A3179.CR2",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Cold Light, photograph 2",
-        "landscape": false,
-        "export": "960A3179.jpg",
-        "width": 1714,
-        "height": 2400,
-        "sha256": "a8f1dd7153247e8bb81fb59f6fe4484e48ed26d7158b9da59349e6e10288f339",
-        "bytes": 1082955
-      },
-      {
-        "id": "960a3151",
-        "source": "960A3151.jpg",
-        "alt": "Head Automatica vocalist in blue stage haze at Bolero Block Party, Carlstadt, NJ",
-        "landscape": false,
-        "export": "960A3151.jpg",
-        "width": 1600,
-        "height": 2400,
-        "bytes": 2888728,
-        "sha256": "4fee5e6d7f6d20a1d2c2bdc8e9845db15a6de59a5d2adf805636509a71a90d27"
-      }
-    ]
-  },
-  {
-    "id": "ink",
-    "title": "Ink",
-    "subtitle": "Portraits and print textures slow the pace.",
-    "photos": [
-      {
-        "id": "960a2904",
-        "source": "960A2904.CR2",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Ink, photograph 1",
-        "landscape": false,
-        "export": "960A2904.jpg",
-        "width": 1600,
-        "height": 2400,
-        "sha256": "133a1b29599d5226768973cf77059a305ecfa8ae4a09f87057b8ac5ae584453a",
-        "bytes": 969451
-      },
-      {
-        "id": "craig-duo",
-        "source": "craig-duo.psd",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Ink, photograph 4",
-        "landscape": false,
-        "export": "craig-duo.jpg",
-        "width": 1600,
-        "height": 2400,
-        "sha256": "dbdf67b1ccd531e42a53796dbbea32fe777551195931a2064a90072f1200c395",
-        "bytes": 1030806
-      },
-      {
-        "id": "960a3082",
-        "source": "960A3082.jpg",
-        "alt": "Black-and-white portrait of Head Automatica vocalist singing with one arm raised",
-        "landscape": false,
-        "export": "960A3082.jpg",
-        "width": 1600,
-        "height": 2400,
-        "bytes": 398203,
-        "sha256": "abf46faae2691994db89ed1a9af6fc8b116a27035463bb4402378c8d4323fbfa"
-      },
-      {
-        "id": "960a3030-edit",
-        "source": "960A3030-Edit.psd",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Ink, photograph 5",
-        "landscape": false,
-        "export": "960A3030-Edit.jpg",
-        "width": 1600,
-        "height": 2400,
-        "sha256": "a4e603f16475601793edb0f0879f61ea026d50a44f8b5aa5bf6b2136c96c9dff",
-        "bytes": 5585294
-      },
-      {
-        "id": "960a3024-edit",
-        "source": "960A3024-Edit.tif",
-        "alt": "Head Automatica at Bolero Block Party, Carlstadt, NJ — Ink, photograph 3",
-        "landscape": false,
-        "export": "960A3024-Edit.jpg",
-        "width": 1714,
-        "height": 2400,
-        "sha256": "1c76013f41b071fe91e121858dcd8764e0ce37b67217ecc5a3d9062b962a32da",
-        "bytes": 427633
       }
     ]
   }
