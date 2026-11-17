@@ -124,6 +124,19 @@
         "protected": true
       },
       {
+        "id": "headautomatica15",
+        "source": "44FA12B6-5468-4F3A-8D2F-2A8B9D07F26D.jpeg",
+        "export": "headautomatica15.jpg",
+        "alt": "Head Automatica drummer behind the cymbals in purple and green stage light",
+        "landscape": false,
+        "width": 1152,
+        "height": 1536,
+        "sha256": "ae9e373ea8e2ff998239abdfe5b8481ffbe6b916ff5f2bf988f06659e4f05cee",
+        "bytes": 219059,
+        "protected": true,
+        "keyVersion": "v2"
+      },
+      {
         "id": "headautomatica14",
         "source": "headautomatica14.jpg",
         "export": "headautomatica14.jpg",

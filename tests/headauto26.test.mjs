@@ -3,11 +3,11 @@ const chapters=JSON.parse(fs.readFileSync('data/headauto26.json')),photos=chapte
 const req=token=>({cookies:token?{'next-auth.session-token':token}:{},headers:{}});
 test('real encrypted NextAuth tokens enforce exact gallery permission',async()=>{assert.equal(await canViewHeadAuto(req()),false);assert.equal(await canViewHeadAuto(req('invalid')),false);for(const [pages,expected] of [[['/music/headauto26'],true],[['/music/iamx25'],false],[['/music/headauto26-other'],false]]){const token=await encode({secret:process.env.NEXTAUTH_SECRET,token:{allowedPages:pages}});assert.equal(await canViewHeadAuto(req(token)),expected);}const expired=await encode({secret:process.env.NEXTAUTH_SECRET,maxAge:-120,token:{allowedPages:['/music/headauto26']}});assert.equal(await canViewHeadAuto(req(expired)),false);});
 test('gallery credentials reject wrong passwords and preserve scoped access',()=>{const password=randomBytes(24).toString('hex'),salt=randomBytes(16),old=process.env.HEADAUTO26_PASSWORD_SCRYPT;process.env.HEADAUTO26_PASSWORD_SCRYPT=salt.toString('hex')+':'+scryptSync(password,salt,64).toString('hex');const input={username:local.HEADAUTO26_USERNAME,password};assert.deepEqual(authorizeHeadAutoCredentials(input).allowedPages,['/music/headauto26']);assert.equal(authorizeHeadAutoCredentials({...input,password:'wrong'}),null);assert.equal(authorizeHeadAutoCredentials(null),null);process.env.HEADAUTO26_ENABLED='false';assert.equal(authorizeHeadAutoCredentials(input),null);assert.equal(isHeadAutoEnabled(),false);Object.assign(process.env,local,{HEADAUTO26_PASSWORD_SCRYPT:old});});
-test('the updated sequence contains all thirteen protected additions and excludes the removed photos', () => {
-  assert.equal(photos.length, 23);
-  assert.equal(new Set(photos.map(p => p.id)).size, 23);
+test('the updated sequence contains all fourteen protected additions and excludes the removed photos', () => {
+  assert.equal(photos.length, 24);
+  assert.equal(new Set(photos.map(p => p.id)).size, 24);
   assert(!photos.some(p => ['960a2933', '960a2889', '960a3210', '960a3559', '960a3578'].includes(p.id)));
-  assert.equal(photos.filter(p => p.protected).length, 13);
+  assert.equal(photos.filter(p => p.protected).length, 14);
   assert(photos.find(p => p.id === 'headautomatica2')?.protected);
   assert.deepEqual(chapters.map(chapter => chapter.id), ['signal']);
   assert.equal(photos.filter(p => p.coverOnly).length, 1);
@@ -23,7 +23,7 @@ test('all exports retain their original checksums and new exports are not public
       const encrypted = fs.readFileSync('assets/headauto26/' + p.export + '.enc');
       assert.equal(encrypted.length, p.bytes + 28, p.export);
       assert.throws(() => decryptHeadAutoImage(encrypted, p.export, '00'.repeat(32)));
-      const key = p.keyVersion === "signal" ? process.env.HEADAUTO26_SIGNAL_KEY : imageKey;
+      const key = p.keyVersion === "v2" ? process.env.HEADAUTO26_ADDITIONS_V2_KEY : p.keyVersion === "signal" ? process.env.HEADAUTO26_SIGNAL_KEY : imageKey;
       if (!key) continue;
       bytes = decryptHeadAutoImage(encrypted, p.export, key);
     } else {
