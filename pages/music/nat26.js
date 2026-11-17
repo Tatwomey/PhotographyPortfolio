@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Link from "next/link";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
 import { getToken } from "next-auth/jwt";
@@ -25,7 +26,7 @@ const images = [
 
 const photos = images.map((image, index) => ({
   ...image,
-  src: "/nat26/" + image.file,
+  src: "/api/nat26/" + image.file,
   alt: "Natalia Clavier at Lightning Society — photograph " + (index + 1),
 }));
 
@@ -153,7 +154,7 @@ export default function NataliaClavierLookbook() {
 
       <main className={styles.lookbook}>
         <header className={styles.masthead}>
-          <a className={styles.wordmark} href="/">Trevor Twomey</a>
+          <Link className={styles.wordmark} href="/">Trevor Twomey</Link>
           <div className={styles.mastheadRight}>
             <span>Artist &amp; management</span>
             <span className={styles.separator}>/</span>
@@ -307,7 +308,24 @@ export default function NataliaClavierLookbook() {
               />
             )}
           </div>
-          <p className={styles.viewerCaption}>Lightning Society · Trevor Twomey</p>
+          <div className={styles.viewerFooter}>
+            <p className={styles.viewerCaption}>Lightning Society · Trevor Twomey</p>
+            {activePhoto && (
+              <a
+                className={styles.download}
+                href={activePhoto.src + "?download=small-web"}
+                download={"Natalia-Clavier-" + activePhoto.file.replace(/\.jpg$/, "-small-web.jpg")}
+                onClick={() => pushGalleryEvent("photo_download", {
+                  photo_id: photoId(selectedIndex),
+                  photo_position: selectedIndex + 1,
+                  download_size: "small_web",
+                  click_source: "viewer",
+                })}
+              >
+                Download Small Web <span>(JPEG · 1600px)</span>
+              </a>
+            )}
+          </div>
         </div>
       </dialog>
     </>

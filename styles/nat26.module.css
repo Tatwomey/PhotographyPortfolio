@@ -249,6 +249,12 @@
 
 .viewer button:focus-visible { outline: 2px solid #c2d0ce; outline-offset: 3px; }
 
+.viewerFooter { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px 24px; }
+.download { border: 1px solid #45494a; padding: 12px 14px; color: #eeece5; font: 11px Arial, Helvetica, sans-serif; text-decoration: none; }
+.download span { color: #9ca09e; }
+.download:hover { border-color: #c2d0ce; }
+.download:focus-visible { outline: 2px solid #c2d0ce; outline-offset: 3px; }
+
 @media (max-width: 700px) {
   .masthead { padding: 23px 0; font-size: 9px; letter-spacing: .09em; }
   .cover { grid-template-columns: minmax(0,1fr); min-height: 0; padding: 47px 0 70px; gap: 40px; }

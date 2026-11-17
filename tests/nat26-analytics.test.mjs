@@ -21,7 +21,7 @@ test("in-page impressions are not confused with fullscreen opens", () => {
   assert.match(page, /data-nat26-photo-index="0"/);
   assert.match(page, /data-nat26-photo-index=\{index \+ 1\}/);
   assert.match(tracker, /"photo_impression"/);
-  assert.match(tracker, /"photo_section"/);
+  assert.match(tracker, /photo_section:/);
   assert.match(tracker, /seen\.has\(index\)/);
   assert.match(tracker, /intersectionRatio >= 0\.5/);
   assert.match(tracker, /1000/);
