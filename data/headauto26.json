@@ -100,16 +100,16 @@
       },
       {
         "id": "headautomatica13",
-        "source": "headautomatica13.jpg",
+        "source": "headautomatica13.jpeg",
         "export": "headautomatica13.jpg",
         "alt": "Bassist surrounded by orange light and fragmented motion trails",
         "landscape": false,
-        "width": 1365,
-        "height": 2048,
-        "sha256": "beb2fd0b5867eb6c7683aa9040fe5cc76fc7aef91e1f3a4d6d056a8b6729186b",
-        "bytes": 266424,
+        "width": 1024,
+        "height": 1536,
+        "sha256": "75418a767a433d3d4026c2a9590b14d29814b69353a87d45fea46cba8ed2cbbb",
+        "bytes": 266458,
         "protected": true,
-        "keyVersion": "signal"
+        "keyVersion": "v2"
       },
       {
         "id": "headautomatica4",
