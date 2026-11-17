@@ -113,15 +113,16 @@
       },
       {
         "id": "headautomatica4",
-        "source": "headautomatica4.jpg",
+        "source": "4AD89868-5341-4452-936A-6248B2DB68AC.jpeg",
         "export": "headautomatica4.jpg",
-        "alt": "Vocalist leaning into the microphone under green rim light",
+        "alt": "Head Automatica vocalist singing into the microphone under green and pink stage light",
         "landscape": false,
-        "width": 1600,
-        "height": 2400,
-        "sha256": "3ed57da94db836eeb78ca5511d72cd610a076e5b22f5ce0aea3531e869e856e7",
-        "bytes": 1114113,
-        "protected": true
+        "width": 1024,
+        "height": 1536,
+        "sha256": "5c110db17560c3d0f1515c5ceec9d0926c33888b323c4e006bf8139b4e323f9f",
+        "bytes": 405289,
+        "protected": true,
+        "keyVersion": "v2"
       },
       {
         "id": "headautomatica15",
