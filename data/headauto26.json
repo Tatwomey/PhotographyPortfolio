@@ -112,6 +112,19 @@
         "keyVersion": "v2"
       },
       {
+        "id": "960a3272-edit-edit",
+        "source": "960A3272-Edit-Edit.jpeg",
+        "export": "960A3272-Edit-Edit.jpeg",
+        "alt": "Guitarist in a pink and violet collage with stars, concentric circles, dollar symbols and distressed edges",
+        "landscape": false,
+        "width": 1024,
+        "height": 1536,
+        "bytes": 506251,
+        "sha256": "f679beab7623c609e0c54507dcadec2020ccb9f33f862f8b3dade319cfec051e",
+        "protected": true,
+        "keyVersion": "v2"
+      },
+      {
         "id": "headautomatica4",
         "source": "4AD89868-5341-4452-936A-6248B2DB68AC.jpeg",
         "export": "headautomatica4.jpg",
