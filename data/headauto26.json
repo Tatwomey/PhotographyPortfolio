@@ -87,15 +87,15 @@
         "sha256": "548fd31e228631690a7acb0aefda40a7d81e8735acad1983f490ce42a3410ad5"
       },
       {
-        "id": "headautomatica8",
-        "source": "headautomatica8.jpg",
-        "export": "headautomatica8.jpg",
-        "alt": "Vocalist and guitarist in deep blue and green light",
+        "id": "headautomatica19",
+        "source": "headautomatica19.jpg",
+        "export": "headautomatica19.jpg",
+        "alt": "Black-and-white vocalist with layered red and cyan silhouettes and horizontal color bands",
         "landscape": false,
-        "width": 1600,
-        "height": 2400,
-        "sha256": "b505b563fbc586c13bdcf113e3d4b9eca36652b69d27c0cbfe2e6ee4a4e325bc",
-        "bytes": 2740136,
+        "width": 1333,
+        "height": 2000,
+        "sha256": "7b31a22f703995005eeebe9d0b1fbfe6189f20aa46ef02866755d67d57d94a35",
+        "bytes": 499913,
         "protected": true
       },
       {
