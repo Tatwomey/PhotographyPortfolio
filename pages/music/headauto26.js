@@ -54,7 +54,7 @@ export default function HeadAutoLookbook({ chapters }) {
       <footer><span>Photography &amp; treatments © Trevor Twomey</span><a href="#lookbook-title">Back to top ↑</a></footer>
     </main>
     <dialog ref={dialog} className="viewer" aria-label="Photograph viewer" onClose={() => setSelected(null)} onKeyDown={event => { if (event.key === "ArrowLeft") { event.preventDefault(); step(-1); } if (event.key === "ArrowRight") { event.preventDefault(); step(1); } }}>
-      <div className="viewer-inner"><div className="viewer-bar"><span>{active ? active.chapter + " / " + (selected + 1) + " of " + photos.length : ""}</span><div className="viewer-controls"><button onClick={() => step(-1)} aria-label="Previous photograph">←</button><button onClick={() => step(1)} aria-label="Next photograph">→</button><button onClick={() => dialog.current.close()}>Close ×</button></div></div>
+      <div className="viewer-inner"><div className="viewer-bar"><span>{active ? (isSingleSequence ? "" : active.chapter + " / ") + (selected + 1) + " of " + photos.length : ""}</span><div className="viewer-controls"><button onClick={() => step(-1)} aria-label="Previous photograph">←</button><button onClick={() => step(1)} aria-label="Next photograph">→</button><button onClick={() => dialog.current.close()}>Close ×</button></div></div>
       {active && <img className="viewer-image" src={photoUrl(active)} alt={active.alt} width={active.width} height={active.height} />}<div className="viewer-caption">{active?.export}</div></div>
     </dialog>
     <style jsx global>{`
