@@ -6,6 +6,8 @@ import { canViewHeadAuto, isHeadAutoEnabled } from "../../../utils/headauto26-ac
 import { decryptHeadAutoImage } from "../../../utils/headauto26-images.mjs";
 
 const photos = chapters.flatMap(chapter => chapter.photos).filter(photo => photo.protected);
+const textures = ["ink-brush-frame.jpg", "kodak-5063-strip.jpeg", "negative-frame.jpeg"]
+  .map(name => ({ export: `texture-${name}`, keyVersion: "mural" }));
 
 export default async function photograph(req, res) {
   res.setHeader("Cache-Control", "private, no-store");
@@ -16,12 +18,15 @@ export default async function photograph(req, res) {
     res.setHeader("Allow", "GET, HEAD");
     return res.status(405).end();
   }
-  const photo = photos.find(item => item.export === req.query.filename);
+  const photo = [...photos, ...textures].find(item => item.export === req.query.filename);
   if (!photo) return res.status(404).end();
   let bytes;
   try {
     const encrypted = await readFile(path.join(process.cwd(), "assets", "headauto26", photo.export + ".enc"));
-    bytes = decryptHeadAutoImage(encrypted, photo.export, photo.keyVersion === "v2" ? process.env.HEADAUTO26_ADDITIONS_V2_KEY : photo.keyVersion === "signal" ? process.env.HEADAUTO26_SIGNAL_KEY : process.env.HEADAUTO26_ADDITIONS_KEY);
+    const key = photo.keyVersion === "mural" ? process.env.HEADAUTO26_MURAL_KEY :
+      photo.keyVersion === "v2" ? process.env.HEADAUTO26_ADDITIONS_V2_KEY :
+      photo.keyVersion === "signal" ? process.env.HEADAUTO26_SIGNAL_KEY : process.env.HEADAUTO26_ADDITIONS_KEY;
+    bytes = decryptHeadAutoImage(encrypted, photo.export, key);
   } catch {
     return res.status(404).end();
   }

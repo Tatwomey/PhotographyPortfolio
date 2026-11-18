@@ -3,11 +3,11 @@ const chapters=JSON.parse(fs.readFileSync('data/headauto26.json')),photos=chapte
 const req=token=>({cookies:token?{'next-auth.session-token':token}:{},headers:{}});
 test('real encrypted NextAuth tokens enforce exact gallery permission',async()=>{assert.equal(await canViewHeadAuto(req()),false);assert.equal(await canViewHeadAuto(req('invalid')),false);for(const [pages,expected] of [[['/music/headauto26'],true],[['/music/iamx25'],false],[['/music/headauto26-other'],false]]){const token=await encode({secret:process.env.NEXTAUTH_SECRET,token:{allowedPages:pages}});assert.equal(await canViewHeadAuto(req(token)),expected);}const expired=await encode({secret:process.env.NEXTAUTH_SECRET,maxAge:-120,token:{allowedPages:['/music/headauto26']}});assert.equal(await canViewHeadAuto(req(expired)),false);});
 test('gallery credentials reject wrong passwords and preserve scoped access',()=>{const password=randomBytes(24).toString('hex'),salt=randomBytes(16),old=process.env.HEADAUTO26_PASSWORD_SCRYPT;process.env.HEADAUTO26_PASSWORD_SCRYPT=salt.toString('hex')+':'+scryptSync(password,salt,64).toString('hex');const input={username:local.HEADAUTO26_USERNAME,password};assert.deepEqual(authorizeHeadAutoCredentials(input).allowedPages,['/music/headauto26']);assert.equal(authorizeHeadAutoCredentials({...input,password:'wrong'}),null);assert.equal(authorizeHeadAutoCredentials(null),null);process.env.HEADAUTO26_ENABLED='false';assert.equal(authorizeHeadAutoCredentials(input),null);assert.equal(isHeadAutoEnabled(),false);Object.assign(process.env,local,{HEADAUTO26_PASSWORD_SCRYPT:old});});
-test('the updated sequence contains all sixteen protected photos and excludes the removed photos', () => {
+test('the mural sequence contains all twenty-five protected photos and excludes the removed photos', () => {
   assert.equal(photos.length, 25);
   assert.equal(new Set(photos.map(p => p.id)).size, 25);
   assert(!photos.some(p => ['960a2933', '960a2889', '960a3210', '960a3559', '960a3578'].includes(p.id)));
-  assert.equal(photos.filter(p => p.protected).length, 16);
+  assert.equal(photos.filter(p => p.protected).length, 25);
   assert(photos.find(p => p.id === 'headautomatica2')?.protected);
   assert.deepEqual(chapters.map(chapter => chapter.id), ['signal']);
   assert.equal(photos.filter(p => p.coverOnly).length, 1);
@@ -23,7 +23,7 @@ test('all exports retain their original checksums and new exports are not public
       const encrypted = fs.readFileSync('assets/headauto26/' + p.export + '.enc');
       assert.equal(encrypted.length, p.bytes + 28, p.export);
       assert.throws(() => decryptHeadAutoImage(encrypted, p.export, '00'.repeat(32)));
-      const key = p.keyVersion === "v2" ? process.env.HEADAUTO26_ADDITIONS_V2_KEY : p.keyVersion === "signal" ? process.env.HEADAUTO26_SIGNAL_KEY : imageKey;
+      const key = p.keyVersion === "mural" ? process.env.HEADAUTO26_MURAL_KEY : p.keyVersion === "v2" ? process.env.HEADAUTO26_ADDITIONS_V2_KEY : p.keyVersion === "signal" ? process.env.HEADAUTO26_SIGNAL_KEY : imageKey;
       if (!key) continue;
       bytes = decryptHeadAutoImage(encrypted, p.export, key);
     } else {
@@ -31,5 +31,22 @@ test('all exports retain their original checksums and new exports are not public
     }
     assert.equal(bytes.length, p.bytes, p.export);
     assert.equal(createHash('sha256').update(bytes).digest('hex'), p.sha256, p.export);
+  }
+});
+test('the three JPEG mural textures are encrypted and retain their exact original bytes', () => {
+  const hashes = {
+    'ink-brush-frame.jpg': 'bf350af3c76f4d637ff4e62d7e3b313ee3303bcdc7b461d899aa6ee011b50feb',
+    'kodak-5063-strip.jpeg': '2be7b8a6e2785b7cba29e64acba9d28b80e151ac1608ac273f1f425b32b17597',
+    'negative-frame.jpeg': 'ed3ca5ee40f5c805fa2182637102457010cf697fc9a20ae88c27f79d50f8d10a',
+  };
+  for (const [file, hash] of Object.entries(hashes)) {
+    assert(!fs.existsSync('public/headauto26-design/' + file));
+    const name = 'texture-' + file;
+    const encrypted = fs.readFileSync('assets/headauto26/' + name + '.enc');
+    assert.throws(() => decryptHeadAutoImage(encrypted, name, '00'.repeat(32)));
+    if (process.env.HEADAUTO26_MURAL_KEY) {
+      const plain = decryptHeadAutoImage(encrypted, name, process.env.HEADAUTO26_MURAL_KEY);
+      assert.equal(createHash('sha256').update(plain).digest('hex'), hash);
+    }
   }
 });

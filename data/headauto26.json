@@ -1,7 +1,7 @@
 [
   {
     "id": "signal",
-    "title": "Signal Break",
+    "title": "Selected Shots",
     "subtitle": "Color splits, frames repeat, and the set becomes collage.",
     "photos": [
       {
@@ -38,7 +38,9 @@
         "width": 1600,
         "height": 2400,
         "sha256": "fdb0bbe3bce8bb818017da34dc595e7c2d2c5cfb732b4d42d5aae1f56cfb6af9",
-        "bytes": 872720
+        "bytes": 872720,
+        "protected": true,
+        "keyVersion": "mural"
       },
       {
         "id": "960a3015-edit",
@@ -49,7 +51,9 @@
         "width": 1600,
         "height": 2400,
         "sha256": "4d150051eed5d4847ee64f9f3c83445689d6f9b51c9f2f8c49923da725f65e44",
-        "bytes": 648225
+        "bytes": 648225,
+        "protected": true,
+        "keyVersion": "mural"
       },
       {
         "id": "headautomatica11",
@@ -86,7 +90,9 @@
         "width": 1600,
         "height": 2400,
         "bytes": 1089806,
-        "sha256": "548fd31e228631690a7acb0aefda40a7d81e8735acad1983f490ce42a3410ad5"
+        "sha256": "548fd31e228631690a7acb0aefda40a7d81e8735acad1983f490ce42a3410ad5",
+        "protected": true,
+        "keyVersion": "mural"
       },
       {
         "id": "headautomatica19",
@@ -114,17 +120,17 @@
         "keyVersion": "v2"
       },
       {
-        "id": "960a3272-edit-edit",
-        "source": "IMG_7720.jpeg",
-        "export": "960A3272-Edit-Edit.jpeg",
-        "alt": "Guitarist in a pink and violet collage with stars, concentric circles, dollar symbols and distressed edges",
+        "id": "ha26-cyan-guitarist",
+        "source": "90E78E3B-6B77-4DCE-A4E4-8D5675527C7C.jpeg",
+        "export": "ha26-cyan-guitarist.jpeg",
+        "alt": "Head Automatica guitarist looking down at the guitar under cyan stage lights",
         "landscape": false,
         "width": 1024,
         "height": 1536,
-        "bytes": 546511,
-        "sha256": "c62517750af052f6ff50b47c25b3470eb2e2f935e255a94727dc708d94973750",
+        "bytes": 600434,
+        "sha256": "c52a4858bef5f79e8941e7e3f8986149ee213c0d19ac9a561eb489b82b8a1898",
         "protected": true,
-        "keyVersion": "v2"
+        "keyVersion": "mural"
       },
       {
         "id": "headautomatica4",
@@ -174,7 +180,9 @@
         "width": 1600,
         "height": 2400,
         "sha256": "dbdf67b1ccd531e42a53796dbbea32fe777551195931a2064a90072f1200c395",
-        "bytes": 1030806
+        "bytes": 1030806,
+        "protected": true,
+        "keyVersion": "mural"
       },
       {
         "id": "960a3247-edit-full",
@@ -185,7 +193,9 @@
         "width": 1600,
         "height": 2400,
         "sha256": "32d04c7b87f4833079f40747d3a79e99932aae6a81ff85cd38eb74e16c497f24",
-        "bytes": 566620
+        "bytes": 566620,
+        "protected": true,
+        "keyVersion": "mural"
       },
       {
         "id": "headautomatica5",
@@ -233,7 +243,9 @@
         "width": 1670,
         "height": 2400,
         "sha256": "df57861d23ebb8ed0f5b5ee97a3bbfa48d2ddeee5dd73efaa8fd15e8476de445",
-        "bytes": 1936604
+        "bytes": 1936604,
+        "protected": true,
+        "keyVersion": "mural"
       },
       {
         "id": "960a3030-edit",
@@ -244,7 +256,9 @@
         "width": 1600,
         "height": 2400,
         "sha256": "a4e603f16475601793edb0f0879f61ea026d50a44f8b5aa5bf6b2136c96c9dff",
-        "bytes": 5585294
+        "bytes": 5585294,
+        "protected": true,
+        "keyVersion": "mural"
       },
       {
         "id": "960a3066-edit",
@@ -255,7 +269,9 @@
         "width": 1600,
         "height": 2400,
         "bytes": 2116245,
-        "sha256": "c7d373666352985ee6588015af2b6183c7080b1604d6a562097a1c0bfdb67884"
+        "sha256": "c7d373666352985ee6588015af2b6183c7080b1604d6a562097a1c0bfdb67884",
+        "protected": true,
+        "keyVersion": "mural"
       },
       {
         "id": "headautomatica7",
@@ -278,7 +294,9 @@
         "width": 1600,
         "height": 2400,
         "sha256": "2b8327204a308ef1177ead8f5a1bc14f9f24121532a88ea28290f7f69e6eb2ec",
-        "bytes": 823440
+        "bytes": 823440,
+        "protected": true,
+        "keyVersion": "mural"
       },
       {
         "id": "headautomatica6",
