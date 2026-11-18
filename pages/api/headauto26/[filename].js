@@ -23,7 +23,8 @@ export default async function photograph(req, res) {
   let bytes;
   try {
     const encrypted = await readFile(path.join(process.cwd(), "assets", "headauto26", photo.export + ".enc"));
-    const key = photo.keyVersion === "mural" ? process.env.HEADAUTO26_MURAL_KEY :
+    const key = photo.keyVersion === "nov18" ? process.env.HEADAUTO26_NOV18_KEY :
+      photo.keyVersion === "mural" ? process.env.HEADAUTO26_MURAL_KEY :
       photo.keyVersion === "v2" ? process.env.HEADAUTO26_ADDITIONS_V2_KEY :
       photo.keyVersion === "signal" ? process.env.HEADAUTO26_SIGNAL_KEY : process.env.HEADAUTO26_ADDITIONS_KEY;
     bytes = decryptHeadAutoImage(encrypted, photo.export, key);
