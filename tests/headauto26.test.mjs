@@ -23,7 +23,7 @@ test('all exports retain their original checksums and new exports are not public
       const encrypted = fs.readFileSync('assets/headauto26/' + p.export + '.enc');
       assert.equal(encrypted.length, p.bytes + 28, p.export);
       assert.throws(() => decryptHeadAutoImage(encrypted, p.export, '00'.repeat(32)));
-      const key = p.keyVersion === "mural" ? process.env.HEADAUTO26_MURAL_KEY : p.keyVersion === "v2" ? process.env.HEADAUTO26_ADDITIONS_V2_KEY : p.keyVersion === "signal" ? process.env.HEADAUTO26_SIGNAL_KEY : imageKey;
+      const key = p.keyVersion === "nov18" ? process.env.HEADAUTO26_NOV18_KEY : p.keyVersion === "mural" ? process.env.HEADAUTO26_MURAL_KEY : p.keyVersion === "v2" ? process.env.HEADAUTO26_ADDITIONS_V2_KEY : p.keyVersion === "signal" ? process.env.HEADAUTO26_SIGNAL_KEY : imageKey;
       if (!key) continue;
       bytes = decryptHeadAutoImage(encrypted, p.export, key);
     } else {
