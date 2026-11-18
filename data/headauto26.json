@@ -66,14 +66,16 @@
       },
       {
         "id": "960a3016-edit",
-        "source": "960A3016-Edit.jpg",
-        "alt": "Head Automatica vocalist with vertical multicolor broadcast bars",
+        "source": "9C216433-26A7-45C6-9D29-F899D984D53C.jpeg",
+        "alt": "Head Automatica vocalist layered against a colorful pixelated background",
         "landscape": false,
         "export": "960A3016-Edit.jpg",
-        "width": 1600,
-        "height": 2400,
-        "bytes": 1951987,
-        "sha256": "2f80a930ae6f89632a8ba6845a927128e6d9cbdece63ab50d52348244da0e59d"
+        "width": 1024,
+        "height": 1536,
+        "bytes": 377812,
+        "sha256": "5efdec85b2cc11ec005d3a5cfb339cdcea4d3f1320d1324ceca693bdbaddcd1f",
+        "protected": true,
+        "keyVersion": "v2"
       },
       {
         "id": "960a3387",
@@ -113,14 +115,14 @@
       },
       {
         "id": "960a3272-edit-edit",
-        "source": "960A3272-Edit-Edit.jpeg",
+        "source": "IMG_7720.jpeg",
         "export": "960A3272-Edit-Edit.jpeg",
         "alt": "Guitarist in a pink and violet collage with stars, concentric circles, dollar symbols and distressed edges",
         "landscape": false,
         "width": 1024,
         "height": 1536,
-        "bytes": 506251,
-        "sha256": "f679beab7623c609e0c54507dcadec2020ccb9f33f862f8b3dade319cfec051e",
+        "bytes": 546511,
+        "sha256": "c62517750af052f6ff50b47c25b3470eb2e2f935e255a94727dc708d94973750",
         "protected": true,
         "keyVersion": "v2"
       },
