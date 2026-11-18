@@ -81,7 +81,7 @@ function Composition({ photos, number }) {
           brush={i === design.brush}
           film={i === design.frame && i !== design.hero ? design.stock : false} />
       ))}
-      <div className="ha-composition-footer" aria-hidden="true">TT / 2026 &nbsp; · &nbsp; SIGNAL BREAK &nbsp; // &nbsp; {String(number + 1).padStart(2, "0")}</div>
+      <div className="ha-composition-footer" aria-hidden="true">TT / 2026 &nbsp; · &nbsp; SELECTED SHOTS &nbsp; // &nbsp; {String(number + 1).padStart(2, "0")}</div>
     </section>
   );
 }
@@ -108,7 +108,7 @@ export default function HeadAutoMural({ chapters }) {
             <p className="ha-kicker">LIVE ARCHIVE / 026</p>
             <h1 id="ha-title">HEAD<br />AUTOMATICA<span className="ha-year">26</span></h1>
             <p className="ha-cover-date">25 SEP 2026 / BOLERO BLOCK PARTY<br />CARLSTADT, NEW JERSEY</p>
-            <a href="#signal" className="ha-scroll">ENTER SIGNAL BREAK <span aria-hidden="true">↓</span></a>
+            <a href="#signal" className="ha-scroll">ENTER SELECTED SHOTS <span aria-hidden="true">↓</span></a>
           </div>
           <Photograph photo={cover} priority className="ha-cover-photo" film="scan" />
           <div className="ha-cover-edge" aria-hidden="true">FRAME 00A / DO NOT DUPLICATE</div>
@@ -116,7 +116,10 @@ export default function HeadAutoMural({ chapters }) {
         <section id="signal" aria-labelledby="ha-signal-title" className="ha-sequence">
           <div className="ha-sequence-heading">
             <span className="ha-kicker">01 / {String(photos.length).padStart(2, "0")} EXPOSURES</span>
-            <h2 id="ha-signal-title">SIGNAL<span>BREAK</span></h2>
+            <div className="ha-heading-lockup">
+              <h2 id="ha-signal-title">SELECTED <span>SHOTS</span></h2>
+              <span className="ha-heading-grid" aria-hidden="true" />
+            </div>
             <p>Color splits. Frames repeat.<br />The set becomes collage.</p>
           </div>
           {panels.map((panel, i) => <Composition key={panel[0].id} photos={panel} number={i} />)}
@@ -154,11 +157,13 @@ export default function HeadAutoMural({ chapters }) {
         .ha-sequence { position:relative; margin:0; }
         .ha-sequence-heading { position:absolute; top:0; left:0; right:0; z-index:8; pointer-events:none; display:flex; align-items:center; gap:12px 20px; padding:14px 3vw; background:linear-gradient(180deg,#0b0b0bb0,transparent); text-shadow:0 2px 15px #000; }
         .ha-sequence-heading .ha-kicker { margin:0; }
+        .ha-heading-lockup { display:flex; flex-direction:column; align-items:flex-start; gap:6px; }
         .ha-sequence-heading h2 { font-size:clamp(24px,4vw,64px); font-weight:900; line-height:.95; letter-spacing:-.075em; margin:0; }
         .ha-sequence-heading h2 span { color:var(--accent); }
+        .ha-heading-grid { display:block; width:clamp(110px,13vw,170px); aspect-ratio:798 / 150; background:url("/headauto26-design/selected-shots-grid.png") left center / contain no-repeat; }
         .ha-sequence-heading p { margin:0; font:12px/1.55 'Courier New',monospace; color:#d3d0c9; }
         .ha-composition { display:grid; grid-template-columns:repeat(16, minmax(0,1fr)); grid-template-rows:auto auto; position:relative; isolation:isolate; margin:0; padding:36px 2vw 32px; overflow:hidden; }
-        .ha-sequence-heading + .ha-composition { padding-top:clamp(84px,8vw,120px); }
+        .ha-sequence-heading + .ha-composition { padding-top:clamp(120px,12vw,166px); }
         .ha-collage-ground { position:absolute; inset:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-template-rows:repeat(2,minmax(0,1fr)); background:#141414 url("/api/headauto26/texture-kodak-5063-strip.jpeg") center top / 100% auto repeat-y; z-index:0; pointer-events:none; }
         .ha-fragment { display:block; position:relative; overflow:hidden; min-width:0; min-height:0; }
         .ha-fragment::before { content:""; position:absolute; inset:-19%; background:var(--fragment) 35% 42% / cover no-repeat; filter:brightness(.60) saturate(.82); }
@@ -202,7 +207,7 @@ export default function HeadAutoMural({ chapters }) {
         .ha-film { padding:var(--frame-padding); background:#131313; box-shadow:0 10px 20px #0009; }
         .ha-negative-frame { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
         .ha-composition-note { position:absolute; top:12px; right:3vw; z-index:6; display:flex; gap:9px; font:10px 'Courier New',monospace; letter-spacing:.1em; color:var(--accent); text-shadow:0 0 8px #000; }
-        .ha-sequence-heading + .ha-composition .ha-composition-note { top:70px; }
+        .ha-sequence-heading + .ha-composition .ha-composition-note { top:clamp(95px,10vw,141px); }
         .ha-stamp { position:absolute; bottom:8px; right:3vw; z-index:6; pointer-events:none; font-weight:900; font-size:clamp(16px,2.2vw,28px); line-height:1; letter-spacing:-.05em; color:var(--accent); text-shadow:1px 2px 10px #000b; }
         .ha-composition:last-child .ha-stamp { bottom:78px; }
         .ha-composition-footer { position:absolute; bottom:10px; left:3vw; z-index:6; color:#e1dbce; font:9px 'Courier New',monospace; letter-spacing:.1em; text-shadow:0 0 8px #000; }
@@ -219,10 +224,13 @@ export default function HeadAutoMural({ chapters }) {
           .ha-cover-date, .ha-scroll, .ha-kicker { font-size:9px; }
           .ha-cover-photo { grid-area:2/1/3/7; align-self:start; margin:15px 0 0; }
           .ha-cover-edge { bottom:12px; font-size:8px; }
-          .ha-sequence-heading { padding:12px 4vw; display:flex; flex-wrap:wrap; gap:3px 10px; }
+          .ha-sequence-heading { padding:12px 4vw; display:flex; flex-direction:column; align-items:flex-start; gap:5px; }
           .ha-sequence-heading h2 { font-size:clamp(26px,7.5vw,48px); }
+          .ha-heading-grid { width:clamp(108px,32vw,150px); }
           .ha-sequence-heading p { display:none; }
           .ha-composition { grid-template-columns:repeat(6,minmax(0,1fr)); grid-template-rows:repeat(4,auto); padding:30px 2vw; }
+          .ha-sequence-heading + .ha-composition { padding-top:130px; }
+          .ha-sequence-heading + .ha-composition .ha-composition-note { top:108px; }
           .ha-kodak-strip { width:92%; left:4%; opacity:.32; }
           .ha-layout-reverse .ha-kodak-strip { right:4%; }
           .ha-layout-fragment .ha-kodak-strip { left:0; width:92%; }
